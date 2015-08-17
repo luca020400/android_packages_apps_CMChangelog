@@ -2,9 +2,4 @@
     <string name="app_name">CM Changelog</string>
 
     <string name="action_settings">Device Info</string>
-    <string name="project">Repository</string>
-    <string name="last_updated">Last Update</string>
-    <string name="wid">ID :</string>
-    <string name="subject"></string>
-
 </resources>
