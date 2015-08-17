@@ -10,13 +10,13 @@ import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.Socket;
 
-public class su {
-    public static String su(String... strings) {
+public class cmd {
+    public static String exec(String... strings) {
         String res = "";
         DataOutputStream outputStream = null;
         InputStream response = null;
         try {
-            Process su = Runtime.getRuntime().exec("su");
+            Process su = Runtime.getRuntime().exec("sh");
             outputStream = new DataOutputStream(su.getOutputStream());
             response = su.getInputStream();
 
