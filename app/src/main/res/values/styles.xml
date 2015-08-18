@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@android:style/Theme.Material.Settings">
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.DarkActionBar">
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/ColorPrimary</item>
@@ -15,5 +15,7 @@
         <item name="android:textColorPrimary">@color/primary_text_light</item>
         <!-- Menu Text Color -->
         <item name="android:actionMenuTextAppearance">@color/primary_text_dark</item>
+        <!-- Redefine the ActionBar style for contentInsetStart -->
+        <item name="android:actionBarStyle">@android:style/Widget.Material.Light.ActionBar.Solid</item>
     </style>
 </resources>

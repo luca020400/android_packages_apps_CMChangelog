@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.simple.JSONArray;
@@ -40,7 +39,6 @@ public class MainActivity extends Activity {
     ArrayList<String> mSubject = new ArrayList<>();
     private ProgressDialog mProgressDialog;
 
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -77,8 +75,8 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    private void DeviceInfo() {
-        String message = getString(R.string.devive_info_device) + " " + mDevice + "\n\n"
+    public void DeviceInfo() {
+         String message = getString(R.string.devive_info_device) + " " + mDevice + "\n\n"
                 + getString(R.string.devive_info_running) + " " + mCMVersion + "\n\n"
                 + getString(R.string.devive_info_update_channel) + " " + mCMReleaseType;
 
@@ -89,12 +87,9 @@ public class MainActivity extends Activity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
-
-        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
-    private void UpdateChangelog() {
+    public void UpdateChangelog() {
         if (mProgressDialog != null) {
             return;
         }
@@ -108,10 +103,9 @@ public class MainActivity extends Activity {
         mProgressDialog.setTitle(R.string.checking_for_updates);
         mProgressDialog.setMessage(getString(R.string.checking_for_updates));
         mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
+        mProgressDialog.setCancelable(true);
 
-        new UpdateTask().execute(String.format
+        new ChangelogTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
     }
 
@@ -124,7 +118,14 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    private class UpdateTask extends AsyncTask<String, String, String> {
+    public class ChangelogTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            if (mProgressDialog != null) {
+                mProgressDialog.show();
+            }
+        }
+
         @Override
         protected String doInBackground(String... urls) {
             JSONParser parser = new JSONParser();
@@ -167,9 +168,10 @@ public class MainActivity extends Activity {
             return null;
         }
 
-        protected void onPostExecute() {
+        @Override
+        protected void onPostExecute(String urls) {
             if (mProgressDialog != null) {
-                mProgressDialog.hide();
+                mProgressDialog.dismiss();
             }
         }
     }

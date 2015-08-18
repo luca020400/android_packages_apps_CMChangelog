@@ -10,4 +10,5 @@
     <string name="update_changelog">Update Changelog</string>
     <string name="data_connection_required">A data connection is required.</string>
     <string name="checking_for_updates">Downloading Changelog</string>
+    <string name="sysinfo_last_check">Last check:</string>
 </resources>
