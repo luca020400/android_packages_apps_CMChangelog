@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">CM Changelog</string>
 
-    <string name="action_settings">Device Info</string>
+    <string name="device_info">Device Info</string>
+    <string name="dialog_ok">OK</string>
+    <string name="devive_info_device">Device:</string>
+    <string name="devive_info_running">Running:</string>
+    <string name="devive_info_update_channel">Update Channel:</string>
 </resources>

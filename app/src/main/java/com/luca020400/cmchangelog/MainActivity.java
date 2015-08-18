@@ -3,31 +3,37 @@ package com.luca020400.cmchangelog;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MainActivity extends Activity {
     public String mDevice;
+    public String mCMVersion;
     public String mCyanogenMod;
-    public String mLastUpdates;
-    public String mRepo;
-    public String mId;
-    public String mSubject;
+    public String mCMReleaseType;
+    ArrayList<String> mRepo = new ArrayList<>();
+    ArrayList<String> mLastUpdates = new ArrayList<>();
+    ArrayList<String> mId = new ArrayList<>();
+    ArrayList<String> mSubject = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +41,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         String[] version = cmd.exec("getprop ro.cm.version").split("-");
-        mDevice = version[3];
+        mCMVersion = cmd.exec("getprop ro.cm.version");
         mCyanogenMod = version[0];
-
-        Log.i("Device", "'" + String.valueOf(mDevice) + "'");
-        Log.i("CyanogenMod", "'" + String.valueOf(mCyanogenMod) + "'");
+        mCMReleaseType = version[2];
+        mDevice = version[3];
 
         new UpdateTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
@@ -47,109 +52,87 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the device_info; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu, menu);
+        menu.add(0, 0, 0, R.string.device_info)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case 0:
+                DeviceInfo();
+                return true;
+        }
+        return false;
     }
 
-    public class GridAdapter extends BaseAdapter {
+    private void DeviceInfo() {
+        String message = getString(R.string.devive_info_device) + " " + mDevice + "\n\n"
+                + getString(R.string.devive_info_running) + " " + mCMVersion + "\n\n"
+                + getString(R.string.devive_info_update_channel) + " " + mCMReleaseType;
 
-        // Assume it's known
-        final int ROW_ITEMS = 2;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.device_info)
+                .setMessage(message)
+                .setPositiveButton(R.string.dialog_ok, null);
 
-        final ArrayList<String> mItems;
-        final int mCount;
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-        /**
-         * Default constructor
-         *
-         * @param items to fill data to
-         */
-        private GridAdapter(final ArrayList<String> items) {
-
-            mCount = items.size() * ROW_ITEMS;
-            mItems = new ArrayList<>(mCount);
-
-            // for small size of items it's ok to do it here, sync way
-            for (String item : items) {
-                // get separate string parts, divided by ,
-                final String[] parts = item.split(",");
-
-                // remove spaces from parts
-                for (String part : parts) {
-                    mItems.add(part);
-                }
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return mCount;
-        }
-
-        @Override
-        public Object getItem(final int position) {
-            return mItems.get(position);
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, final View convertView, final ViewGroup parent) {
-
-            View view = convertView;
-
-            if (view == null) {
-                view = LayoutInflater.from(parent.getContext()).inflate
-                        (android.R.layout.simple_list_item_1, parent, false);
-            }
-
-            final TextView text = (TextView) view.findViewById(android.R.id.text1);
-
-            text.setText(mItems.get(position));
-
-            return view;
-        }
+        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+        messageView.setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
     private class UpdateTask extends AsyncTask<String, String, String> {
         protected String doInBackground(String... urls) {
-            JSONObject json;
+            JSONParser parser = new JSONParser();
             try {
-                JSONArray jArray = new JSONArray(Jsoup.connect(urls[0]).ignoreContentType(true).get());
-                json = jArray.getJSONObject(0);
-                mRepo = json.getString("repo");
-                mLastUpdates = json.getString("last_updated");
-                mId = json.getString("id");
-                mSubject = json.getString("subject");
-            } catch (JSONException e) {
-                // json shitted itself
-                e.printStackTrace();
+                URL url = new URL(urls[0]);
+                URLConnection con = url.openConnection();
+                File temp = File.createTempFile("cmxlog_json", ".tmp");
+                OutputStream out = new FileOutputStream(temp);
+                InputStream inputStream = con.getInputStream();
+                byte buf[] = new byte[1024];
+                int len;
+                while ((len = inputStream.read(buf)) > 0)
+                    out.write(buf, 0, len);
+                out.close();
+                inputStream.close();
+                Object obj = parser.parse(new FileReader(temp.getAbsolutePath()));
+                JSONObject jsonObject = (JSONObject) obj;
+                // Repo Name
+                JSONArray msg_repo = (JSONArray) jsonObject.get("repo");
+                Iterator<String> iterator_repo = msg_repo.iterator();
+                while (iterator_repo.hasNext()) {
+                    mRepo.add(iterator_repo.next());
+                }
+                // Last Updated
+                JSONArray msg_last_updated = (JSONArray) jsonObject.get("last_updated");
+                Iterator<String> iterator_last_updated = msg_last_updated.iterator();
+                while (iterator_repo.hasNext()) {
+                    mLastUpdates.add(iterator_repo.next());
+                }
+                // Commit ID
+                JSONArray msg_id = (JSONArray) jsonObject.get("id");
+                Iterator<String> iterator_id = msg_repo.iterator();
+                while (iterator_repo.hasNext()) {
+                    mId.add(iterator_repo.next());
+                }
+                // Commit message
+                JSONArray msg_subject = (JSONArray) jsonObject.get("subject");
+                Iterator<String> iterator_subject = msg_subject.iterator();
+                while (iterator_repo.hasNext()) {
+                    mSubject.add(iterator_repo.next());
+                }
             } catch (IOException e) {
-                // can't connect to url (jsoup shitted itself)
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
+            Log.d("Repo", String.format(mRepo.get(1)));
             return null;
-        }
-
-        protected void onPostExecute() {
-            final GridView grid = (GridView) findViewById(R.id.gridView);
-            final ArrayList<String> items = new ArrayList<>();
-
-            items.add(mRepo);
-            items.add(mSubject);
-
-            grid.setAdapter(new GridAdapter(items));
         }
     }
 }
