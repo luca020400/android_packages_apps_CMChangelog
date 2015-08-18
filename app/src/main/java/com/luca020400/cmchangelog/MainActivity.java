@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class MainActivity extends Activity {
     public String mDevice;
@@ -143,35 +142,22 @@ public class MainActivity extends Activity {
                 out.close();
                 inputStream.close();
 
-                Object obj = parser.parse(new FileReader(temp.getAbsolutePath()));
-                JSONObject jsonObject = (JSONObject) obj;
+                JSONArray jsonarray = (JSONArray)parser.parse(new FileReader(temp.getAbsolutePath()));
 
-                JSONArray msg_repo = (JSONArray) jsonObject.get("repo");
-                JSONArray msg_last_updated = (JSONArray) jsonObject.get("last_updated");
-                JSONArray msg_id = (JSONArray) jsonObject.get("id");
-                JSONArray msg_subject = (JSONArray) jsonObject.get("subject");
+                for (int i = 0; i < jsonarray.size(); ++i) {
 
-                // Repo Name
-                Iterator<String> iterator_repo = msg_repo.iterator();
-                while (iterator_repo.hasNext()) {
-                    mRepo.add(iterator_repo.next());
-                }
-                // Last Updated
-                Iterator<String> iterator_last_updated = msg_last_updated.iterator();
-                while (iterator_last_updated.hasNext()) {
-                    mLastUpdates.add(iterator_last_updated.next());
-                }
-                // Commit ID
-                Iterator<String> iterator_id = msg_id.iterator();
-                while (iterator_id.hasNext()) {
-                    mId.add(iterator_id.next());
-                }
-                // Commit message
-                Iterator<String> iterator_subject = msg_subject.iterator();
-                while (iterator_subject.hasNext()) {
-                    mSubject.add(iterator_subject.next());
-                }
+                    JSONObject jsonObject = (JSONObject) jsonarray.get(i);
 
+                    String msg_project = (String) jsonObject.get("project");
+                    String msg_last_updated = (String) jsonObject.get("last_updated");
+                    Long msg_id = (Long) jsonObject.get("id");
+                    String msg_subject = (String) jsonObject.get("subject");
+
+                    mRepo.add(msg_project);
+                    mLastUpdates.add(msg_last_updated);
+                    mId.add(String.format("%d", msg_id.intValue()));
+                    mSubject.add(msg_subject);
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
