@@ -6,4 +6,8 @@
     <string name="devive_info_device">Device:</string>
     <string name="devive_info_running">Running:</string>
     <string name="devive_info_update_channel">Update Channel:</string>
+    <string name="changelog">Changelog</string>
+    <string name="update_changelog">Update Changelog</string>
+    <string name="data_connection_required">A data connection is required.</string>
+    <string name="checking_for_updates">Downloading Changelog</string>
 </resources>
