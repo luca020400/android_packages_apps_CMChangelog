@@ -109,11 +109,10 @@ public class MainActivity extends Activity {
         mProgressDialog.setMessage(getString(R.string.checking_for_updates));
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
 
         new UpdateTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
-        mProgressDialog.show();
-        new UpdateTask().onPostExecute();
     }
 
     public boolean isOnline() {
