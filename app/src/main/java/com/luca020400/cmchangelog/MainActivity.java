@@ -1,5 +1,6 @@
 package com.luca020400.cmchangelog;
 
+import android.app.AlertDialog;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,20 +8,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -54,25 +45,23 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //addPreferencesFromResource(R.xml.main);
-
         String[] version = cmd.exec("getprop ro.cm.version").split("-");
         mCMVersion = cmd.exec("getprop ro.cm.version");
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
-
-        new UpdateTask().execute(String.format
-                ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 0, 0, R.string.device_info)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         menu.add(0, 0, 0, R.string.update_changelog)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-
+                .setIcon(R.drawable.ic_menu_refresh)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS
+                        | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, 1, 0, R.string.device_info)
+                .setIcon(R.drawable.ic_info)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS
+                        | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
     }
 
@@ -80,10 +69,10 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                DeviceInfo();
+                UpdateChangelog();
                 return true;
             case 1:
-                UpdateChangelog();
+                DeviceInfo();
                 return true;
         }
         return false;
@@ -111,7 +100,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if (isOnline()) {
+        if (!isOnline()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -125,13 +114,16 @@ public class MainActivity extends Activity {
         new UpdateTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
         mProgressDialog.show();
+        new UpdateTask().onPostExecute();
     }
 
     public boolean isOnline() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 
     private class UpdateTask extends AsyncTask<String, String, String> {
@@ -150,40 +142,36 @@ public class MainActivity extends Activity {
                     out.write(buf, 0, len);
                 out.close();
                 inputStream.close();
+
                 Object obj = parser.parse(new FileReader(temp.getAbsolutePath()));
                 JSONObject jsonObject = (JSONObject) obj;
-                // Repo Name
+
                 JSONArray msg_repo = (JSONArray) jsonObject.get("repo");
-                if (!msg_repo.isEmpty()) {
-                    Iterator<String> iterator_repo = msg_repo.iterator();
-                    while (iterator_repo.hasNext()) {
-                        mRepo.add(iterator_repo.next());
-                    }
+                JSONArray msg_last_updated = (JSONArray) jsonObject.get("last_updated");
+                JSONArray msg_id = (JSONArray) jsonObject.get("id");
+                JSONArray msg_subject = (JSONArray) jsonObject.get("subject");
+
+                // Repo Name
+                Iterator<String> iterator_repo = msg_repo.iterator();
+                while (iterator_repo.hasNext()) {
+                    mRepo.add(iterator_repo.next());
                 }
                 // Last Updated
-                JSONArray msg_last_updated = (JSONArray) jsonObject.get("last_updated");
-                if (!msg_last_updated.isEmpty()) {
-                    Iterator<String> iterator_last_updated = msg_last_updated.iterator();
-                    while (iterator_last_updated.hasNext()) {
-                        mLastUpdates.add(iterator_last_updated.next());
-                    }
+                Iterator<String> iterator_last_updated = msg_last_updated.iterator();
+                while (iterator_last_updated.hasNext()) {
+                    mLastUpdates.add(iterator_last_updated.next());
                 }
                 // Commit ID
-                JSONArray msg_id = (JSONArray) jsonObject.get("id");
-                if (!msg_id.isEmpty()) {
-                    Iterator<String> iterator_id = msg_repo.iterator();
-                    while (iterator_id.hasNext()) {
-                        mId.add(iterator_id.next());
-                    }
+                Iterator<String> iterator_id = msg_id.iterator();
+                while (iterator_id.hasNext()) {
+                    mId.add(iterator_id.next());
                 }
                 // Commit message
-                JSONArray msg_subject = (JSONArray) jsonObject.get("subject");
-                if (!msg_subject.isEmpty()) {
-                    Iterator<String> iterator_subject = msg_subject.iterator();
-                    while (iterator_subject.hasNext()) {
-                        mSubject.add(iterator_subject.next());
-                    }
+                Iterator<String> iterator_subject = msg_subject.iterator();
+                while (iterator_subject.hasNext()) {
+                    mSubject.add(iterator_subject.next());
                 }
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
