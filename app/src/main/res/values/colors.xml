@@ -1,8 +1,6 @@
 <resources>
     <color name="ColorPrimary">#ff266aa6</color>
     <color name="ColorPrimaryDark">#ff185c98</color>
-    <color name="accent_material_dark">#ff80cbc4</color>
-    <color name="background_material_dark">#ff303030</color>
     <color name="primary_text_light">#fffafafa</color>
     <color name="primary_text_dark">#de000000</color>
 </resources>

@@ -8,10 +8,19 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,6 +28,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MainActivity extends Activity {
-    private ProgressDialog mProgressDialog;
     public String mDevice;
     public String mCMVersion;
     public String mCyanogenMod;
@@ -39,11 +48,13 @@ public class MainActivity extends Activity {
     ArrayList<String> mLastUpdates = new ArrayList<>();
     ArrayList<String> mId = new ArrayList<>();
     ArrayList<String> mSubject = new ArrayList<>();
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        //addPreferencesFromResource(R.xml.main);
 
         String[] version = cmd.exec("getprop ro.cm.version").split("-");
         mCMVersion = cmd.exec("getprop ro.cm.version");
@@ -125,13 +136,6 @@ public class MainActivity extends Activity {
 
     private class UpdateTask extends AsyncTask<String, String, String> {
         @Override
-        protected void onPreExecute() {
-            if (isOnline()) {
-                Toast.makeText(MainActivity.this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
         protected String doInBackground(String... urls) {
             JSONParser parser = new JSONParser();
             try {
@@ -180,6 +184,8 @@ public class MainActivity extends Activity {
                         mSubject.add(iterator_subject.next());
                     }
                 }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ParseException e) {
