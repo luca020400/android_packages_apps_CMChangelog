@@ -4,15 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -41,6 +42,10 @@ public class MainActivity extends Activity {
     public String mCMVersion;
     public String mCyanogenMod;
     public String mCMReleaseType;
+    public String[] simpleproject;
+    public String[] simplelastupdated;
+    public String[] simpleid;
+    public String[] simplesubject;
     ArrayList<String> mProject = new ArrayList<>();
     ArrayList<String> mLastUpdates = new ArrayList<>();
     ArrayList<String> mId = new ArrayList<>();
@@ -51,14 +56,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        String[] version = cmd.exec("getprop ro.cm.version").split("-");
-        mCMVersion = cmd.exec("getprop ro.cm.version");
+        String version_full = cmd.exec("getprop ro.cm.version");
+        String[] version = version_full.split("-");
+        mCMVersion = version_full;
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
 
-        new ChangelogTask().execute(String.format
-                ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
+        UpdateChangelog();
     }
 
     @Override
@@ -176,25 +181,33 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(String urls) {
             super.onPostExecute(urls);
-            String[] simplemProject = new String[ mProject.size() ];
-            String[] simplemLastupdated = new String[ mLastUpdates.size() ];
-            String[] simplemId = new String[ mId.size() ];
-            String[] simplemSubject = new String[ mSubject.size() ];
-            mProject.toArray(simplemProject);
-            mLastUpdates.toArray(simplemLastupdated);
-            mId.toArray(simplemId);
-            mSubject.toArray(simplemSubject);
+            simpleproject = new String[ mProject.size() ];
+            simplelastupdated = new String[ mLastUpdates.size() ];
+            simpleid = new String[ mId.size() ];
+            simplesubject = new String[ mSubject.size() ];
+            mProject.toArray(simpleproject);
+            mLastUpdates.toArray(simplelastupdated);
+            mId.toArray(simpleid);
+            mSubject.toArray(simplesubject);
 
             mChangelog.clear();
-
             for (int i = 0; i < mProject.size(); i++) {
-                mChangelog.add(simplemProject[i] + "\n\n" + simplemSubject[i] + "\n\n");
+                mChangelog.add(simpleproject[i] + "\n" + simplesubject[i]);
             }
+
             // Locate the gridview in gridview_main.xml
             gridview = (GridView) findViewById(R.id.gridview);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1, mChangelog);
-
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,R.layout.gridview, mChangelog);
             gridview.setAdapter(adapter);
+
+            gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View v,
+                                        int position, long id) {
+                    String review_url = new String(String.format("http://review.cyanogenmod.org/#/c/%s", simpleid[position]));
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
+                    startActivity(browserIntent);
+                }
+            });
 
             // Close the progressdialog
             if (mProgressDialog != null) {
