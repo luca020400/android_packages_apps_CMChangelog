@@ -162,6 +162,7 @@ public class MainActivity extends Activity {
                     mId.add(String.format("%d", msg_id.intValue()));
                     mSubject.add(msg_subject);
                 }
+                temp.delete();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -187,7 +188,7 @@ public class MainActivity extends Activity {
             mChangelog.clear();
 
             for (int i = 0; i < mProject.size(); i++) {
-                mChangelog.add(simplemProject[i] + " " + simplemSubject[i]);
+                mChangelog.add(simplemProject[i] + "\n\n" + simplemSubject[i] + "\n\n");
             }
             // Locate the gridview in gridview_main.xml
             gridview = (GridView) findViewById(R.id.gridview);
