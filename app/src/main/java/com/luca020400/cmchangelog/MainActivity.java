@@ -38,10 +38,10 @@ public class MainActivity extends Activity {
     private ProgressDialog mProgressDialog;
     GridView gridview;
 
-    public String mDevice;
     public String mCMVersion;
     public String mCyanogenMod;
     public String mCMReleaseType;
+    public String mDevice;
     public String[] simpleproject;
     public String[] simplelastupdated;
     public String[] simpleid;
@@ -116,7 +116,8 @@ public class MainActivity extends Activity {
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService
+                (Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnected()) {
             return true;
@@ -151,7 +152,8 @@ public class MainActivity extends Activity {
                 out.close();
                 inputStream.close();
 
-                JSONArray jsonarray = (JSONArray)parser.parse(new FileReader(temp.getAbsolutePath()));
+                JSONArray jsonarray = (JSONArray)parser.parse
+                        (new FileReader(temp.getAbsolutePath()));
 
                 for (int i = 0; i < jsonarray.size(); ++i) {
 
@@ -195,21 +197,21 @@ public class MainActivity extends Activity {
                 mChangelog.add(simpleproject[i] + "\n" + simplesubject[i]);
             }
 
-            // Locate the gridview in gridview_main.xml
             gridview = (GridView) findViewById(R.id.gridview);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,R.layout.gridview, mChangelog);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>
+                    (MainActivity.this,R.layout.gridview, mChangelog);
             gridview.setAdapter(adapter);
 
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
-                    String review_url = new String(String.format("http://review.cyanogenmod.org/#/c/%s", simpleid[position]));
+                    String review_url = new String(String.format
+                            ("http://review.cyanogenmod.org/#/c/%s", simpleid[position]));
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                     startActivity(browserIntent);
                 }
             });
 
-            // Close the progressdialog
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
