@@ -1,15 +1,20 @@
 package com.luca020400.cmchangelog;
 
-import android.app.AlertDialog;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import org.json.simple.JSONArray;
@@ -29,24 +34,31 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
+    private ProgressDialog mProgressDialog;
+    GridView gridview;
+
     public String mDevice;
     public String mCMVersion;
     public String mCyanogenMod;
     public String mCMReleaseType;
-    ArrayList<String> mRepo = new ArrayList<>();
+    ArrayList<String> mProject = new ArrayList<>();
     ArrayList<String> mLastUpdates = new ArrayList<>();
     ArrayList<String> mId = new ArrayList<>();
     ArrayList<String> mSubject = new ArrayList<>();
-    private ProgressDialog mProgressDialog;
+    ArrayList<String> mChangelog = new ArrayList<>();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
         String[] version = cmd.exec("getprop ro.cm.version").split("-");
         mCMVersion = cmd.exec("getprop ro.cm.version");
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
+
+        new ChangelogTask().execute(String.format
+                ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
     }
 
     @Override
@@ -90,21 +102,10 @@ public class MainActivity extends Activity {
     }
 
     public void UpdateChangelog() {
-        if (mProgressDialog != null) {
-            return;
-        }
-
         if (!isOnline()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(R.string.checking_for_updates);
-        mProgressDialog.setMessage(getString(R.string.checking_for_updates));
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setCancelable(true);
-
         new ChangelogTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
     }
@@ -121,9 +122,12 @@ public class MainActivity extends Activity {
     public class ChangelogTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
-            if (mProgressDialog != null) {
-                mProgressDialog.show();
-            }
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setTitle(R.string.checking_for_updates);
+            mProgressDialog.setMessage(getString(R.string.checking_for_updates));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.show();
         }
 
         @Override
@@ -153,7 +157,7 @@ public class MainActivity extends Activity {
                     Long msg_id = (Long) jsonObject.get("id");
                     String msg_subject = (String) jsonObject.get("subject");
 
-                    mRepo.add(msg_project);
+                    mProject.add(msg_project);
                     mLastUpdates.add(msg_last_updated);
                     mId.add(String.format("%d", msg_id.intValue()));
                     mSubject.add(msg_subject);
@@ -170,6 +174,28 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String urls) {
+            super.onPostExecute(urls);
+            String[] simplemProject = new String[ mProject.size() ];
+            String[] simplemLastupdated = new String[ mLastUpdates.size() ];
+            String[] simplemId = new String[ mId.size() ];
+            String[] simplemSubject = new String[ mSubject.size() ];
+            mProject.toArray(simplemProject);
+            mLastUpdates.toArray(simplemLastupdated);
+            mId.toArray(simplemId);
+            mSubject.toArray(simplemSubject);
+
+            mChangelog.clear();
+
+            for (int i = 0; i < mProject.size(); i++) {
+                mChangelog.add(simplemProject[i] + " " + simplemSubject[i]);
+            }
+            // Locate the gridview in gridview_main.xml
+            gridview = (GridView) findViewById(R.id.gridview);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1, mChangelog);
+
+            gridview.setAdapter(adapter);
+
+            // Close the progressdialog
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
