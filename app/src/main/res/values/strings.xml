@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">CM Changelog</string>
-
     <string name="device_info">Device Info</string>
     <string name="dialog_ok">OK</string>
     <string name="devive_info_device">Device:</string>
