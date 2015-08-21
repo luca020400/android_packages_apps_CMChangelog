@@ -204,19 +204,19 @@ public class MainActivity extends Activity {
                     View view = super.getView(position, convertView, parent);
                     TextView text1 = (TextView) view.findViewById(android.R.id.text1);
                     TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-                    String date = null;
+                    String CommitDate = null;
 
                     try {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        Date convertedCurrentDate = sdf.parse(simplelastupdated[position]);
-                        date = sdf.format(convertedCurrentDate );
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                        Date convertedCommitDate = sdf.parse(simplelastupdated[position]);
+                        CommitDate = sdf.format(convertedCommitDate );
                     } catch (java.text.ParseException e) {
                         e.printStackTrace();
                     }
 
                     text1.setText(simplesubject[position]);
                     text1.setTextColor(Color.parseColor("#008080"));
-                    text2.setText(String.format("%s (%s)", date, simpleproject[position]));
+                    text2.setText(String.format("%s (%s)", CommitDate, simpleproject[position]));
                     text2.setTextColor(Color.parseColor("#FFFFFF"));
                     return view;
                 }
