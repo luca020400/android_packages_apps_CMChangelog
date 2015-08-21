@@ -97,17 +97,16 @@ public class MainActivity extends Activity {
     }
 
     public void DeviceInfo() {
-         String message = getString(R.string.devive_info_device) + " " + mDevice + "\n\n"
-                + getString(R.string.devive_info_running) + " " + mCMVersion + "\n\n"
-                + getString(R.string.devive_info_update_channel) + " " + mCMReleaseType;
+        String message = getString(R.string.devive_info_device) + " " + mDevice + "\n"
+            + getString(R.string.devive_info_running) + " " + mCMVersion + "\n"
+            + getString(R.string.devive_info_update_channel) + " " + mCMReleaseType;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(R.string.device_info)
-                .setMessage(message)
-                .setPositiveButton(R.string.dialog_ok, null);
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.device_info)
+            .setMessage(message)
+            .setPositiveButton(R.string.dialog_ok, null)
+            .show();
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     public void UpdateChangelog() {
