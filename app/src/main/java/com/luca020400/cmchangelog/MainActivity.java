@@ -157,6 +157,7 @@ public class MainActivity extends Activity {
 
                 JSONArray jsonarray = (JSONArray)parser.parse
                         (new FileReader(temp.getAbsolutePath()));
+                temp.delete();
 
                 for (int i = 0; i < jsonarray.size(); ++i) {
 
@@ -172,12 +173,7 @@ public class MainActivity extends Activity {
                     mId.add(String.format("%d", msg_id.intValue()));
                     mSubject.add(msg_subject);
                 }
-                temp.delete();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
+            } catch ( IOException | ParseException e) {
                 e.printStackTrace();
             }
             return null;
@@ -217,7 +213,11 @@ public class MainActivity extends Activity {
 
                     commit.setText(simplesubject[position]);
                     commit.setTextColor(Color.parseColor("#009688"));
-                    repo.setText(simpleproject[position]);
+                    if (simpleproject[position].equals("android")) {
+                        repo.setText(simpleproject[position]);
+                    } else {
+                        repo.setText(simpleproject[position].replace("android_", ""));
+                    }
                     repo.setTextColor(Color.parseColor("#FFFFFF"));
                     date.setText(CommitDate);
                     date.setTextColor(Color.parseColor("#ff5252"));
