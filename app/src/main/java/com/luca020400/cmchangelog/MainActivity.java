@@ -203,8 +203,8 @@ public class MainActivity extends Activity {
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
                     TextView commit = (TextView) view.findViewById(R.id.commit);
-                    TextView date = (TextView) view.findViewById(R.id.date);
                     TextView repo = (TextView) view.findViewById(R.id.repo);
+                    TextView date = (TextView) view.findViewById(R.id.date);
 
                     String CommitDate = null;
 
@@ -218,10 +218,10 @@ public class MainActivity extends Activity {
 
                     commit.setText(simplesubject[position]);
                     commit.setTextColor(Color.parseColor("#009688"));
-                    date.setText(CommitDate);
-                    date.setTextColor(Color.parseColor("#ff5252"));
                     repo.setText(simpleproject[position]);
                     repo.setTextColor(Color.parseColor("#FFFFFF"));
+                    date.setText(CommitDate);
+                    date.setTextColor(Color.parseColor("#ff5252"));
                     return view;
                 }
             };
