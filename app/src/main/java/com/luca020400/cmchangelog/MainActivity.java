@@ -198,12 +198,14 @@ public class MainActivity extends Activity {
 
             gridview = (GridView) findViewById(R.id.gridview);
             ArrayAdapter adapter = new ArrayAdapter(MainActivity.this,
-                    android.R.layout.simple_list_item_2, android.R.id.text1, simplesubject) {
+                    R.layout.gridview, R.id.commit, simplesubject) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
-                    TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                    TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+                    TextView commit = (TextView) view.findViewById(R.id.commit);
+                    TextView date = (TextView) view.findViewById(R.id.date);
+                    TextView repo = (TextView) view.findViewById(R.id.repo);
+
                     String CommitDate = null;
 
                     try {
@@ -214,10 +216,12 @@ public class MainActivity extends Activity {
                         e.printStackTrace();
                     }
 
-                    text1.setText(simplesubject[position]);
-                    text1.setTextColor(Color.parseColor("#008080"));
-                    text2.setText(String.format("%s (%s)", CommitDate, simpleproject[position]));
-                    text2.setTextColor(Color.parseColor("#FFFFFF"));
+                    commit.setText(simplesubject[position]);
+                    commit.setTextColor(Color.parseColor("#009688"));
+                    date.setText(CommitDate);
+                    date.setTextColor(Color.parseColor("#ff5252"));
+                    repo.setText(simpleproject[position]);
+                    repo.setTextColor(Color.parseColor("#FFFFFF"));
                     return view;
                 }
             };
