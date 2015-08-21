@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -13,9 +14,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.simple.JSONArray;
@@ -32,7 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends Activity {
     private ProgressDialog mProgressDialog;
@@ -50,7 +55,6 @@ public class MainActivity extends Activity {
     ArrayList<String> mLastUpdates = new ArrayList<>();
     ArrayList<String> mId = new ArrayList<>();
     ArrayList<String> mSubject = new ArrayList<>();
-    ArrayList<String> mChangelog = new ArrayList<>();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,21 +196,38 @@ public class MainActivity extends Activity {
             mId.toArray(simpleid);
             mSubject.toArray(simplesubject);
 
-            mChangelog.clear();
-            for (int i = 0; i < mProject.size(); i++) {
-                mChangelog.add(simpleproject[i] + "\n" + simplesubject[i]);
-            }
-
             gridview = (GridView) findViewById(R.id.gridview);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>
-                    (MainActivity.this,R.layout.gridview, mChangelog);
+            ArrayAdapter adapter = new ArrayAdapter(MainActivity.this,
+                    android.R.layout.simple_list_item_2, android.R.id.text1, simplesubject) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
+                    TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                    TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+                    String date = null;
+
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date convertedCurrentDate = sdf.parse(simplelastupdated[position]);
+                        date = sdf.format(convertedCurrentDate );
+                    } catch (java.text.ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    text1.setText(simplesubject[position]);
+                    text1.setTextColor(Color.parseColor("#008080"));
+                    text2.setText(String.format("%s (%s)", date, simpleproject[position]));
+                    text2.setTextColor(Color.parseColor("#FFFFFF"));
+                    return view;
+                }
+            };
             gridview.setAdapter(adapter);
 
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
-                    String review_url = new String(String.format
-                            ("http://review.cyanogenmod.org/#/c/%s", simpleid[position]));
+                    String review_url = String.format
+                            ("http://review.cyanogenmod.org/#/c/%s", simpleid[position]);
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                     startActivity(browserIntent);
                 }
