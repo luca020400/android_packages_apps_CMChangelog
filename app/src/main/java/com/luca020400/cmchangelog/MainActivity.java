@@ -214,7 +214,7 @@ public class MainActivity extends Activity {
                     commit.setText(simplesubject[position]);
                     commit.setTextColor(Color.parseColor("#009688"));
                     if (simpleproject[position].equals("android")) {
-                        repo.setText(simpleproject[position]);
+                        repo.setText(simpleproject[position] + "_manifest");
                     } else {
                         repo.setText(simpleproject[position].replace("android_", ""));
                     }
