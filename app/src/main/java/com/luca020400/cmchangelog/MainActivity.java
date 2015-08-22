@@ -27,7 +27,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -40,21 +39,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends Activity {
-    private ProgressDialog mProgressDialog;
+    ProgressDialog mProgressDialog;
     GridView gridview;
 
-    public String mCMVersion;
-    public String mCyanogenMod;
-    public String mCMReleaseType;
-    public String mDevice;
-    public String[] simpleproject;
-    public String[] simplelastupdated;
-    public String[] simpleid;
-    public String[] simplesubject;
-    ArrayList<String> mProject = new ArrayList<>();
-    ArrayList<String> mLastUpdates = new ArrayList<>();
-    ArrayList<String> mId = new ArrayList<>();
-    ArrayList<String> mSubject = new ArrayList<>();
+    String mCMVersion;
+    String mCyanogenMod;
+    String mCMReleaseType;
+    String mDevice;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +120,15 @@ public class MainActivity extends Activity {
     }
 
     public class ChangelogTask extends AsyncTask<String, String, String> {
+        String[] simpleproject;
+        String[] simplelastupdated;
+        String[] simpleid;
+        String[] simplesubject;
+        ArrayList<String> mProject = new ArrayList<>();
+        ArrayList<String> mLastUpdates = new ArrayList<>();
+        ArrayList<String> mId = new ArrayList<>();
+        ArrayList<String> mSubject = new ArrayList<>();
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -182,10 +182,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(String urls) {
             super.onPostExecute(urls);
-            simpleproject = new String[ mProject.size() ];
-            simplelastupdated = new String[ mLastUpdates.size() ];
-            simpleid = new String[ mId.size() ];
-            simplesubject = new String[ mSubject.size() ];
+
+            simpleproject = new String[mProject.size()];
+            simplelastupdated = new String[mLastUpdates.size()];
+            simpleid = new String[mId.size()];
+            simplesubject = new String[mSubject.size()];
             mProject.toArray(simpleproject);
             mLastUpdates.toArray(simplelastupdated);
             mId.toArray(simpleid);
@@ -225,7 +226,6 @@ public class MainActivity extends Activity {
                 }
             };
             gridview.setAdapter(adapter);
-
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
