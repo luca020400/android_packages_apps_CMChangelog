@@ -26,17 +26,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     GridView gridview;
@@ -93,7 +88,6 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                swipeRefreshLayout.setRefreshing(true);
                 UpdateChangelog();
                 return true;
             case 1:
@@ -146,27 +140,19 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
         ArrayList<String> mSubject = new ArrayList<>();
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            swipeRefreshLayout.setRefreshing(true);
+        }
+
+        @Override
         protected String doInBackground(String... urls) {
             JSONParser parser = new JSONParser();
             try {
-                URL url = new URL(urls[0]);
-                URLConnection con = url.openConnection();
-                File temp = File.createTempFile("cmxlog_json", ".tmp");
-                OutputStream out = new FileOutputStream(temp);
-                InputStream inputStream = con.getInputStream();
-                byte buf[] = new byte[1024];
-                int len;
-                while ((len = inputStream.read(buf)) > 0)
-                    out.write(buf, 0, len);
-                out.close();
-                inputStream.close();
-
-                JSONArray jsonarray = (JSONArray)parser.parse
-                        (new FileReader(temp.getAbsolutePath()));
-                temp.delete();
+                String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
+                JSONArray jsonarray = (JSONArray) parser.parse(out);
 
                 for (int i = 0; i < jsonarray.size(); ++i) {
-
                     JSONObject jsonObject = (JSONObject) jsonarray.get(i);
 
                     String msg_project = (String) jsonObject.get("project");
@@ -179,7 +165,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
                     mId.add(String.format("%d", msg_id.intValue()));
                     mSubject.add(msg_subject);
                 }
-            } catch ( IOException | ParseException e) {
+            } catch (IOException | ParseException e) {
                 e.printStackTrace();
             }
             return null;
