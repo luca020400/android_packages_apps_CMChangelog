@@ -2,7 +2,6 @@ package com.luca020400.cmchangelog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +10,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,9 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends Activity {
-    ProgressDialog mProgressDialog;
+public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     GridView gridview;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     String mCMVersion;
     String mCyanogenMod;
@@ -58,7 +58,22 @@ public class MainActivity extends Activity {
         mCMReleaseType = version[2];
         mDevice = version[3];
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(R.color.ColorPrimary);
+
         UpdateChangelog();
+    }
+
+    public void onRefresh() {
+        swipeRefreshLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(true);
+                                        UpdateChangelog();
+                                    }
+                                }
+        );
     }
 
     @Override
@@ -128,16 +143,6 @@ public class MainActivity extends Activity {
         ArrayList<String> mLastUpdates = new ArrayList<>();
         ArrayList<String> mId = new ArrayList<>();
         ArrayList<String> mSubject = new ArrayList<>();
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(MainActivity.this);
-            mProgressDialog.setTitle(R.string.checking_for_updates);
-            mProgressDialog.setMessage(getString(R.string.checking_for_updates));
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show();
-        }
 
         @Override
         protected String doInBackground(String... urls) {
@@ -236,9 +241,13 @@ public class MainActivity extends Activity {
                 }
             });
 
-            if (mProgressDialog != null) {
-                mProgressDialog.dismiss();
-            }
+            swipeRefreshLayout.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            swipeRefreshLayout.setRefreshing(false);
+                                        }
+                                    }
+            );
         }
     }
 }

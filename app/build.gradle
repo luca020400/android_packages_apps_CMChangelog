@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.luca020400.cmchangelog"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
-        versionName "1.1"
+        versionName "1.2"
     }
     buildTypes {
         release {
@@ -28,9 +28,9 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.0.+'
-    compile 'com.android.support:cardview-v7:23.0.+'
-    compile 'com.android.support:support-v4:23.0.+'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:cardview-v7:23.0.1'
+    compile 'com.android.support:support-v4:23.0.1'
     compile ('com.googlecode.json-simple:json-simple:1.1.1') {
         exclude module: 'junit'
     }
