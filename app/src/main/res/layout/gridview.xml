@@ -11,6 +11,7 @@
         android:id="@+id/commit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="start"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:textStyle="bold"
         android:layout_marginTop="8dp" />
@@ -18,21 +19,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/commit"
-        android:layout_alignStart="@id/commit" >
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/repo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="start"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
+            android:gravity="end"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
     </LinearLayout>
 </LinearLayout>
