@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeColors(R.color.ColorPrimary);
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
 
         UpdateChangelog();
     }
@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 0:
+                swipeRefreshLayout.setRefreshing(true);
                 UpdateChangelog();
                 return true;
             case 1:
