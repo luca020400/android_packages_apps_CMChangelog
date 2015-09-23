@@ -61,14 +61,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     public void onRefresh() {
-        swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
-                                        UpdateChangelog();
-                                    }
-                                }
-        );
+        UpdateChangelog();
     }
 
     @Override
@@ -111,22 +104,16 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     public void UpdateChangelog() {
-        if (!isOnline()) {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService
+                (Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo == null || !netInfo.isConnected()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
             return;
         }
         new ChangelogTask().execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService
-                (Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 
     public class ChangelogTask extends AsyncTask<String, String, String> {
@@ -227,14 +214,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
                     startActivity(browserIntent);
                 }
             });
-
-            swipeRefreshLayout.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            swipeRefreshLayout.setRefreshing(false);
-                                        }
-                                    }
-            );
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 }
