@@ -137,10 +137,10 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
             JSONParser parser = new JSONParser();
             try {
                 String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
-                JSONArray jsonarray = (JSONArray) parser.parse(out);
+                JSONArray jsonArray = (JSONArray) parser.parse(out);
 
-                for (int i = 0; i < jsonarray.size(); ++i) {
-                    JSONObject jsonObject = (JSONObject) jsonarray.get(i);
+                for (int i = 0; i < jsonArray.size(); ++i) {
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 
                     String msg_project = (String) jsonObject.get("project");
                     String msg_last_updated = (String) jsonObject.get("last_updated");
@@ -162,18 +162,9 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
         protected void onPostExecute(String urls) {
             super.onPostExecute(urls);
 
-            simpleproject = new String[mProject.size()];
-            simplelastupdated = new String[mLastUpdates.size()];
-            simpleid = new String[mId.size()];
-            simplesubject = new String[mSubject.size()];
-            mProject.toArray(simpleproject);
-            mLastUpdates.toArray(simplelastupdated);
-            mId.toArray(simpleid);
-            mSubject.toArray(simplesubject);
-
             gridview = (GridView) findViewById(R.id.gridview);
             ArrayAdapter adapter = new ArrayAdapter(MainActivity.this,
-                    R.layout.gridview, R.id.commit, simplesubject) {
+                    R.layout.gridview, R.id.commit, mSubject) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
@@ -185,18 +176,18 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-                        Date convertedCommitDate = sdf.parse(simplelastupdated[position]);
+                        Date convertedCommitDate = sdf.parse(mLastUpdates.get(position));
                         CommitDate = sdf.format(convertedCommitDate );
                     } catch (java.text.ParseException e) {
                         e.printStackTrace();
                     }
 
-                    commit.setText(simplesubject[position]);
+                    commit.setText(mSubject.get(position));
                     commit.setTextColor(Color.parseColor("#009688"));
-                    if (simpleproject[position].equals("android")) {
-                        repo.setText(simpleproject[position] + "_manifest");
+                    if (mProject.get(position).equals("android")) {
+                        repo.setText(mProject.get(position) + "_manifest");
                     } else {
-                        repo.setText(simpleproject[position].replace("android_", ""));
+                        repo.setText(mProject.get(position).replace("android_", ""));
                     }
                     repo.setTextColor(Color.parseColor("#FFFFFF"));
                     date.setText(CommitDate);
@@ -209,7 +200,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
                     String review_url = String.format
-                            ("http://review.cyanogenmod.org/#/c/%s", simpleid[position]);
+                            ("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                     startActivity(browserIntent);
                 }
