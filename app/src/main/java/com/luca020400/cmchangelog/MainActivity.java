@@ -21,10 +21,9 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -117,10 +116,6 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     public class ChangelogTask extends AsyncTask<String, String, String> {
-        String[] simpleproject;
-        String[] simplelastupdated;
-        String[] simpleid;
-        String[] simplesubject;
         ArrayList<String> mProject = new ArrayList<>();
         ArrayList<String> mLastUpdates = new ArrayList<>();
         ArrayList<String> mId = new ArrayList<>();
@@ -134,25 +129,24 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected String doInBackground(String... urls) {
-            JSONParser parser = new JSONParser();
             try {
                 String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
-                JSONArray jsonArray = (JSONArray) parser.parse(out);
+                JSONArray newJArray = new JSONArray(out);
 
-                for (int i = 0; i < jsonArray.size(); ++i) {
-                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                for (int i = 0; i < newJArray.length(); ++i) {
+                    JSONObject jsonObject = newJArray.getJSONObject(i);
 
                     String msg_project = (String) jsonObject.get("project");
                     String msg_last_updated = (String) jsonObject.get("last_updated");
-                    Long msg_id = (Long) jsonObject.get("id");
+                    Integer msg_id = (Integer) jsonObject.get("id");
                     String msg_subject = (String) jsonObject.get("subject");
 
                     mProject.add(msg_project);
                     mLastUpdates.add(msg_last_updated);
-                    mId.add(String.format("%d", msg_id.intValue()));
+                    mId.add(msg_id.toString());
                     mSubject.add(msg_subject);
                 }
-            } catch (IOException | ParseException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
