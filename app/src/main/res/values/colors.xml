@@ -3,4 +3,6 @@
     <color name="color_primary_dark">#ff185c98</color>
     <color name="primary_text_light">#fffafafa</color>
     <color name="primary_text_dark">#de000000</color>
+    <color name="teal_text">#009688</color>
+    <color name="red_text">#ff5252</color>
 </resources>
