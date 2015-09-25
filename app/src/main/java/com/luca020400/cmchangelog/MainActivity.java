@@ -176,15 +176,12 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
                     }
 
                     commit.setText(mSubject.get(position));
-                    commit.setTextColor(getResources().getColor(R.color.teal_text));
                     if (mProject.get(position).equals("android")) {
                         repo.setText(mProject.get(position) + "_manifest");
                     } else {
                         repo.setText(mProject.get(position).replace("android_", ""));
                     }
-                    repo.setTextColor(Color.WHITE);
                     date.setText(CommitDate);
-                    date.setTextColor(getResources().getColor(R.color.red_text));
                     return view;
                 }
             };

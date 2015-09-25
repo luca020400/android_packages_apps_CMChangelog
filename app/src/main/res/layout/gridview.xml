@@ -14,6 +14,7 @@
         android:gravity="start"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:textStyle="bold"
+        android:textColor="@color/teal_text"
         android:layout_marginTop="8dp" />
 
     <LinearLayout
@@ -27,12 +28,13 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
-
+        
         <TextView
             android:id="@+id/date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+            android:textColor="@color/red_text" />
     </LinearLayout>
 </LinearLayout>
