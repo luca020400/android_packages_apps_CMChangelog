@@ -45,9 +45,8 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        String version_full = cmd.exec("getprop ro.cm.version");
-        String[] version = version_full.split("-");
-        mCMVersion = version_full;
+        mCMVersion = cmd.exec("getprop ro.cm.version");
+        String[] version = mCMVersion.split("-");
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
