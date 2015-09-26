@@ -33,13 +33,13 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
-    GridView gridview;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private GridView gridview;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
-    String mCMVersion;
-    String mCyanogenMod;
-    String mCMReleaseType;
-    String mDevice;
+    private String mCMVersion;
+    private String mCyanogenMod;
+    private String mCMReleaseType;
+    private String mDevice;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
