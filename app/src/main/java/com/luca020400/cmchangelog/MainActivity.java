@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,28 +64,24 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 0, 0, R.string.update_changelog)
-                .setIcon(R.drawable.ic_menu_refresh)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS
-                        | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, 1, 0, R.string.device_info)
-                .setIcon(R.drawable.ic_info)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS
-                        | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actions, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case 0:
+            case R.id.update_changelog:
                 UpdateChangelog();
-                return true;
-            case 1:
+                break;
+            case R.id.device_info:
                 DeviceInfo();
-                return true;
+                break;
         }
-        return false;
+
+        return true;
     }
 
     public void DeviceInfo() {
