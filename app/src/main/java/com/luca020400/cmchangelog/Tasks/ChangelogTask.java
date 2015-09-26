@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
-    ArrayList<String> mId = new ArrayList<>();
-    ChangelogAdapter adapter;
+    private ArrayList<String> mId = new ArrayList<>();
+    private ChangelogAdapter adapter;
 
     @Override
     protected void onPreExecute() {

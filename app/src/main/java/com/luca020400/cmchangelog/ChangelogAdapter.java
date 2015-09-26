@@ -22,7 +22,7 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Change change = getItem(position);
-        String CommitDate = null;
+        String commitDate = null;
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.gridview, parent, false);
@@ -36,18 +36,18 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm",
                     java.util.Locale.getDefault());
             Date convertedCommitDate = sdf.parse(change.last_updated_adapter);
-            CommitDate = sdf.format(convertedCommitDate );
+            commitDate = sdf.format(convertedCommitDate );
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         subject.setText(change.subject_adapter);
+        last_updated.setText(commitDate);
         if (change.project_adapter.equals("android")) {
             project.setText(change.project_adapter + "_manifest");
         } else {
             project.setText(change.project_adapter.replace("android_", ""));
         }
-        last_updated.setText(CommitDate);
         return convertView;
     }
 }

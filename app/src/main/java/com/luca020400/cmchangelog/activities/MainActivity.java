@@ -70,15 +70,16 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     public void DeviceInfo() {
-        String message = getString(R.string.devive_info_device) + " " + mDevice + "\n"
-            + getString(R.string.devive_info_running) + " " + mCMVersion + "\n"
-            + getString(R.string.devive_info_update_channel) + " " + mCMReleaseType;
+        String message = String.format("%s %s\n%s %s\n%s %s",
+                getString(R.string.devive_info_device), mCMVersion,
+                getString(R.string.devive_info_running), mCMVersion,
+                getString(R.string.devive_info_update_channel), mCMReleaseType);
 
         new AlertDialog.Builder(this)
-            .setTitle(R.string.device_info)
-            .setMessage(message)
-            .setPositiveButton(R.string.dialog_ok, null)
-            .show();
+                .setTitle(R.string.device_info)
+                .setMessage(message)
+                .setPositiveButton(R.string.dialog_ok, null)
+                .show();
     }
 
     public void UpdateChangelog() {
