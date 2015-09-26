@@ -33,5 +33,6 @@
             android:gravity="end"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary"
             android:textColor="@color/red_text" />
+        
     </LinearLayout>
 </LinearLayout>
