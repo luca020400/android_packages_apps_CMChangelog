@@ -4,14 +4,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.TextView;
 
+import com.luca020400.cmchangelog.ChangelogAdapter;
 import com.luca020400.cmchangelog.R;
 import com.luca020400.cmchangelog.activities.MainActivity;
+import com.luca020400.cmchangelog.activities.MainActivity.Change;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,25 +18,26 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
-    ArrayList<String> mProject = new ArrayList<>();
-    ArrayList<String> mLastUpdates = new ArrayList<>();
     ArrayList<String> mId = new ArrayList<>();
-    ArrayList<String> mSubject = new ArrayList<>();
+    ChangelogAdapter adapter;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        if (adapter != null) {
+            adapter.clear();
+        }
         MainActivity.getInstance().swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     protected String doInBackground(String... urls) {
+        ArrayList<Change> arrayOflog = new ArrayList<>();
+        adapter = new ChangelogAdapter(MainActivity._instance, arrayOflog);
         try {
             String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
             JSONArray newJArray = new JSONArray(out);
@@ -50,10 +50,10 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 Integer msg_id = (Integer) jsonObject.get("id");
                 String msg_subject = (String) jsonObject.get("subject");
 
-                mProject.add(msg_project);
-                mLastUpdates.add(msg_last_updated);
+                Change newChange = new Change(msg_subject, msg_project, msg_last_updated);
+                adapter.add(newChange);
+
                 mId.add(msg_id.toString());
-                mSubject.add(msg_subject);
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -67,35 +67,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
 
         final MainActivity mainActivity = MainActivity.getInstance();
         GridView gridview = (GridView) mainActivity.findViewById(R.id.gridview);
-        ArrayAdapter adapter = new ArrayAdapter(mainActivity,
-                R.layout.gridview, R.id.commit, mSubject) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView commit = (TextView) view.findViewById(R.id.commit);
-                TextView repo = (TextView) view.findViewById(R.id.repo);
-                TextView date = (TextView) view.findViewById(R.id.date);
 
-                String CommitDate = null;
-
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-                    Date convertedCommitDate = sdf.parse(mLastUpdates.get(position));
-                    CommitDate = sdf.format(convertedCommitDate );
-                } catch (java.text.ParseException e) {
-                    e.printStackTrace();
-                }
-
-                commit.setText(mSubject.get(position));
-                if (mProject.get(position).equals("android")) {
-                    repo.setText(mProject.get(position) + "_manifest");
-                } else {
-                    repo.setText(mProject.get(position).replace("android_", ""));
-                }
-                date.setText(CommitDate);
-                return view;
-            }
-        };
         gridview.setAdapter(adapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,

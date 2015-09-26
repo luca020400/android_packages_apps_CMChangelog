@@ -100,4 +100,16 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     public static MainActivity getInstance() {
         return _instance;
     }
+
+    public static class Change {
+        public String subject_adapter;
+        public String project_adapter;
+        public String last_updated_adapter;
+
+        public Change(String subject_adapter, String project_adapter, String last_updated_adapter) {
+            this.subject_adapter = subject_adapter;
+            this.project_adapter = project_adapter;
+            this.last_updated_adapter = last_updated_adapter;
+        }
+    }
 }

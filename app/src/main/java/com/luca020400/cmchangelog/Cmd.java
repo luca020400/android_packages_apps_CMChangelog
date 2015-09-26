@@ -7,8 +7,6 @@ import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramSocket;
-import java.net.Socket;
 
 public class Cmd {
     public static String exec(String... strings) {
