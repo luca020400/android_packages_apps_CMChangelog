@@ -10,11 +10,12 @@ import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.Socket;
 
-public class cmd {
+public class Cmd {
     public static String exec(String... strings) {
         String res = "";
         DataOutputStream outputStream = null;
         InputStream response = null;
+
         try {
             Process su = Runtime.getRuntime().exec("sh");
             outputStream = new DataOutputStream(su.getOutputStream());
@@ -38,16 +39,19 @@ public class cmd {
         } finally {
             CloseSilently(outputStream, response);
         }
+
         return res;
     }
 
     private static String readFully(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
-        int length = 0;
+        int length;
+
         while ((length = is.read(buffer)) != -1) {
             baos.write(buffer, 0, length);
         }
+
         return baos.toString("UTF-8");
     }
 
@@ -56,12 +60,9 @@ public class cmd {
             if (x != null) {
                 try {
                     Log.d("Closing: ", String.valueOf(x));
+
                     if (x instanceof Closeable) {
                         ((Closeable) x).close();
-                    } else if (x instanceof Socket) {
-                        ((Socket) x).close();
-                    } else if (x instanceof DatagramSocket) {
-                        ((DatagramSocket) x).close();
                     } else {
                         Log.d("cannot close: ", String.valueOf(x));
                         throw new RuntimeException("cannot close " + x);

@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
-        
+
         <TextView
             android:id="@+id/date"
             android:layout_width="fill_parent"

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -45,7 +44,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mCMVersion = cmd.exec("getprop ro.cm.version");
+        mCMVersion = Cmd.exec("getprop ro.cm.version");
         String[] version = mCMVersion.split("-");
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
