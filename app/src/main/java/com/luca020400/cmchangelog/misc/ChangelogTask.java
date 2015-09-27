@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.cyanogenmod.changelog.ChangelogActivity;
-import org.cyanogenmod.changelog.Change;
+import org.cyanogenmod.changelog.ChangelogActivity.Change;
 import org.cyanogenmod.changelog.R;
 
 import org.json.JSONArray;

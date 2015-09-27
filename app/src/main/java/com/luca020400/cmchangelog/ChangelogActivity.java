@@ -65,9 +65,9 @@ public class ChangelogActivity extends Activity {
     }
 
     public void DeviceInfo() {
-        String message = String.format("%s %s\n\n%s %s\n\n%s %s",
+        String message = String.format("%s %s\n%s %s\n%s %s",
                 getString(R.string.device_info_device), mDevice,
-                getString(R.string.device_info_running), mCMVersion,
+                getString(R.string.device_info_version), mCMVersion,
                 getString(R.string.device_info_update_channel), mCMReleaseType);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
