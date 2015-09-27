@@ -34,7 +34,7 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
         TextView last_updated = (TextView) convertView.findViewById(R.id.last_updated);
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm",
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",
                     java.util.Locale.getDefault());
             Date convertedCommitDate = sdf.parse(change.last_updated_adapter);
             commitDate = sdf.format(convertedCommitDate );
