@@ -2,11 +2,11 @@ package com.luca020400.cmchangelog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,9 +17,9 @@ import com.luca020400.cmchangelog.misc.ChangelogTask;
 import com.luca020400.cmchangelog.misc.Cmd;
 import com.luca020400.cmchangelog.R;
 
-public class ChangelogActivity extends Activity {
+public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     public static ChangelogActivity _instance;
-    public ProgressDialog mProgressDialog;
+    public SwipeRefreshLayout swipeRefreshLayout;
 
     private String mCMVersion;
     private String mCyanogenMod;
@@ -37,12 +37,14 @@ public class ChangelogActivity extends Activity {
         mCMReleaseType = version[2];
         mDevice = version[3];
 
-        mProgressDialog = new ProgressDialog(ChangelogActivity.this);
-        mProgressDialog.setTitle(R.string.checking_for_updates);
-        mProgressDialog.setMessage(getString(R.string.checking_for_updates));
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setCancelable(true);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
 
+        UpdateChangelog();
+    }
+
+    public void onRefresh() {
         UpdateChangelog();
     }
 
@@ -56,22 +58,18 @@ public class ChangelogActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.update_changelog:
-                UpdateChangelog();
-                break;
             case R.id.device_info:
                 DeviceInfo();
                 break;
         }
-
         return true;
     }
 
     public void DeviceInfo() {
         String message = String.format("%s %s\n\n%s %s\n\n%s %s",
-                getString(R.string.devive_info_device), mDevice,
-                getString(R.string.devive_info_running), mCMVersion,
-                getString(R.string.devive_info_update_channel), mCMReleaseType);
+                getString(R.string.device_info_device), mDevice,
+                getString(R.string.device_info_running), mCMVersion,
+                getString(R.string.device_info_update_channel), mCMReleaseType);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(R.string.device_info)
@@ -92,6 +90,7 @@ public class ChangelogActivity extends Activity {
 
         if (netInfo == null || !netInfo.isConnected()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
             return;
         }
 

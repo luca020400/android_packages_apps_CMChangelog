@@ -31,7 +31,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
         if (adapter != null) {
             adapter.clear();
         }
-        ChangelogActivity.getInstance().mProgressDialog.show();
+        ChangelogActivity.getInstance().swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -78,9 +78,6 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 changelogActivity.startActivity(browserIntent);
             }
         });
-
-        if (changelogActivity.mProgressDialog != null) {
-            changelogActivity.mProgressDialog.dismiss();
-        }
+        changelogActivity.swipeRefreshLayout.setRefreshing(false);
     }
 }
