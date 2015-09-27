@@ -1,4 +1,4 @@
-package com.luca020400.cmchangelog;
+package com.luca020400.cmchangelog.misc;
 
 import android.util.Log;
 

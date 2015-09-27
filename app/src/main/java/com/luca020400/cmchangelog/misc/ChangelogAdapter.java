@@ -1,4 +1,4 @@
-package com.luca020400.cmchangelog;
+package com.luca020400.cmchangelog.misc;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.luca020400.cmchangelog.activities.MainActivity.Change;
+import com.luca020400.cmchangelog.ChangelogActivity.Change;
+import com.luca020400.cmchangelog.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

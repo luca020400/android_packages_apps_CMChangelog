@@ -1,4 +1,4 @@
-package com.luca020400.cmchangelog.Tasks;
+package com.luca020400.cmchangelog.misc;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,10 +7,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.luca020400.cmchangelog.ChangelogAdapter;
+import com.luca020400.cmchangelog.ChangelogActivity;
+import com.luca020400.cmchangelog.ChangelogActivity.Change;
+import com.luca020400.cmchangelog.misc.ChangelogAdapter;
 import com.luca020400.cmchangelog.R;
-import com.luca020400.cmchangelog.activities.MainActivity;
-import com.luca020400.cmchangelog.activities.MainActivity.Change;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,13 +31,13 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
         if (adapter != null) {
             adapter.clear();
         }
-        MainActivity.getInstance().swipeRefreshLayout.setRefreshing(true);
+        ChangelogActivity.getInstance().mProgressDialog.show();
     }
 
     @Override
     protected String doInBackground(String... urls) {
         ArrayList<Change> arrayOflog = new ArrayList<>();
-        adapter = new ChangelogAdapter(MainActivity._instance, arrayOflog);
+        adapter = new ChangelogAdapter(ChangelogActivity._instance, arrayOflog);
         try {
             String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
             JSONArray newJArray = new JSONArray(out);
@@ -65,8 +65,8 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String urls) {
         super.onPostExecute(urls);
 
-        final MainActivity mainActivity = MainActivity.getInstance();
-        GridView gridview = (GridView) mainActivity.findViewById(R.id.gridview);
+        final ChangelogActivity changelogActivity = ChangelogActivity.getInstance();
+        GridView gridview = (GridView) changelogActivity.findViewById(R.id.gridview);
 
         gridview.setAdapter(adapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,10 +75,12 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String review_url = String.format
                         ("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
-                mainActivity.startActivity(browserIntent);
+                changelogActivity.startActivity(browserIntent);
             }
         });
 
-        mainActivity.swipeRefreshLayout.setRefreshing(false);
+        if (changelogActivity.mProgressDialog != null) {
+            changelogActivity.mProgressDialog.dismiss();
+        }
     }
 }

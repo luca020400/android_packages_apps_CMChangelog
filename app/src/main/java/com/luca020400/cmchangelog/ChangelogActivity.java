@@ -1,24 +1,25 @@
-package com.luca020400.cmchangelog.activities;
+package com.luca020400.cmchangelog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.luca020400.cmchangelog.Cmd;
+import com.luca020400.cmchangelog.misc.ChangelogTask;
+import com.luca020400.cmchangelog.misc.Cmd;
 import com.luca020400.cmchangelog.R;
-import com.luca020400.cmchangelog.Tasks.ChangelogTask;
 
-public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
-    public static MainActivity _instance;
-    public SwipeRefreshLayout swipeRefreshLayout;
+public class ChangelogActivity extends Activity {
+    public static ChangelogActivity _instance;
+    public ProgressDialog mProgressDialog;
 
     private String mCMVersion;
     private String mCyanogenMod;
@@ -36,20 +37,17 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
         mCMReleaseType = version[2];
         mDevice = version[3];
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
+        mProgressDialog = new ProgressDialog(ChangelogActivity.this);
+        mProgressDialog.setTitle(R.string.checking_for_updates);
+        mProgressDialog.setMessage(getString(R.string.checking_for_updates));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(true);
 
-        UpdateChangelog();
-    }
-
-    public void onRefresh() {
         UpdateChangelog();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
         return true;
@@ -70,16 +68,21 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     public void DeviceInfo() {
-        String message = String.format("%s %s\n%s %s\n%s %s",
-                getString(R.string.devive_info_device), mCMVersion,
+        String message = String.format("%s %s\n\n%s %s\n\n%s %s",
+                getString(R.string.devive_info_device), mDevice,
                 getString(R.string.devive_info_running), mCMVersion,
                 getString(R.string.devive_info_update_channel), mCMReleaseType);
 
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(R.string.device_info)
                 .setMessage(message)
-                .setPositiveButton(R.string.dialog_ok, null)
-                .show();
+                .setPositiveButton(R.string.dialog_ok, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+        messageView.setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
     public void UpdateChangelog() {
@@ -89,8 +92,6 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
         if (netInfo == null || !netInfo.isConnected()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
-
             return;
         }
 
@@ -98,7 +99,7 @@ public class MainActivity extends Activity implements SwipeRefreshLayout.OnRefre
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
     }
 
-    public static MainActivity getInstance() {
+    public static ChangelogActivity getInstance() {
         return _instance;
     }
 
