@@ -5,11 +5,11 @@ android {
     buildToolsVersion '23.0.1'
 
     defaultConfig {
-        applicationId 'com.luca020400.cmchangelog'
+        applicationId 'org.cyanogenmod.changelog'
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 3
-        versionName '3.2'
+        versionName '3.2.1'
     }
     buildTypes {
         release {
