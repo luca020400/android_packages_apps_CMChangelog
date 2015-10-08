@@ -81,11 +81,11 @@ public class ChangelogActivity extends Activity {
     }
 
     public void UpdateChangelog() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService
-                (Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (netInfo == null || !netInfo.isConnected()) {
+        if (networkInfo == null || !networkInfo.isConnected()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
             return;
