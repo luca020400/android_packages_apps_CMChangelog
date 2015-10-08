@@ -22,8 +22,8 @@ import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
     private ChangelogActivity mChangelogActivity;
+    private ChangelogAdapter mAdapter;
     private ArrayList<String> mId = new ArrayList<>();
-    private ChangelogAdapter adapter;
 
     public ChangelogTask(ChangelogActivity changelogActivity) {
         mChangelogActivity = changelogActivity;
@@ -33,8 +33,8 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        if (adapter != null) {
-            adapter.clear();
+        if (mAdapter != null) {
+            mAdapter.clear();
         }
 
         mChangelogActivity.swipeRefreshLayout.setRefreshing(true);
@@ -44,7 +44,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
     protected String doInBackground(String... urls) {
         ArrayList<Change> arrayOflog = new ArrayList<>();
 
-        adapter = new ChangelogAdapter(mChangelogActivity, arrayOflog);
+        mAdapter = new ChangelogAdapter(mChangelogActivity, arrayOflog);
 
         try {
             String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
@@ -59,7 +59,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String msg_subject = (String) jsonObject.get("subject");
 
                 Change newChange = new Change(msg_subject, msg_project, msg_last_updated);
-                adapter.add(newChange);
+                mAdapter.add(newChange);
 
                 mId.add(msg_id.toString());
             }
@@ -75,7 +75,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
 
         GridView gridview = (GridView) mChangelogActivity.findViewById(R.id.gridview);
 
-        gridview.setAdapter(adapter);
+        gridview.setAdapter(mAdapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
