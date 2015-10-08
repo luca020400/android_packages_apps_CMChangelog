@@ -17,7 +17,6 @@ import org.cyanogenmod.changelog.misc.ChangelogTask;
 import org.cyanogenmod.changelog.misc.Cmd;
 
 public class ChangelogActivity extends Activity {
-    private static ChangelogActivity _instance;
     public SwipeRefreshLayout swipeRefreshLayout;
 
     private String mCMVersion;
@@ -26,7 +25,6 @@ public class ChangelogActivity extends Activity {
     private String mDevice;
 
     public void onCreate(Bundle savedInstanceState) {
-        _instance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -83,33 +81,17 @@ public class ChangelogActivity extends Activity {
     }
 
     public void UpdateChangelog() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService
-                (Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (netInfo == null || !netInfo.isConnected()) {
+        if (networkInfo == null || !networkInfo.isConnected()) {
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
             return;
         }
 
-        new ChangelogTask().execute(String.format
+        new ChangelogTask(this).execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
-    }
-
-    public static ChangelogActivity getInstance() {
-        return _instance;
-    }
-
-    public static class Change {
-        public String subject_adapter;
-        public String project_adapter;
-        public String last_updated_adapter;
-
-        public Change(String subject_adapter, String project_adapter, String last_updated_adapter) {
-            this.subject_adapter = subject_adapter;
-            this.project_adapter = project_adapter;
-            this.last_updated_adapter = last_updated_adapter;
-        }
     }
 }

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Cmd {
+    private static String TAG = "Cmd";
+
     public static String exec(String... strings) {
         String res = "";
         DataOutputStream outputStream = null;
@@ -33,7 +35,7 @@ public class Cmd {
             }
             res = readFully(response);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "", e);
         } finally {
             CloseSilently(outputStream, response);
         }
@@ -57,16 +59,16 @@ public class Cmd {
         for (Object x : xs) {
             if (x != null) {
                 try {
-                    Log.d("Closing: ", String.valueOf(x));
+                    Log.d(TAG, "Closing: " + String.valueOf(x));
 
                     if (x instanceof Closeable) {
                         ((Closeable) x).close();
                     } else {
-                        Log.d("cannot close: ", String.valueOf(x));
+                        Log.d(TAG, "cannot close: " + String.valueOf(x));
                         throw new RuntimeException("cannot close " + x);
                     }
                 } catch (Throwable e) {
-                    Log.e("Error :", String.valueOf(e));
+                    Log.e(TAG, "", e);
                 }
             }
         }

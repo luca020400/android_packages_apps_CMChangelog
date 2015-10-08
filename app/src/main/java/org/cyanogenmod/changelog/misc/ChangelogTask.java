@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.cyanogenmod.changelog.ChangelogActivity;
-import org.cyanogenmod.changelog.ChangelogActivity.Change;
 import org.cyanogenmod.changelog.R;
 
 import org.json.JSONArray;
@@ -22,22 +22,32 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
+    private static String TAG = "ChangelogTask";
+    private ChangelogActivity mChangelogActivity;
+    private ChangelogAdapter mAdapter;
     private ArrayList<String> mId = new ArrayList<>();
-    private ChangelogAdapter adapter;
+
+    public ChangelogTask(ChangelogActivity changelogActivity) {
+        mChangelogActivity = changelogActivity;
+    }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (adapter != null) {
-            adapter.clear();
+
+        if (mAdapter != null) {
+            mAdapter.clear();
         }
-        ChangelogActivity.getInstance().swipeRefreshLayout.setRefreshing(true);
+
+        mChangelogActivity.swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     protected String doInBackground(String... urls) {
         ArrayList<Change> arrayOflog = new ArrayList<>();
-        adapter = new ChangelogAdapter(ChangelogActivity.getInstance(), arrayOflog);
+
+        mAdapter = new ChangelogAdapter(mChangelogActivity, arrayOflog);
+
         try {
             String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
             JSONArray newJArray = new JSONArray(out);
@@ -51,12 +61,12 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String msg_subject = (String) jsonObject.get("subject");
 
                 Change newChange = new Change(msg_subject, msg_project, msg_last_updated);
-                adapter.add(newChange);
+                mAdapter.add(newChange);
 
                 mId.add(msg_id.toString());
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "", e);
         }
         return null;
     }
@@ -65,23 +75,22 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String urls) {
         super.onPostExecute(urls);
 
-        final ChangelogActivity changelogActivity = ChangelogActivity.getInstance();
-        GridView gridview = (GridView) changelogActivity.findViewById(R.id.gridview);
+        GridView gridview = (GridView) mChangelogActivity.findViewById(R.id.gridview);
 
-        gridview.setAdapter(adapter);
+        gridview.setAdapter(mAdapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 String review_url = String.format
                         ("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
-                changelogActivity.startActivity(browserIntent);
+                mChangelogActivity.startActivity(browserIntent);
             }
         });
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                changelogActivity.swipeRefreshLayout.setRefreshing(false);
+                mChangelogActivity.swipeRefreshLayout.setRefreshing(false);
             }
         },500);
     }

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.cyanogenmod.changelog.ChangelogActivity.Change;
 import org.cyanogenmod.changelog.R;
 
 import java.text.ParseException;
@@ -36,18 +35,18 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",
                     java.util.Locale.getDefault());
-            Date convertedCommitDate = sdf.parse(change.last_updated_adapter);
+            Date convertedCommitDate = sdf.parse(change.mLastUpdated);
             commitDate = sdf.format(convertedCommitDate );
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        subject.setText(change.subject_adapter);
+        subject.setText(change.mSubject);
         last_updated.setText(commitDate);
-        if (change.project_adapter.equals("android")) {
-            project.setText(change.project_adapter + "_manifest");
+        if (change.mProject.equals("android")) {
+            project.setText(change.mProject + "_manifest");
         } else {
-            project.setText(change.project_adapter.replace("android_", ""));
+            project.setText(change.mProject.replace("android_", ""));
         }
         return convertView;
     }
