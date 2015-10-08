@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
+    private static String TAG = "ChangelogTask";
     private ChangelogActivity mChangelogActivity;
     private ChangelogAdapter mAdapter;
     private ArrayList<String> mId = new ArrayList<>();
@@ -64,7 +66,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 mId.add(msg_id.toString());
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "", e);
         }
         return null;
     }
