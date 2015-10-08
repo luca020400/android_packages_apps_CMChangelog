@@ -22,22 +22,31 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ChangelogTask extends AsyncTask<String, String, String> {
+    private ChangelogActivity mChangelogActivity;
     private ArrayList<String> mId = new ArrayList<>();
     private ChangelogAdapter adapter;
+
+    public ChangelogTask(ChangelogActivity changelogActivity) {
+        mChangelogActivity = changelogActivity;
+    }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+
         if (adapter != null) {
             adapter.clear();
         }
-        ChangelogActivity.getInstance().swipeRefreshLayout.setRefreshing(true);
+
+        mChangelogActivity.swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     protected String doInBackground(String... urls) {
         ArrayList<Change> arrayOflog = new ArrayList<>();
-        adapter = new ChangelogAdapter(ChangelogActivity.getInstance(), arrayOflog);
+
+        adapter = new ChangelogAdapter(mChangelogActivity, arrayOflog);
+
         try {
             String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
             JSONArray newJArray = new JSONArray(out);
@@ -65,8 +74,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String urls) {
         super.onPostExecute(urls);
 
-        final ChangelogActivity changelogActivity = ChangelogActivity.getInstance();
-        GridView gridview = (GridView) changelogActivity.findViewById(R.id.gridview);
+        GridView gridview = (GridView) mChangelogActivity.findViewById(R.id.gridview);
 
         gridview.setAdapter(adapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,13 +83,13 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String review_url = String.format
                         ("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
-                changelogActivity.startActivity(browserIntent);
+                mChangelogActivity.startActivity(browserIntent);
             }
         });
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                changelogActivity.swipeRefreshLayout.setRefreshing(false);
+                mChangelogActivity.swipeRefreshLayout.setRefreshing(false);
             }
         },500);
     }

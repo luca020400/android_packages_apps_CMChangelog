@@ -17,7 +17,6 @@ import org.cyanogenmod.changelog.misc.ChangelogTask;
 import org.cyanogenmod.changelog.misc.Cmd;
 
 public class ChangelogActivity extends Activity {
-    private static ChangelogActivity _instance;
     public SwipeRefreshLayout swipeRefreshLayout;
 
     private String mCMVersion;
@@ -26,7 +25,6 @@ public class ChangelogActivity extends Activity {
     private String mDevice;
 
     public void onCreate(Bundle savedInstanceState) {
-        _instance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -93,12 +91,8 @@ public class ChangelogActivity extends Activity {
             return;
         }
 
-        new ChangelogTask().execute(String.format
+        new ChangelogTask(this).execute(String.format
                 ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
-    }
-
-    public static ChangelogActivity getInstance() {
-        return _instance;
     }
 
     public static class Change {
