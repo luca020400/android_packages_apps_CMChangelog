@@ -1,6 +1,7 @@
 package org.cyanogenmod.changelog.misc;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ChangelogAdapter extends ArrayAdapter<Change>{
+public class ChangelogAdapter extends ArrayAdapter<Change> {
+    private static String TAG = "ChangelogAdapter";
+
     public ChangelogAdapter(Context context, ArrayList<Change> changes) {
         super(context, 0, changes);
     }
@@ -25,7 +28,8 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
         String commitDate = null;
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.gridview, parent, false);
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            convertView = layoutInflater.inflate(R.layout.gridview, parent, false);
         }
 
         TextView subject = (TextView) convertView.findViewById(R.id.subject);
@@ -33,21 +37,23 @@ public class ChangelogAdapter extends ArrayAdapter<Change>{
         TextView last_updated = (TextView) convertView.findViewById(R.id.last_updated);
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-                    java.util.Locale.getDefault());
-            Date convertedCommitDate = sdf.parse(change.mLastUpdated);
-            commitDate = sdf.format(convertedCommitDate );
+            SimpleDateFormat simpleDateFormat =
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault());
+            Date convertedCommitDate = simpleDateFormat.parse(change.mLastUpdated);
+            commitDate = simpleDateFormat.format(convertedCommitDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e(TAG, "", e);
         }
 
         subject.setText(change.mSubject);
         last_updated.setText(commitDate);
+
         if (change.mProject.equals("android")) {
-            project.setText(change.mProject + "_manifest");
+            project.setText(String.format("%s_manifest", change.mProject));
         } else {
             project.setText(change.mProject.replace("android_", ""));
         }
+
         return convertView;
     }
 }

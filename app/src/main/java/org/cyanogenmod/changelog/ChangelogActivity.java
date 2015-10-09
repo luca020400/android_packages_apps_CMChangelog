@@ -19,7 +19,7 @@ import org.cyanogenmod.changelog.misc.Cmd;
 public class ChangelogActivity extends Activity {
     public SwipeRefreshLayout swipeRefreshLayout;
 
-    private String mCMVersion;
+    private String mCmVersion;
     private String mCyanogenMod;
     private String mCMReleaseType;
     private String mDevice;
@@ -28,8 +28,8 @@ public class ChangelogActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mCMVersion = Cmd.exec("getprop ro.cm.version");
-        String[] version = mCMVersion.split("-");
+        mCmVersion = Cmd.exec("getprop ro.cm.version");
+        String[] version = mCmVersion.split("-");
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
@@ -49,6 +49,7 @@ public class ChangelogActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
+
         return true;
     }
 
@@ -59,13 +60,14 @@ public class ChangelogActivity extends Activity {
                 DeviceInfo();
                 break;
         }
+
         return true;
     }
 
     public void DeviceInfo() {
         String message = String.format("%s %s\n%s %s\n%s %s",
                 getString(R.string.device_info_device), mDevice,
-                getString(R.string.device_info_version), mCMVersion,
+                getString(R.string.device_info_version), mCmVersion,
                 getString(R.string.device_info_update_channel), mCMReleaseType);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -81,6 +83,7 @@ public class ChangelogActivity extends Activity {
     }
 
     public void UpdateChangelog() {
+        String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -91,7 +94,6 @@ public class ChangelogActivity extends Activity {
             return;
         }
 
-        new ChangelogTask(this).execute(String.format
-                ("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice));
+        new ChangelogTask(this).execute(apiUrl);
     }
 }

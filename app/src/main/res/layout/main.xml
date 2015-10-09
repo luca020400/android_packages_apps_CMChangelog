@@ -9,7 +9,5 @@
         android:layout_height="match_parent"
         android:numColumns="1"
         android:stretchMode="columnWidth"
-        android:gravity="center">
-
-    </GridView>
+        android:gravity="center" />
 </android.support.v4.widget.SwipeRefreshLayout>

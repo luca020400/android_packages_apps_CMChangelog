@@ -44,30 +44,32 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... urls) {
-        ArrayList<Change> arrayOflog = new ArrayList<>();
+        ArrayList<Change> logs = new ArrayList<>();
 
-        mAdapter = new ChangelogAdapter(mChangelogActivity, arrayOflog);
+        mAdapter = new ChangelogAdapter(mChangelogActivity, logs);
 
         try {
-            String out = new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
-            JSONArray newJArray = new JSONArray(out);
+            String scanner =
+                    new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
+            JSONArray jsonArray = new JSONArray(scanner);
 
-            for (int i = 0; i < newJArray.length(); ++i) {
-                JSONObject jsonObject = newJArray.getJSONObject(i);
+            for (int i = 0; i < jsonArray.length(); ++i) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                String msg_project = (String) jsonObject.get("project");
-                String msg_last_updated = (String) jsonObject.get("last_updated");
-                Integer msg_id = (Integer) jsonObject.get("id");
-                String msg_subject = (String) jsonObject.get("subject");
+                String subject = (String) jsonObject.get("subject");
+                String project = (String) jsonObject.get("project");
+                String lastUpdated = (String) jsonObject.get("last_updated");
+                Integer id = (Integer) jsonObject.get("id");
 
-                Change newChange = new Change(msg_subject, msg_project, msg_last_updated);
+                Change newChange = new Change(subject, project, lastUpdated);
                 mAdapter.add(newChange);
 
-                mId.add(msg_id.toString());
+                mId.add(id.toString());
             }
         } catch (IOException | JSONException e) {
             Log.e(TAG, "", e);
         }
+
         return null;
     }
 
@@ -76,22 +78,21 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
         super.onPostExecute(urls);
 
         GridView gridview = (GridView) mChangelogActivity.findViewById(R.id.gridview);
-
         gridview.setAdapter(mAdapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                String review_url = String.format
-                        ("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                String review_url =
+                        String.format("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                 mChangelogActivity.startActivity(browserIntent);
             }
         });
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mChangelogActivity.swipeRefreshLayout.setRefreshing(false);
             }
-        },500);
+        }, 500);
     }
 }

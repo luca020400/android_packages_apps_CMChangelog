@@ -12,14 +12,14 @@ public class Cmd {
     private static String TAG = "Cmd";
 
     public static String exec(String... strings) {
-        String res = "";
+        String output = "";
         DataOutputStream outputStream = null;
-        InputStream response = null;
+        InputStream inputStream = null;
 
         try {
-            Process su = Runtime.getRuntime().exec("sh");
-            outputStream = new DataOutputStream(su.getOutputStream());
-            response = su.getInputStream();
+            Process process = Runtime.getRuntime().exec("sh");
+            outputStream = new DataOutputStream(process.getOutputStream());
+            inputStream = process.getInputStream();
 
             for (String s : strings) {
                 outputStream.writeBytes(s + "\n");
@@ -28,45 +28,48 @@ public class Cmd {
 
             outputStream.writeBytes("exit\n");
             outputStream.flush();
+
             try {
-                su.waitFor();
+                process.waitFor();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "", e);
             }
-            res = readFully(response);
+
+            output = readFully(inputStream);
         } catch (IOException e) {
             Log.e(TAG, "", e);
         } finally {
-            CloseSilently(outputStream, response);
+            CloseSilently(outputStream, inputStream);
         }
 
-        return res;
+        return output;
     }
 
     private static String readFully(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
 
         while ((length = is.read(buffer)) != -1) {
-            baos.write(buffer, 0, length);
+            byteArrayOutputStream.write(buffer, 0, length);
         }
 
-        return baos.toString("UTF-8");
+        return byteArrayOutputStream.toString("UTF-8");
     }
 
-    private static void CloseSilently(Object... xs) {
-        for (Object x : xs) {
-            if (x != null) {
+    private static void CloseSilently(Object... objects) {
+        for (Object object : objects) {
+            if (object != null) {
                 try {
-                    Log.d(TAG, "Closing: " + String.valueOf(x));
+                    Log.d(TAG, "Closing: " + String.valueOf(object));
 
-                    if (x instanceof Closeable) {
-                        ((Closeable) x).close();
-                    } else {
-                        Log.d(TAG, "cannot close: " + String.valueOf(x));
-                        throw new RuntimeException("cannot close " + x);
+                    if (object instanceof Closeable) {
+                        ((Closeable) object).close();
+                        return;
                     }
+
+                    Log.d(TAG, "cannot close: " + String.valueOf(object));
+                    throw new RuntimeException("cannot close " + object);
                 } catch (Throwable e) {
                     Log.e(TAG, "", e);
                 }
