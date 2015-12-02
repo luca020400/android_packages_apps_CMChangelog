@@ -1,6 +1,5 @@
 package org.cyanogenmod.changelog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -32,7 +31,7 @@ public class ChangelogActivity extends AppCompatActivity {
 
         mCmVersion = Cmd.exec("getprop ro.cm.version");
         String[] version = mCmVersion.split("-");
-        mCyanogenMod = version[0];
+        mCyanogenMod = version[0].replace(".0", "");
         mCMReleaseType = version[2];
         mDevice = version[3];
 
@@ -82,7 +81,7 @@ public class ChangelogActivity extends AppCompatActivity {
         dialog.show();
 
         TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Small);
+        messageView.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
     public void UpdateChangelog() {
