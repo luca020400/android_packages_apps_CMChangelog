@@ -49,7 +49,7 @@ public class ChangelogAdapter extends ArrayAdapter<Change> {
         last_updated.setText(commitDate);
 
         if (change.mProject.equals("android")) {
-            project.setText(String.format("%s_manifest", change.mProject));
+            project.setText(change.mProject);
         } else {
             project.setText(change.mProject.replace("android_", ""));
         }

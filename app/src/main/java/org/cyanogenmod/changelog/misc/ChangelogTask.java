@@ -59,16 +59,18 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String subject = (String) jsonObject.get("subject");
                 String project = (String) jsonObject.get("project");
                 String lastUpdated = (String) jsonObject.get("last_updated");
-                Integer id = (Integer) jsonObject.get("id");
+                String id = jsonObject.get("id").toString();
 
-                Change newChange = new Change(subject, project, lastUpdated);
+                Change newChange = new Change(subject, project, lastUpdated, id);
                 mAdapter.add(newChange);
 
-                mId.add(id.toString());
+                mId.add(id);
             }
         } catch (IOException | JSONException e) {
             Log.e(TAG, "", e);
         }
+
+        Log.i(TAG, "Successfully parsed CMXLog API");
 
         return null;
     }
@@ -84,6 +86,7 @@ public class ChangelogTask extends AsyncTask<String, String, String> {
                 String review_url =
                         String.format("http://review.cyanogenmod.org/#/c/%s", mId.get(position));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
+                Log.i(TAG, String.format("Opening %s", review_url));
                 mChangelogActivity.startActivity(browserIntent);
             }
         });

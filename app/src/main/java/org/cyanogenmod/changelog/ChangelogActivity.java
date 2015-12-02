@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import org.cyanogenmod.changelog.misc.ChangelogTask;
 import org.cyanogenmod.changelog.misc.Cmd;
 
 public class ChangelogActivity extends AppCompatActivity {
+    private static String TAG = "ChangelogActivity";
     public SwipeRefreshLayout swipeRefreshLayout;
 
     private String mCmVersion;
@@ -41,7 +43,8 @@ public class ChangelogActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 UpdateChangelog();
-            }});
+            }
+        });
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         UpdateChangelog();
@@ -85,12 +88,14 @@ public class ChangelogActivity extends AppCompatActivity {
     }
 
     public void UpdateChangelog() {
+        Log.i(TAG, "Updating Changelog");
         String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if (networkInfo == null || !networkInfo.isConnected()) {
+            Log.w(TAG, "Missing network connection");
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
             return;
