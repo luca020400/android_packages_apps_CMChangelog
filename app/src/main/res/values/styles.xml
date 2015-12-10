@@ -1,8 +1,5 @@
 <resources>
-    <style name="CMChangelogTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-
+    <style name="CMChangelogTheme" parent="android:Theme.Material">
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:colorAccent">@color/teal_text</item>

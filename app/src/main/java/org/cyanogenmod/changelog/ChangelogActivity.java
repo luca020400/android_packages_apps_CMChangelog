@@ -1,13 +1,12 @@
 package org.cyanogenmod.changelog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +17,7 @@ import android.widget.Toast;
 import org.cyanogenmod.changelog.misc.ChangelogTask;
 import org.cyanogenmod.changelog.misc.Cmd;
 
-public class ChangelogActivity extends AppCompatActivity {
+public class ChangelogActivity extends Activity {
     private static String TAG = "ChangelogActivity";
     public SwipeRefreshLayout swipeRefreshLayout;
 
@@ -46,7 +45,6 @@ public class ChangelogActivity extends AppCompatActivity {
             }
         });
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         UpdateChangelog();
     }
 
