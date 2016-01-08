@@ -197,9 +197,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         new AsyncTask<String, String, String>() {
+            private long time;
 
             @Override
             protected void onPreExecute() {
+                time = System.currentTimeMillis();
                 if (mAdapter != null) mAdapter.clear();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
@@ -210,7 +212,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     String scanner =
                             new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
                     JSONArray jsonArray = new JSONArray(scanner);
-
                     for (int i = 0; i < jsonArray.length(); ++i) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String subject = (String) jsonObject.get("subject");
@@ -223,7 +224,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     Log.e(TAG, "", e);
                 }
 
-                Log.i(TAG, "Successfully parsed CMXLog API");
+                Log.i(TAG, "Successfully parsed CMXLog API in " +
+                        (System.currentTimeMillis() - time) + "ms");
 
                 return null;
             }
