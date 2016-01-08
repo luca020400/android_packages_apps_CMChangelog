@@ -63,10 +63,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private RecyclerView.LayoutManager mLayoutManager;
     /**
-     * Set of models used as data source
-     */
-    private ArrayList<Change> mList;
-    /**
      * String representing the full CyanogenMod build version
      */
     private String mCMVersion;
@@ -99,8 +95,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Utility method.
      */
     private void init(){
-        // Init list
-        mList = new ArrayList<>();
+
         // Setup SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         // Setup refresh listener which triggers new data loading
@@ -117,7 +112,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup divider for RecyclerView itemsi
         mRecyclerView.addItemDecoration(new Divider(this));
         // Init adapter
-        mAdapter = new ChangelogAdapter(mList);
+        mAdapter = new ChangelogAdapter(new ArrayList<Change>(196));
+        mAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -185,43 +181,37 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
         String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            Log.w(TAG, "Missing network connection");
-            Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
-            mSwipeRefreshLayout.setRefreshing(false);
-            return;
-        }
+        if (!deviceIsConnected()) return;
 
-        new AsyncTask<String, String, String>() {
-            private long time;
+        new AsyncTask<String, Change, Void>() {
 
+            // Runs on UI thread
             @Override
             protected void onPreExecute() {
-                time = System.currentTimeMillis();
                 if (mAdapter != null) mAdapter.clear();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
 
+            // Runs on the separate thread
             @Override
-            protected String doInBackground(String... urls) {
+            protected Void doInBackground(String... url) {
+                long time = System.currentTimeMillis();
                 try {
                     String scanner =
-                            new Scanner(new URL(urls[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
+                            new Scanner(new URL(url[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
                     JSONArray jsonArray = new JSONArray(scanner);
                     for (int i = 0; i < jsonArray.length(); ++i) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String subject = (String) jsonObject.get("subject");
-                        String project = (String) jsonObject.get("project");
-                        String lastUpdated = (String) jsonObject.get("last_updated");
-                        String id = jsonObject.get("id").toString();
-                        mList.add(new Change(subject, project, lastUpdated, id));
+                        publishProgress(new Change(
+                                jsonObject.get("subject").toString(),
+                                jsonObject.get("project").toString(),
+                                jsonObject.get("last_updated").toString(),
+                                jsonObject.get("id").toString()
+                        ));
                     }
                 } catch (IOException | JSONException e) {
-                    Log.e(TAG, "", e);
+                    Log.e(TAG, e.toString());
                 }
 
                 Log.i(TAG, "Successfully parsed CMXLog API in " +
@@ -230,9 +220,15 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 return null;
             }
 
+            // Runs on the UI thread
             @Override
-            protected void onPostExecute(String urls) {
-                mAdapter.notifyDataSetChanged();
+            protected void onProgressUpdate(Change... changes) {
+                mAdapter.add(changes[0]);
+            }
+
+            // Runs on the UI thread
+            @Override
+            protected void onPostExecute(Void aVoid) {
                 // delay refreshing animation just for the show
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -242,6 +238,21 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 }, 400);
             }
         }.execute(apiUrl);
+    }
+
+    private boolean deviceIsConnected() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            Log.w(TAG, "Missing network connection");
+            Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
+            mSwipeRefreshLayout.setRefreshing(false);
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

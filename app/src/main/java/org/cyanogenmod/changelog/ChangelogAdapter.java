@@ -50,7 +50,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     }
 
-    private ArrayList<Change> mDataset;
+    private final ArrayList<Change> mDataset;
 
     public ChangelogAdapter(ArrayList<Change> mDataset) {
         this.mDataset = mDataset;
@@ -99,6 +99,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     public void clear() {
         mDataset.clear();
+        notifyDataSetChanged();
     }
 
     /**
@@ -107,6 +108,23 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     public void addAll(List<Change> list) {
         mDataset.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void add(Change change) {
+        mDataset.add(change);
+        notifyItemInserted(mDataset.size() - 1);
+    }
+
+    public void add(int position, Change change) {
+        mDataset.add(0, change);
+        notifyItemInserted(position);
+    }
+
+    public void recycle(int position, Change change) {
+        mDataset.remove(0);
+        mDataset.add(0, change);
+        notifyItemChanged(position);
     }
 
     /**
