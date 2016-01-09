@@ -168,7 +168,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         messageView.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
-
     @Override
     public void onRefresh() {
         updateChangelog();
@@ -181,7 +180,12 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         Log.i(TAG, "Updating Changelog");
         String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
 
-        if (!deviceIsConnected()) return;
+        if (!deviceIsConnected()) {
+            Log.w(TAG, "Missing network connection");
+            Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
+            mSwipeRefreshLayout.setRefreshing(false);
+            return;
+        }
 
         new AsyncTask<String, Change, Void>() {
 
@@ -239,19 +243,16 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }.execute(apiUrl);
     }
 
+    /**
+     * Check if the device is connected to internet, return true if the device has data connection.
+     * @return true if device is connected to internet, otherwise returns false.
+     */
     private boolean deviceIsConnected() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            Log.w(TAG, "Missing network connection");
-            Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
-            mSwipeRefreshLayout.setRefreshing(false);
-            return false;
-        } else {
-            return true;
-        }
+        return !(networkInfo == null || !networkInfo.isConnected());
     }
 
 }
