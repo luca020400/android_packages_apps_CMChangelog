@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -40,12 +41,14 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         private final TextView subject;
         private final TextView project;
         private final TextView date;
+        private final LinearLayout container;
 
         public ViewHolder(View itemView) {
             super(itemView);
             subject = (TextView) itemView.findViewById(R.id.subject);
             project = (TextView) itemView.findViewById(R.id.project);
             date = (TextView) itemView.findViewById(R.id.last_updated);
+            container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
         }
 
     }
@@ -81,7 +84,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             Log.e(TAG, "", e);
         }
         // set open in browser intent
-        holder.subject.setOnClickListener(new View.OnClickListener() {
+        holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String review_url =

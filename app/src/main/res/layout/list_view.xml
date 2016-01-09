@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -14,8 +15,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        >
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/project"
@@ -23,16 +23,15 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceListItem"
             android:textStyle="bold"
-            android:textColor="@color/change_title_color"
-            />
+            android:textColor="@color/change_title_color" />
+
         <TextView
             android:id="@+id/subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/project"
             android:textColor="@color/change_package_text_color"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-            />
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
 
         <TextView
             android:id="@+id/last_updated"
@@ -41,8 +40,7 @@
             android:layout_below="@id/subject"
             android:layout_alignParentEnd="true"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-            android:textColor="@color/change_date_text_color"
-            />
+            android:textColor="@color/change_date_text_color" />
 
     </RelativeLayout>
 </LinearLayout>
