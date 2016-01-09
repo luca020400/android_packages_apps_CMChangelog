@@ -98,8 +98,9 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      * Clear all the elements of the RecyclerView
      */
     public void clear() {
+        int c = getItemCount();
         mDataset.clear();
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(0, c);
     }
 
     /**
@@ -108,7 +109,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     public void addAll(List<Change> list) {
         mDataset.addAll(list);
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public void add(Change change) {
@@ -119,12 +120,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public void add(int position, Change change) {
         mDataset.add(0, change);
         notifyItemInserted(position);
-    }
-
-    public void recycle(int position, Change change) {
-        mDataset.remove(0);
-        mDataset.add(0, change);
-        notifyItemChanged(position);
     }
 
     /**
