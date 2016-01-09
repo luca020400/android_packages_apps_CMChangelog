@@ -130,7 +130,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 deviceInfoDialog();
                 break;
             case R.id.menu_refresh:
-                updateChangelog();
+                if (!mSwipeRefreshLayout.isRefreshing()) updateChangelog();
                 break;
         }
 
