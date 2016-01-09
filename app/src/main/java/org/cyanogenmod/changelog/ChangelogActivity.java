@@ -109,11 +109,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        // Setup divider for RecyclerView itemsi
+        // Setup divider for RecyclerView items
         mRecyclerView.addItemDecoration(new Divider(this));
         // Init adapter
-        mAdapter = new ChangelogAdapter(new ArrayList<Change>(196));
-        mAdapter.setHasStableIds(true);
+        mAdapter = new ChangelogAdapter(new ArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
     }
 
