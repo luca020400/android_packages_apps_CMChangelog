@@ -179,7 +179,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
 
         if (!deviceIsConnected()) {
-            Log.w(TAG, "Missing network connection");
+            Log.e(TAG, "Missing network connection");
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
             return;
@@ -211,7 +211,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                                 jsonObject.get("id").toString()));
                     }
                 } catch (IOException | JSONException e) {
-                    Log.e(TAG, e.toString());
+                    Log.e(TAG, "Cannot parse CMXLog API:\n" + e.toString());
                 }
                 Log.i(TAG, "Successfully parsed CMXLog API in " +
                         (System.currentTimeMillis() - time) + "ms");
