@@ -111,6 +111,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mRecyclerView.setLayoutManager(mLayoutManager);
         // Setup divider for RecyclerView items
         mRecyclerView.addItemDecoration(new Divider(this));
+        // Setup item animator
+        mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Init adapter
         mAdapter = new ChangelogAdapter(new ArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
@@ -188,11 +190,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         new AsyncTask<String, Change, Void>() {
-
+            ArrayList<Change> temp;
             // Runs on UI thread
             @Override
             protected void onPreExecute() {
-                if (mAdapter != null) mAdapter.clear();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
 
@@ -201,18 +202,19 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             protected Void doInBackground(String... url) {
                 long time = System.currentTimeMillis();
                 try {
+                    temp = new ArrayList<>();
                     String scanner =
                             new Scanner(new URL(url[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
                     JSONArray jsonArray = new JSONArray(scanner);
                     for (int i = 0; i < jsonArray.length(); ++i) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        publishProgress(new Change(
+                        temp.add(new Change(
                                 jsonObject.get("subject").toString(),
                                 jsonObject.get("project").toString(),
                                 jsonObject.get("last_updated").toString(),
-                                jsonObject.get("id").toString()
-                        ));
+                                jsonObject.get("id").toString()));
                     }
+
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, e.toString());
                 }
@@ -223,15 +225,19 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 return null;
             }
 
-            // Runs on the UI thread
+            // Runs on the UI thread (invoked on publishProgress() call)
             @Override
             protected void onProgressUpdate(Change... changes) {
-                mAdapter.add(changes[0]);
+
             }
 
             // Runs on the UI thread
             @Override
             protected void onPostExecute(Void aVoid) {
+                // update the list
+                mAdapter.clear();
+                mAdapter.addAll(temp);
+
                 // delay refreshing animation just for the show
                 new Handler().postDelayed(new Runnable() {
                     @Override
