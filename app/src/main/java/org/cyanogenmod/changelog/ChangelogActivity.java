@@ -42,6 +42,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
@@ -183,8 +185,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             return;
         }
 
-        new AsyncTask<String, Change, Void>() {
-            ArrayList<Change> temp;
+        new AsyncTask<String, Change, List<Change>>() {
 
             // Runs on UI thread
             @Override
@@ -194,16 +195,16 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
             // Runs on the separate thread
             @Override
-            protected Void doInBackground(String... url) {
+            protected List<Change> doInBackground(String... url) {
+                List<Change> changes = new LinkedList<>();
                 long time = System.currentTimeMillis();
                 try {
-                    temp = new ArrayList<>();
                     String scanner = new Scanner(new URL(url[0])
                             .openStream(), "UTF-8").useDelimiter("\\A").next();
                     JSONArray jsonArray = new JSONArray(scanner);
                     for (int i = 0; i < jsonArray.length(); ++i) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        temp.add(new Change(
+                        changes.add(new Change(
                                 jsonObject.get("subject").toString(),
                                 jsonObject.get("project").toString(),
                                 jsonObject.get("last_updated").toString(),
@@ -212,19 +213,17 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, e.toString());
                 }
-
                 Log.i(TAG, "Successfully parsed CMXLog API in " +
                         (System.currentTimeMillis() - time) + "ms");
-
-                return null;
+                return changes;
             }
 
             // Runs on the UI thread
             @Override
-            protected void onPostExecute(Void aVoid) {
+            protected void onPostExecute(List<Change> fetchedChanges) {
                 // update the list
                 mAdapter.clear();
-                mAdapter.addAll(temp);
+                mAdapter.addAll(fetchedChanges);
 
                 // delay refreshing animation just for the show
                 new Handler().postDelayed(new Runnable() {
