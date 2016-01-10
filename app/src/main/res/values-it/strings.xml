@@ -8,6 +8,6 @@
     <string name="data_connection_required">E\' richiesta una connessione dati.</string>
     <!-- Action Menu -->
     <string name="menu_device_info">Info dispositivo</string>
-    <string name="menu_refresh">Aggiorna</string>
+    <string name="menu_refresh">Ricarica</string>
 </resources>
 
