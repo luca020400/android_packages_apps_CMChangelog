@@ -78,10 +78,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * String representing device code-name (e.g. hammerhead)
      */
     private String mDevice;
-    /**
-     * API URL
-     */
-    private final String API_URL = "http://api.cmxlog.com/changes";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +91,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Utility method.
      */
     private void init(){
-
         // Setup SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         // Setup refresh listener which triggers new data loading
@@ -135,7 +130,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 if (!mSwipeRefreshLayout.isRefreshing()) updateChangelog();
                 break;
         }
-
         return true;
     }
 
@@ -167,7 +161,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         dialog.show();
 
         TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Small);
+        messageView.setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
     @Override
@@ -191,6 +185,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
         new AsyncTask<String, Change, Void>() {
             ArrayList<Change> temp;
+
             // Runs on UI thread
             @Override
             protected void onPreExecute() {
@@ -203,8 +198,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 long time = System.currentTimeMillis();
                 try {
                     temp = new ArrayList<>();
-                    String scanner =
-                            new Scanner(new URL(url[0]).openStream(), "UTF-8").useDelimiter("\\A").next();
+                    String scanner = new Scanner(new URL(url[0])
+                            .openStream(), "UTF-8").useDelimiter("\\A").next();
                     JSONArray jsonArray = new JSONArray(scanner);
                     for (int i = 0; i < jsonArray.length(); ++i) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -214,7 +209,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                                 jsonObject.get("last_updated").toString(),
                                 jsonObject.get("id").toString()));
                     }
-
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, e.toString());
                 }
@@ -223,12 +217,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                         (System.currentTimeMillis() - time) + "ms");
 
                 return null;
-            }
-
-            // Runs on the UI thread (invoked on publishProgress() call)
-            @Override
-            protected void onProgressUpdate(Change... changes) {
-
             }
 
             // Runs on the UI thread
@@ -260,5 +248,4 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
         return !(networkInfo == null || !networkInfo.isConnected());
     }
-
 }

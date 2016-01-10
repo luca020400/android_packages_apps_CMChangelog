@@ -50,7 +50,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             date = (TextView) itemView.findViewById(R.id.last_updated);
             container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
         }
-
     }
 
     private final ArrayList<Change> mDataset;
@@ -94,7 +93,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
                 v.getContext().startActivity(browserIntent);
             }
         });
-
     }
 
     /**
@@ -115,16 +113,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         notifyItemRangeChanged(0, getItemCount());
     }
 
-    public void add(Change change) {
-        mDataset.add(change);
-        notifyItemInserted(mDataset.size() - 1);
-    }
-
-    public void add(int position, Change change) {
-        mDataset.add(0, change);
-        notifyItemInserted(position);
-    }
-
     /**
      * Returns the size of the data set. Usually invoked by LayoutManager.
      * @return the size of the data set.
@@ -133,5 +121,4 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public int getItemCount() {
         return mDataset.size();
     }
-
 }
