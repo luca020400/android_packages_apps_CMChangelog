@@ -211,7 +211,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                                 jsonObject.get("id").toString()));
                     }
                 } catch (IOException | JSONException e) {
-                    Log.e(TAG, "Cannot parse CMXLog API:\n" + e.toString());
+                    Log.e(TAG, "Cannot parse CMXLog API", e);
                 }
                 Log.i(TAG, "Successfully parsed CMXLog API in " +
                         (System.currentTimeMillis() - time) + "ms");
