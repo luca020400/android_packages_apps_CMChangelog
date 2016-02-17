@@ -17,6 +17,7 @@
 
 package org.cyanogenmod.changelog;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -90,7 +91,11 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
                         String.format("http://review.cyanogenmod.org/#/c/%s", mDataset.get(position).getChangeId());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                 Log.i(TAG, String.format("Opening %s", review_url));
-                v.getContext().startActivity(browserIntent);
+                try {
+                    v.getContext().startActivity(browserIntent);
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "Browser activity not found.");
+                }
             }
         });
     }

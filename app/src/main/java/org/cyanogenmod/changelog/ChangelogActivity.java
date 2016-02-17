@@ -86,7 +86,15 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         setContentView(R.layout.main);
         retrieveDeviceInfo();
         init();
-        updateChangelog();
+
+        // Run updateChangelog() delayed, because otherwise
+        // the swipe refresh layout progress bar is not shown
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateChangelog();
+            }
+        }, 100);
     }
 
     /**
