@@ -35,16 +35,15 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private static String TAG = "ChangelogActivity";
@@ -149,7 +148,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     private void retrieveDeviceInfo() {
         mCMVersion = Cmd.exec("getprop ro.cm.version");
         String[] version = mCMVersion.split("-");
-        mCyanogenMod = version[0].replace(".0", "");
+        mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
     }
@@ -184,7 +183,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
-        String apiUrl = String.format("http://api.cmxlog.com/changes/%s/%s", mCyanogenMod, mDevice);
+        // number of changes to fetch
+        int n = 120;
+        String apiUrl = String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s",
+                "branch:cm-" + mCyanogenMod,
+                "n=" + n);
 
         if (!deviceIsConnected()) {
             Log.e(TAG, "Missing network connection");
@@ -207,23 +210,67 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 List<Change> changes = new LinkedList<>();
                 long time = System.currentTimeMillis();
                 try {
-                    String scanner = new Scanner(new URL(url[0])
-                            .openStream(), "UTF-8").useDelimiter("\\A").next();
-                    JSONArray jsonArray = new JSONArray(scanner);
-                    for (int i = 0; i < jsonArray.length(); ++i) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        changes.add(new Change(
-                                jsonObject.get("subject").toString(),
-                                jsonObject.get("project").toString(),
-                                jsonObject.get("last_updated").toString(),
-                                jsonObject.get("id").toString()));
+                    HttpURLConnection con = (HttpURLConnection) new URL(url[0]).openConnection();
+                    // optional default is GET
+                    con.setRequestMethod("GET");
+
+                    // log
+                    Log.d(TAG, "Sending 'GET' request to URL : " + url[0]);
+                    Log.d(TAG, "Response Code : " + con.getResponseCode());
+                    Log.d(TAG, "Response Msg : " + con.getResponseMessage());
+                    /* Parse JSON */
+                    JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
+                    /* To prevent against Cross Site Script Inclusion (XSSI) attacks, the JSON response body starts with a magic
+                    prefix line that must be stripped before feeding the rest of the response body to a JSON parser: */
+                    reader.setLenient(true);
+                    reader.beginArray();
+                    while (reader.hasNext()) {
+                        Change c = readChange(reader);
+                        if (c != null)
+                            changes.add(c);
                     }
-                } catch (IOException | JSONException e) {
-                    Log.e(TAG, "Cannot parse CMXLog API", e);
+                    reader.endArray();
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Cannot parse REST API", e);
                 }
-                Log.i(TAG, "Successfully parsed CMXLog API in " +
+                Log.i(TAG, "Successfully parsed REST API in " +
                         (System.currentTimeMillis() - time) + "ms");
                 return changes;
+            }
+
+            private Change readChange(JsonReader reader) throws IOException {
+                Change newChange = new Change();
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    switch (reader.nextName()) {
+                        case "_number":
+                            newChange.setChangeId(reader.nextString());
+                            break;
+                        case "project":
+                            newChange.setProject(reader.nextString());
+                            break;
+                        case "subject":
+                            newChange.setSubject(reader.nextString());
+                            break;
+                        case "updated":
+                            newChange.setLastUpdate(reader.nextString());
+                            break;
+                        default:
+                            reader.skipValue();
+                    }
+                }
+                reader.endObject();
+
+                // Select device specific commits
+                if (newChange.getProject().contains("device") || newChange.getProject().contains("kernel")){
+                    if (newChange.getProject().contains(mDevice)) {
+                        return newChange;
+                    } else {
+                        return null;
+                    }
+                }
+                return newChange;
             }
 
             // Runs on the UI thread

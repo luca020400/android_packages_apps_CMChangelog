@@ -28,6 +28,11 @@ public class Change {
     private String changeId;
 
     /**
+     * Constructs a new Change with empty values
+     */
+    public Change() {}
+
+    /**
      * Constructs a new Change.
      * @param subject the subject of the Change
      * @param project the project package affected by the Change
