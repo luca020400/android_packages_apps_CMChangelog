@@ -183,11 +183,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
-        // number of changes to fetch
-        int n = 120;
-        String apiUrl = String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s",
-                "branch:cm-" + mCyanogenMod,
-                "n=" + n);
 
         if (!deviceIsConnected()) {
             Log.e(TAG, "Missing network connection");
@@ -196,7 +191,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             return;
         }
 
-        new AsyncTask<String, Change, List<Change>>() {
+        new AsyncTask<Integer, Change, List<Change>>() {
 
             // Runs on UI thread
             @Override
@@ -206,36 +201,46 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
             // Runs on the separate thread
             @Override
-            protected List<Change> doInBackground(String... url) {
+            protected List<Change> doInBackground(Integer... q) {
                 List<Change> changes = new LinkedList<>();
-                long time = System.currentTimeMillis();
-                try {
-                    HttpURLConnection con = (HttpURLConnection) new URL(url[0]).openConnection();
-                    // optional default is GET
-                    con.setRequestMethod("GET");
-
-                    // log
-                    Log.d(TAG, "Sending 'GET' request to URL : " + url[0]);
-                    Log.d(TAG, "Response Code : " + con.getResponseCode());
-                    Log.d(TAG, "Response Msg : " + con.getResponseMessage());
-                    /* Parse JSON */
-                    JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
-                    /* To prevent against Cross Site Script Inclusion (XSSI) attacks, the JSON response body starts with a magic
-                    prefix line that must be stripped before feeding the rest of the response body to a JSON parser: */
-                    reader.setLenient(true);
-                    reader.beginArray();
-                    while (reader.hasNext()) {
-                        Change c = readChange(reader);
-                        if (c != null)
-                            changes.add(c);
+                int parsed = 0;
+                // number of changes to fetch and to skip
+                int n = 120, start = 0;
+                while (parsed < q[0]) {
+                    long time = System.currentTimeMillis();
+                    // create API url
+                    String apiUrl = String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
+                            "branch:cm-" + mCyanogenMod,
+                            "n=" + n,
+                            "start=" + start);
+                    try {
+                        HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
+                        // optional default is GET
+                        con.setRequestMethod("GET");
+                        // log
+                        Log.d(TAG, "Sending 'GET' request to URL : " + apiUrl);
+                        Log.d(TAG, "Response Code : " + con.getResponseCode());
+                        Log.d(TAG, "Response Msg : " + con.getResponseMessage());
+                        /* Parse JSON */
+                        JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
+                        reader.setLenient(true); // strip XSSI protection
+                        reader.beginArray();
+                        while (reader.hasNext()) {
+                            Change c = readChange(reader);
+                            if (isDeviceSpecific(c)) {
+                                changes.add(c);
+                                parsed ++;
+                            }
+                        }
+                        reader.endArray();
+                        reader.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Cannot parse REST API", e);
                     }
-                    reader.endArray();
-                    reader.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Cannot parse REST API", e);
+                    Log.i(TAG, "Successfully parsed REST API in " +
+                            (System.currentTimeMillis() - time) + "ms");
+                    start += n;
                 }
-                Log.i(TAG, "Successfully parsed REST API in " +
-                        (System.currentTimeMillis() - time) + "ms");
                 return changes;
             }
 
@@ -261,16 +266,17 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     }
                 }
                 reader.endObject();
-
-                // Select device specific commits
-                if (newChange.getProject().contains("device") || newChange.getProject().contains("kernel")){
-                    if (newChange.getProject().contains(mDevice)) {
-                        return newChange;
-                    } else {
-                        return null;
-                    }
-                }
                 return newChange;
+            }
+
+            private boolean isDeviceSpecific(Change change){
+                if (change.getProject().contains("device")){
+                    return (change.getProject().contains(mDevice));
+                } else if (change.getProject().contains("kernel")) {
+                    return (change.getProject().contains(mDevice));
+                }else if (change.getProject().contains("hardware")) {
+                    return false;
+                } else return true;
             }
 
             // Runs on the UI thread
@@ -288,7 +294,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     }
                 }, 400);
             }
-        }.execute(apiUrl);
+        }.execute(40);
     }
 
     /**

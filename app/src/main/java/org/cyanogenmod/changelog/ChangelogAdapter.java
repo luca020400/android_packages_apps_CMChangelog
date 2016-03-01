@@ -71,7 +71,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public void onBindViewHolder(ViewHolder holder, final int position) {
         Change change = mDataset.get(position);
         holder.project.setText(
-                String.format("%s", change.getProject().replace("CyanogenMod/android_", "")));
+                String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
         holder.subject.setText(
                 String.format("%s", change.getSubject()));
         // parse the value of the date
