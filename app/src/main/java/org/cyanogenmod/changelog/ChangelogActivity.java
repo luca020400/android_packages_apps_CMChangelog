@@ -24,6 +24,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -48,6 +49,7 @@ import java.util.List;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private static String TAG = "ChangelogActivity";
+
     /**
      * View Container
      */
@@ -84,6 +86,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * String representing device code-name (e.g. hammerhead)
      */
     private String mDevice;
+
+    /*
+     * Device Info
+     */
+    private String mManufacturer;
+    private String mHardware;
+    private String mBoard;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +146,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         TextView dialogMessage = (TextView) infoDialog.findViewById(R.id.info_dialog_message);
         dialogMessage.setText(message);
         mInfoDialog = builder.create();
+
+        mHardware = Build.HARDWARE.toLowerCase();
+        mManufacturer = Build.MANUFACTURER.toLowerCase();
+        mBoard = Build.BOARD.toLowerCase();
     }
 
     @Override
@@ -277,11 +290,15 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
         private boolean isDeviceSpecific(Change change) {
             if (change.getProject().contains("device")) {
-                return (change.getProject().contains(mDevice));
+                return (change.getProject().contains(mDevice) ||
+                        change.getProject().contains(mManufacturer) &&
+                                change.getProject().contains(mBoard));
             } else if (change.getProject().contains("kernel")) {
-                return (change.getProject().contains(mDevice));
+                return (change.getProject().contains(mDevice) ||
+                        change.getProject().contains(mManufacturer) &&
+                                change.getProject().contains(mBoard));
             } else if (change.getProject().contains("hardware")) {
-                return false;
+                return change.getProject().contains(mHardware);
             }
 
             return true;
