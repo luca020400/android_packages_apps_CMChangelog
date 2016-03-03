@@ -130,7 +130,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 getString(R.string.device_info_device), mDevice,
                 getString(R.string.device_info_version), mCMVersion,
                 getString(R.string.device_info_update_channel), mCMReleaseType);
-        View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, null);
+        View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, mRecyclerView, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
                 .setPositiveButton(R.string.dialog_ok, null);
@@ -260,7 +260,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                         // check if its a legit change
                         if (isDeviceSpecific(newChange)) {
                             changes.add(newChange);
-                            parsed += 1;
+                            parsed++;
                         }
                     }
                     reader.endArray();

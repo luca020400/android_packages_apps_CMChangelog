@@ -57,7 +57,8 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Change change = mDataset.get(position);
+        final int pos = holder.getAdapterPosition();
+        Change change = mDataset.get(pos);
         holder.project.setText(
                 String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
         holder.subject.setText(
@@ -76,7 +77,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             @Override
             public void onClick(View v) {
                 String review_url =
-                        String.format("http://review.cyanogenmod.org/#/c/%s", mDataset.get(position).getChangeId());
+                        String.format("http://review.cyanogenmod.org/#/c/%s", mDataset.get(pos).getChangeId());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
                 Log.i(TAG, String.format("Opening %s", review_url));
                 try {

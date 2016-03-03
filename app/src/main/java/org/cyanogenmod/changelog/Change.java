@@ -30,8 +30,7 @@ public class Change {
     /**
      * Constructs a new Change with empty values
      */
-    public Change() {
-    }
+    public Change() {}
 
     /**
      * Constructs a new Change.
