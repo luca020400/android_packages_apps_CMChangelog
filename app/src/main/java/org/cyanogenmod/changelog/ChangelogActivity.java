@@ -289,14 +289,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         private boolean isDeviceSpecific(Change change) {
+            Boolean match = change.getProject().contains(mDevice) ||
+                            change.getProject().contains(mManufacturer) &&
+                            change.getProject().contains(mBoard);
             if (change.getProject().contains("device")) {
-                return (change.getProject().contains(mDevice) ||
-                        change.getProject().contains(mManufacturer) &&
-                                change.getProject().contains(mBoard));
+                return match;
             } else if (change.getProject().contains("kernel")) {
-                return (change.getProject().contains(mDevice) ||
-                        change.getProject().contains(mManufacturer) &&
-                                change.getProject().contains(mBoard));
+                return match;
             } else if (change.getProject().contains("hardware")) {
                 return change.getProject().contains(mHardware);
             }
