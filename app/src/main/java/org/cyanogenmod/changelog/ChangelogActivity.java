@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -105,7 +104,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     /**
      * Utility method.
      */
-    private void init(){
+    private void init() {
         // Setup SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         // Setup refresh listener which triggers new data loading
@@ -124,7 +123,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Setup and initialize RecyclerView adapter
-        mAdapter = new ChangelogAdapter(new ArrayList<Change>());
+        mAdapter = new ChangelogAdapter(new LinkedList<Change>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format("%s %s\n%s %s\n%s %s",
@@ -189,115 +188,12 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             return;
         }
 
-        new AsyncTask<Integer, Change, List<Change>>() {
-            // Runs on UI thread
-            @Override
-            protected void onPreExecute() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-
-            // Runs on the separate thread
-            @Override
-            protected List<Change> doInBackground(Integer... q) {
-                List<Change> changes = new LinkedList<>();
-                int parsed = 0;
-                // number of changes to fetch and to skip
-                int n = 120, start = 0;
-                while (parsed < q[0]) {
-                    long time = System.currentTimeMillis();
-                    // create API url
-                    String apiUrl = String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
-                            "branch:cm-" + mCyanogenMod,
-                            "n=" + n,
-                            "start=" + start);
-                    try {
-                        HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
-                        // optional default is GET
-                        con.setRequestMethod("GET");
-                        // log
-                        Log.d(TAG, "Sending 'GET' request to URL : " + apiUrl);
-                        Log.d(TAG, "Response Code : " + con.getResponseCode());
-                        Log.d(TAG, "Response Msg : " + con.getResponseMessage());
-                        /* Parse JSON */
-                        JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
-                        reader.setLenient(true); // strip XSSI protection
-                        reader.beginArray();
-                        while (reader.hasNext()) {
-                            Change c = readChange(reader);
-                            if (isDeviceSpecific(c)) {
-                                changes.add(c);
-                                publishProgress(c);
-                                parsed += 1;
-                            }
-                        }
-                        reader.endArray();
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Cannot parse REST API", e);
-                    }
-                    Log.i(TAG, "Successfully parsed REST API in " +
-                            (System.currentTimeMillis() - time) + "ms");
-                    start += n;
-                }
-                return changes;
-            }
-
-            private Change readChange(JsonReader reader) throws IOException {
-                Change newChange = new Change();
-                reader.beginObject();
-                while (reader.hasNext()) {
-                    switch (reader.nextName()) {
-                        case "_number":
-                            newChange.setChangeId(reader.nextString());
-                            break;
-                        case "project":
-                            newChange.setProject(reader.nextString());
-                            break;
-                        case "subject":
-                            newChange.setSubject(reader.nextString());
-                            break;
-                        case "updated":
-                            newChange.setLastUpdate(reader.nextString());
-                            break;
-                        default:
-                            reader.skipValue();
-                    }
-                }
-                reader.endObject();
-                return newChange;
-            }
-
-            private boolean isDeviceSpecific(Change change){
-                if (change.getProject().contains("device")){
-                    return (change.getProject().contains(mDevice));
-                } else if (change.getProject().contains("kernel")) {
-                    return (change.getProject().contains(mDevice));
-                } else if (change.getProject().contains("hardware")) {
-                    return false;
-                }
-
-                return true;
-            }
-
-            // Runs on the UI thread
-            @Override
-            protected void onPostExecute(List<Change> fetchedChanges) {
-                // update the list
-                mAdapter.clear();
-                mAdapter.addAll(fetchedChanges);
-                // delay refreshing animation just for the show
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 400);
-            }
-        }.execute(40);
+        new ChangelogTask().execute(80);
     }
 
     /**
      * Check if the device is connected to internet, return true if the device has data connection.
+     *
      * @return true if device is connected to internet, otherwise returns false.
      */
     private boolean deviceIsConnected() {
@@ -307,4 +203,106 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
         return !(networkInfo == null || !networkInfo.isConnected());
     }
+
+    private class ChangelogTask extends AsyncTask<Integer, Change, List<Change>> {
+        // Runs on UI thread
+        @Override
+        protected void onPreExecute() {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+
+        // Runs on the separate thread
+        @Override
+        protected List<Change> doInBackground(Integer... q) {
+            List<Change> changes = new LinkedList<>();
+            int parsed = 0; // number of changes parsed and selected so far
+            int n = 120, start = 0; // number of changes to fetch and to skip
+            while (parsed < q[0]) {
+                long time = System.currentTimeMillis();
+                // Form API URL
+                String apiUrl = String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
+                        "branch:cm-" + mCyanogenMod,
+                        "n=" + n,
+                        "start=" + start);
+                try {
+                    HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
+                    // Optional default is GET
+                    con.setRequestMethod("GET");
+                    // Log
+                    Log.d(TAG, "Sending 'GET' request to URL : " + apiUrl);
+                    Log.v(TAG, String.format("Response code: %s\tResponse message: %s", con.getResponseCode(), con.getResponseMessage()));
+                    /* Parse JSON */
+                    JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
+                    reader.setLenient(true); // strip XSSI protection
+                    reader.beginArray();
+                    while (reader.hasNext()) {
+                        reader.beginObject();
+                        Change newChange = new Change();
+                        while (reader.hasNext()) {
+                            switch (reader.nextName()) {
+                                case "_number":
+                                    newChange.setChangeId(reader.nextString());
+                                    break;
+                                case "project":
+                                    newChange.setProject(reader.nextString());
+                                    break;
+                                case "subject":
+                                    newChange.setSubject(reader.nextString());
+                                    break;
+                                case "updated":
+                                    newChange.setLastUpdate(reader.nextString());
+                                    break;
+                                default:
+                                    reader.skipValue();
+                            }
+                        }
+                        reader.endObject();
+                        // check if its a legit change
+                        if (isDeviceSpecific(newChange)) {
+                            changes.add(newChange);
+                            parsed += 1;
+                        }
+                    }
+                    reader.endArray();
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Parse error!", e);
+                }
+                Log.i(TAG, "Successfully parsed REST API in " +
+                        (System.currentTimeMillis() - time) + "ms");
+                start += n; // skip n changes in next iteration
+            }
+            return changes;
+        }
+
+        private boolean isDeviceSpecific(Change change) {
+            if (change.getProject().contains("device")) {
+                return (change.getProject().contains(mDevice));
+            } else if (change.getProject().contains("kernel")) {
+                return (change.getProject().contains(mDevice));
+            } else if (change.getProject().contains("hardware")) {
+                return false;
+            }
+
+            return true;
+        }
+
+        // Runs on the UI thread
+        @Override
+        protected void onPostExecute(List<Change> fetchedChanges) {
+            // update the list
+            mAdapter.clear();
+            mAdapter.addAll(fetchedChanges);
+            // delay refreshing animation just for the show
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }, 400);
+        }
+    }
+
+
 }
+

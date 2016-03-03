@@ -30,14 +30,16 @@ public class Change {
     /**
      * Constructs a new Change with empty values
      */
-    public Change() {}
+    public Change() {
+    }
 
     /**
      * Constructs a new Change.
-     * @param subject the subject of the Change
-     * @param project the project package affected by the Change
+     *
+     * @param subject    the subject of the Change
+     * @param project    the project package affected by the Change
      * @param lastUpdate last update date of the Change
-     * @param id id of the Change
+     * @param id         id of the Change
      */
     public Change(String subject, String project, String lastUpdate, String id) {
         this.subject = subject;
@@ -50,28 +52,28 @@ public class Change {
         return subject;
     }
 
-    public String getProject() {
-        return project;
-    }
-
-    public String getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public String getChangeId() {
-        return changeId;
-    }
-
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getProject() {
+        return project;
     }
 
     public void setProject(String project) {
         this.project = project;
     }
 
+    public String getLastUpdate() {
+        return lastUpdate;
+    }
+
     public void setLastUpdate(String lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public String getChangeId() {
+        return changeId;
     }
 
     public void setChangeId(String changeId) {

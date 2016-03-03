@@ -30,32 +30,20 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
     private static String TAG = "RVAdapter";
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    private final List<Change> mDataset;
 
-        private final TextView subject;
-        private final TextView project;
-        private final TextView date;
-        private final LinearLayout container;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            subject = (TextView) itemView.findViewById(R.id.subject);
-            project = (TextView) itemView.findViewById(R.id.project);
-            date = (TextView) itemView.findViewById(R.id.last_updated);
-            container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
-        }
-    }
-
-    private final ArrayList<Change> mDataset;
-
-    public ChangelogAdapter(ArrayList<Change> mDataset) {
+    /**
+     * Construct a new ChangelogAdapter representing the specified data set.
+     *
+     * @param mDataset the set of data we want this Adapter to represent.
+     */
+    public ChangelogAdapter(List<Change> mDataset) {
         this.mDataset = mDataset;
     }
 
@@ -111,6 +99,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     /**
      * Append a set of elements to the RecyclerView
+     *
      * @param list the List we want to append.
      */
     public void addAll(List<Change> list) {
@@ -120,10 +109,27 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     /**
      * Returns the size of the data set. Usually invoked by LayoutManager.
+     *
      * @return the size of the data set.
      */
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView subject;
+        private final TextView project;
+        private final TextView date;
+        private final LinearLayout container;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            subject = (TextView) itemView.findViewById(R.id.subject);
+            project = (TextView) itemView.findViewById(R.id.project);
+            date = (TextView) itemView.findViewById(R.id.last_updated);
+            container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
+        }
     }
 }
