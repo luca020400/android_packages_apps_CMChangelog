@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/changelog_right_padding"
-        android:paddingEnd="@dimen/changelog_left_padding"
-        android:paddingTop="@dimen/changelog_top_padding"
+        android:background="@color/change_background_color"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/changelog_bot_padding"
-        android:background="@color/change_background_color" >
+        android:paddingEnd="@dimen/changelog_left_padding"
+        android:paddingStart="@dimen/changelog_right_padding"
+        android:paddingTop="@dimen/changelog_top_padding">
 
         <TextView
             android:id="@+id/project"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/change_title_color"
-            android:textStyle="bold"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/subject"
@@ -35,9 +35,9 @@
             android:id="@+id/last_updated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/subject"
             android:layout_alignParentEnd="true"
+            android:layout_below="@id/subject"
             android:textColor="@color/change_date_text_color"
-            android:textSize="13sp" />
+            android:textSize="13sp"/>
     </RelativeLayout>
 </LinearLayout>

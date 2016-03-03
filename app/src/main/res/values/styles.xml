@@ -1,4 +1,5 @@
 <resources>
+
     <style name="CMChangelogTheme" parent="android:Theme.Material.Light.DarkActionBar">
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
