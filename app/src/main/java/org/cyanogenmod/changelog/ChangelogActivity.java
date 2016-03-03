@@ -123,10 +123,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mRecyclerView.addItemDecoration(new Divider(this));
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
-        // Init adapter
+        // Setup and initialize RecyclerView adapter
         mAdapter = new ChangelogAdapter(new ArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
-        // Init dialog
+        // Setup and initialize info dialog
         String message = String.format("%s %s\n%s %s\n%s %s",
                 getString(R.string.device_info_device), mDevice,
                 getString(R.string.device_info_version), mCMVersion,
@@ -190,7 +190,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         new AsyncTask<Integer, Change, List<Change>>() {
-
             // Runs on UI thread
             @Override
             protected void onPreExecute() {
@@ -227,7 +226,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                             Change c = readChange(reader);
                             if (isDeviceSpecific(c)) {
                                 changes.add(c);
-                                parsed ++;
+                                publishProgress(c);
+                                parsed += 1;
                             }
                         }
                         reader.endArray();
@@ -272,9 +272,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     return (change.getProject().contains(mDevice));
                 } else if (change.getProject().contains("kernel")) {
                     return (change.getProject().contains(mDevice));
-                }else if (change.getProject().contains("hardware")) {
+                } else if (change.getProject().contains("hardware")) {
                     return false;
-                } else return true;
+                }
+
+                return true;
             }
 
             // Runs on the UI thread
@@ -283,7 +285,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 // update the list
                 mAdapter.clear();
                 mAdapter.addAll(fetchedChanges);
-
                 // delay refreshing animation just for the show
                 new Handler().postDelayed(new Runnable() {
                     @Override
