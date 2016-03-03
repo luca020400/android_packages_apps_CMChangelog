@@ -3,27 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/changelog_right_padding"
-    android:paddingEnd="@dimen/changelog_left_padding"
-    android:paddingTop="@dimen/changelog_top_padding"
-    android:paddingBottom="@dimen/changelog_bot_padding"
-    android:background="@color/change_background_color">
+    android:layout_height="wrap_content" >
 
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:paddingStart="@dimen/changelog_right_padding"
+        android:paddingEnd="@dimen/changelog_left_padding"
+        android:paddingTop="@dimen/changelog_top_padding"
+        android:paddingBottom="@dimen/changelog_bot_padding"
+        android:background="@color/change_background_color" >
 
         <TextView
             android:id="@+id/project"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="@color/change_title_color"
             android:textStyle="bold"
-            android:textColor="@color/change_title_color" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/subject"
@@ -31,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/project"
             android:textColor="@color/change_package_text_color"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary" />
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/last_updated"
@@ -39,8 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/subject"
             android:layout_alignParentEnd="true"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-            android:textColor="@color/change_date_text_color" />
-
+            android:textColor="@color/change_date_text_color"
+            android:textSize="13sp" />
     </RelativeLayout>
 </LinearLayout>
