@@ -19,6 +19,7 @@ package org.cyanogenmod.changelog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,6 +33,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * LayoutManager of the RecyclerView
      */
     private RecyclerView.LayoutManager mLayoutManager;
+    /**
+     *
+     */
+    private Dialog mInfoDialog;
     /**
      * String representing the full CyanogenMod build version
      */
@@ -120,6 +126,18 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Init adapter
         mAdapter = new ChangelogAdapter(new ArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
+        // Init dialog
+        String message = String.format("%s %s\n%s %s\n%s %s",
+                getString(R.string.device_info_device), mDevice,
+                getString(R.string.device_info_version), mCMVersion,
+                getString(R.string.device_info_update_channel), mCMReleaseType);
+        View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
+                .setView(infoDialog)
+                .setPositiveButton(R.string.dialog_ok, null);
+        TextView dialogMessage = (TextView) infoDialog.findViewById(R.id.info_dialog_message);
+        dialogMessage.setText(message);
+        mInfoDialog = builder.create();
     }
 
     @Override
@@ -133,7 +151,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_device_info:
-                deviceInfoDialog();
+                mInfoDialog.show();
                 break;
             case R.id.menu_refresh:
                 if (!mSwipeRefreshLayout.isRefreshing()) updateChangelog();
@@ -151,26 +169,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
-    }
-
-    /**
-     * Crate a dialog displaying info about the device.
-     */
-    private void deviceInfoDialog() {
-        String message = String.format("%s %s\n%s %s\n%s %s",
-                getString(R.string.device_info_device), mDevice,
-                getString(R.string.device_info_version), mCMVersion,
-                getString(R.string.device_info_update_channel), mCMReleaseType);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(R.string.menu_device_info)
-                .setMessage(message)
-                .setPositiveButton(R.string.dialog_ok, null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Small);
     }
 
     @Override
