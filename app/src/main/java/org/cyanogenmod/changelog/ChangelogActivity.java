@@ -40,16 +40,23 @@ import android.widget.Toast;
 
 import com.google.gson.stream.JsonReader;
 
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
-    private static String TAG = "ChangelogActivity";
-
+    private static final String TAG = "ChangelogActivity";
     /**
      * View Container
      */
@@ -62,10 +69,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Adapter for the RecyclerView
      */
     private ChangelogAdapter mAdapter;
-    /**
-     * LayoutManager of the RecyclerView
-     */
-    private RecyclerView.LayoutManager mLayoutManager;
     /**
      *
      */
@@ -124,9 +127,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         // Setup divider for RecyclerView items
         mRecyclerView.addItemDecoration(new Divider(this));
         // Setup item animator
@@ -146,10 +147,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         TextView dialogMessage = (TextView) infoDialog.findViewById(R.id.info_dialog_message);
         dialogMessage.setText(message);
         mInfoDialog = builder.create();
-
-        mHardware = Build.HARDWARE.toLowerCase();
-        mManufacturer = Build.MANUFACTURER.toLowerCase();
-        mBoard = Build.BOARD.toLowerCase();
     }
 
     @Override
@@ -181,6 +178,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mCyanogenMod = version[0];
         mCMReleaseType = version[2];
         mDevice = version[3];
+        mHardware = Build.HARDWARE.toLowerCase();
+        mManufacturer = Build.MANUFACTURER.toLowerCase();
+        mBoard = Build.BOARD.toLowerCase();
     }
 
     @Override
@@ -217,11 +217,43 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         return !(networkInfo == null || !networkInfo.isConnected());
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        new CacheTask().execute(mAdapter.getDataset());
+    }
+
     private class ChangelogTask extends AsyncTask<Integer, Change, List<Change>> {
         // Runs on UI thread
         @Override
         protected void onPreExecute() {
             mSwipeRefreshLayout.setRefreshing(true);
+            /* If the RecyclerView is empty, populate it with cached data. */
+            if (mAdapter.getItemCount() == 0) {
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(new File(getCacheDir(), "cache"));
+                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    List<Change> cachedData = new LinkedList<>();
+                    Change temp;
+                    while ((temp = (Change) objectInputStream.readObject()) != null) {
+                        cachedData.add(temp);
+                    }
+                    objectInputStream.close();
+                    mAdapter.clear();
+                    mAdapter.addAll(cachedData);
+                    Log.d(TAG, "Restored cache");
+                } catch (FileNotFoundException e) {
+                    Log.w(TAG, "Cache not found.");
+                } catch (EOFException e) {
+                    Log.e(TAG, "Error while reading cache! (EOF) ");
+                } catch (StreamCorruptedException e) {
+                    Log.e(TAG, "Corrupted cache!");
+                } catch (IOException e) {
+                    Log.e(TAG, "Error while reading cache!");
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         // Runs on the separate thread
@@ -316,6 +348,24 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
     }
 
+    private class CacheTask extends AsyncTask<List, Void, Void> {
+        @Override
+        protected Void doInBackground(List... list) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(getCacheDir(), "cache"));
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                for (Object obj : list[0]) {
+                    objectOutputStream.writeObject(obj);
+                }
+                objectOutputStream.writeObject(null);
+                objectOutputStream.close();
+                Log.d(TAG, "Successfully cached data");
+            } catch (IOException e) {
+                Log.e(TAG, "Error while writing cache");
+            }
+            return null;
+        }
+    }
 
 }
 

@@ -47,6 +47,10 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         this.mDataset = mDataset;
     }
 
+    public List<Change> getDataset() {
+        return mDataset;
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public ChangelogAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

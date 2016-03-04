@@ -17,10 +17,12 @@
 
 package org.cyanogenmod.changelog;
 
+import java.io.Serializable;
+
 /**
  * Model class to use as the data source for the Adapter
  */
-public class Change {
+public class Change implements Serializable {
 
     private String subject;
     private String project;
