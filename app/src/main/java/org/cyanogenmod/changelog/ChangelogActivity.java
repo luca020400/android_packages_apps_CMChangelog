@@ -54,6 +54,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "ChangelogActivity";
@@ -131,7 +132,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Setup and initialize RecyclerView adapter
-        mAdapter = new ChangelogAdapter(new LinkedList<Change>());
+        mAdapter = new ChangelogAdapter(new CopyOnWriteArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format("%s %s\n%s %s\n%s %s",
