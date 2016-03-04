@@ -97,20 +97,18 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     private String mHardware;
     private String mBoard;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        /* Get device info */
         retrieveDeviceInfo();
+        /* Setup and create Views */
         init();
-
-        // Run updateChangelog() delayed, because otherwise
-        // the swipe refresh layout progress bar is not shown
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateChangelog();
-            }
-        }, 100);
+        /* Populate RecyclerView with cached data */
+        bindCache();
+        /* Fetch data */
+        updateChangelog();
     }
 
     /**
@@ -147,6 +145,32 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         TextView dialogMessage = (TextView) infoDialog.findViewById(R.id.info_dialog_message);
         dialogMessage.setText(message);
         mInfoDialog = builder.create();
+    }
+
+    private void bindCache() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(new File(getCacheDir(), "cache"));
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            List<Change> cachedData = new LinkedList<>();
+            Change temp;
+            while ((temp = (Change) objectInputStream.readObject()) != null) {
+                cachedData.add(temp);
+            }
+            objectInputStream.close();
+            mAdapter.clear();
+            mAdapter.addAll(cachedData);
+            Log.d(TAG, "Restored cache");
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "Cache not found.");
+        } catch (EOFException e) {
+            Log.e(TAG, "Error while reading cache! (EOF) ");
+        } catch (StreamCorruptedException e) {
+            Log.e(TAG, "Corrupted cache!");
+        } catch (IOException e) {
+            Log.e(TAG, "Error while reading cache!");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -227,33 +251,15 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Runs on UI thread
         @Override
         protected void onPreExecute() {
-            mSwipeRefreshLayout.setRefreshing(true);
-            /* If the RecyclerView is empty, populate it with cached data. */
-            if (mAdapter.getItemCount() == 0) {
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(new File(getCacheDir(), "cache"));
-                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                    List<Change> cachedData = new LinkedList<>();
-                    Change temp;
-                    while ((temp = (Change) objectInputStream.readObject()) != null) {
-                        cachedData.add(temp);
-                    }
-                    objectInputStream.close();
-                    mAdapter.clear();
-                    mAdapter.addAll(cachedData);
-                    Log.d(TAG, "Restored cache");
-                } catch (FileNotFoundException e) {
-                    Log.w(TAG, "Cache not found.");
-                } catch (EOFException e) {
-                    Log.e(TAG, "Error while reading cache! (EOF) ");
-                } catch (StreamCorruptedException e) {
-                    Log.e(TAG, "Corrupted cache!");
-                } catch (IOException e) {
-                    Log.e(TAG, "Error while reading cache!");
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+            /* Start refreshing circle animation.
+             * Wrap in runnable to workaround SwipeRefreshLayout bug.
+             * View: https://code.google.com/p/android/issues/detail?id=77712 */
+            mSwipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(true);
                 }
-            }
+            });
         }
 
         // Runs on the separate thread
@@ -328,7 +334,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             } else if (change.getProject().contains("hardware")) {
                 return change.getProject().contains(mHardware);
             }
-
             return true;
         }
 
