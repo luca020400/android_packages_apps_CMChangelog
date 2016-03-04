@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Cmd {
-    private static String TAG = "Cmd";
+    private static final String TAG = "Cmd";
 
     public static String exec(String... strings) {
         String output = "";

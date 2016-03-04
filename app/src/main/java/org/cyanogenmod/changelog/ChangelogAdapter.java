@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
-    private static String TAG = "RVAdapter";
+    private static final String TAG = "RVAdapter";
 
     private final List<Change> mDataset;
 
