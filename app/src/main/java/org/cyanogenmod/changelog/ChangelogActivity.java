@@ -263,8 +263,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         new CacheTask().execute(mAdapter.getDataset());
     }
 
