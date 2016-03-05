@@ -1,7 +1,7 @@
 <resources>
     <!-- Theme colors -->
-    <color name="color_primary">#388E3C</color>
-    <color name="color_primary_dark">#1B5E20</color>
+    <color name="color_primary">#43A047</color>
+    <color name="color_primary_dark">#388E3C</color>
     <color name="color_accent">#FF9100</color>
     <!-- ListView colors -->
     <color name="change_background_color">#fff</color>
