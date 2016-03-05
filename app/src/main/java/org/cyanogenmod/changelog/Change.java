@@ -20,7 +20,9 @@ package org.cyanogenmod.changelog;
 import java.io.Serializable;
 
 /**
- * Model class to use as the data source for the Adapter
+ * Model class to use as the data source for ChangelogAdapter
+ *
+ * @see ChangelogAdapter
  */
 public class Change implements Serializable {
 
@@ -30,9 +32,10 @@ public class Change implements Serializable {
     private String changeId;
 
     /**
-     * Constructs a new Change with empty values
+     * Constructs a new empty Change
      */
-    public Change() {}
+    public Change() {
+    }
 
     /**
      * Constructs a new Change.

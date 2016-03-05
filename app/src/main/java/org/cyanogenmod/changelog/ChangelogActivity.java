@@ -57,10 +57,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+    /**
+     * Debug tag.
+     */
     private static final String TAG = "ChangelogActivity";
-
-    /*
-     * Special Repos
+    /**
+     * Common repositories.
      */
     private static final String[] COMMON_REPOS = {
             "android_hardware_akm",
@@ -75,48 +77,57 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
+    /**
+     * Common repositories (Qualcomm boards only).
+     */
     private static final String[] COMMON_REPOS_QCOM = {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy"
     };
     /**
-     * View Container
+     * The manufacturer of the product/hardware.
+     */
+    private final String mManufacturer = Build.MANUFACTURER.toLowerCase();
+    /**
+     * The name of the hardware (from the kernel command line or /proc).
+     */
+    private final String mHardware = Build.HARDWARE.toLowerCase();
+    /**
+     * The name of the underlying board.
+     */
+    private final String mBoard = Build.BOARD.toLowerCase();
+    /**
+     * Content view.
      */
     private SwipeRefreshLayout mSwipeRefreshLayout;
     /**
-     * RecyclerView used to list all the changes
+     * RecyclerView used to list all the changes.
      */
     private RecyclerView mRecyclerView;
     /**
-     * Adapter for the RecyclerView
+     * Adapter for the RecyclerView.
      */
     private ChangelogAdapter mAdapter;
     /**
-     *
+     * Dialog showing info about the device.
      */
     private Dialog mInfoDialog;
     /**
-     * String representing the full CyanogenMod build version
+     * The full CyanogenMod build version.
      */
     private String mCMVersion;
     /**
-     * String representing the CyanogenMod version of the device (e.g 13)
+     * The CyanogenMod version of the device (e.g 13).
      */
     private String mCyanogenMod;
     /**
-     * String representing the update channel aka release type (e.g nightly)
+     * The update channel aka release type (e.g nightly).
      */
     private String mCMReleaseType;
     /**
-     * String representing device code-name (e.g. hammerhead)
+     * The device code-name (e.g. hammerhead).
      */
     private String mDevice;
-    /*
-     * Device Info
-     */
-    private String mManufacturer;
-    private String mHardware;
-    private String mBoard;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +141,48 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         bindCache();
         /* Fetch data */
         updateChangelog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new CacheTask().execute(mAdapter.getDataset());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_device_info:
+                mInfoDialog.show();
+                break;
+            case R.id.menu_refresh:
+                if (!mSwipeRefreshLayout.isRefreshing()) updateChangelog();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRefresh() {
+        updateChangelog();
+    }
+
+    /**
+     * Retrieve info about the device.
+     */
+    private void retrieveDeviceInfo() {
+        mCMVersion = Cmd.exec("getprop ro.cm.version");
+        String[] version = mCMVersion.split("-");
+        mCyanogenMod = version[0];
+        mCMReleaseType = version[2];
+        mDevice = version[3];
     }
 
     /**
@@ -168,73 +221,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mInfoDialog = builder.create();
     }
 
-    private void bindCache() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(new File(getCacheDir(), "cache"));
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            List<Change> cachedData = new LinkedList<>();
-            Change temp;
-            while ((temp = (Change) objectInputStream.readObject()) != null) {
-                cachedData.add(temp);
-            }
-            objectInputStream.close();
-            mAdapter.clear();
-            mAdapter.addAll(cachedData);
-            Log.d(TAG, "Restored cache");
-        } catch (FileNotFoundException e) {
-            Log.w(TAG, "Cache not found.");
-        } catch (EOFException e) {
-            Log.e(TAG, "Error while reading cache! (EOF) ");
-        } catch (StreamCorruptedException e) {
-            Log.e(TAG, "Corrupted cache!");
-        } catch (IOException e) {
-            Log.e(TAG, "Error while reading cache!");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actions, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_device_info:
-                mInfoDialog.show();
-                break;
-            case R.id.menu_refresh:
-                if (!mSwipeRefreshLayout.isRefreshing()) updateChangelog();
-                break;
-        }
-        return true;
-    }
-
     /**
-     * Retrieve info about the device.
-     */
-    private void retrieveDeviceInfo() {
-        mCMVersion = Cmd.exec("getprop ro.cm.version");
-        String[] version = mCMVersion.split("-");
-        mCyanogenMod = version[0];
-        mCMReleaseType = version[2];
-        mDevice = version[3];
-        mHardware = Build.HARDWARE.toLowerCase();
-        mManufacturer = Build.MANUFACTURER.toLowerCase();
-        mBoard = Build.BOARD.toLowerCase();
-    }
-
-    @Override
-    public void onRefresh() {
-        updateChangelog();
-    }
-
-    /**
-     * Fetch data asynchronously
+     * Fetch data from API asynchronously.
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
@@ -262,10 +250,33 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         return !(networkInfo == null || !networkInfo.isConnected());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        new CacheTask().execute(mAdapter.getDataset());
+    /**
+     * Read cached data and bind it to the RecyclerView.
+     */
+    private void bindCache() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(new File(getCacheDir(), "cache"));
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            List<Change> cachedData = new LinkedList<>();
+            Change temp;
+            while ((temp = (Change) objectInputStream.readObject()) != null) {
+                cachedData.add(temp);
+            }
+            objectInputStream.close();
+            mAdapter.clear();
+            mAdapter.addAll(cachedData);
+            Log.d(TAG, "Restored cache");
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "Cache not found.");
+        } catch (EOFException e) {
+            Log.e(TAG, "Error while reading cache! (EOF) ");
+        } catch (StreamCorruptedException e) {
+            Log.e(TAG, "Corrupted cache!");
+        } catch (IOException e) {
+            Log.e(TAG, "Error while reading cache!");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private class ChangelogTask extends AsyncTask<Integer, Change, List<Change>> {
@@ -415,4 +426,3 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
 }
-
