@@ -98,6 +98,19 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     private String mHardware;
     private String mBoard;
 
+    /*
+     * Special Repos
+     */
+    String[] mCommonReposCommon = {
+            "android_hardware_cyanogen",
+            "android_hardware_sony_thermanager",
+            "android_hardware_sony_timekeep"
+    };
+    String[] mCommonReposQcom = {
+            "android_device_qcom_common",
+            "android_device_qcom_sepolicy"
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -328,10 +341,26 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         private boolean isDeviceSpecific(Change change) {
-            if (change.getProject().contains("device") || change.getProject().contains("kernel")) {
+            for (String repo : mCommonReposCommon) {
+                if (change.getProject().contains(repo)) {
+                    return true;
+                }
+            }
+
+            for (String repo : mCommonReposQcom) {
+                if (mHardware.equals("qcom") && change.getProject().contains(repo)) {
+                    return true;
+                }
+            }
+
+            if (change.getProject().contains("device") ||
+                    change.getProject().contains("kernel")) {
                 return change.getProject().contains(mDevice) ||
+                        change.getProject().contains(mManufacturer + "-common") ||
                         change.getProject().contains(mManufacturer) &&
-                                change.getProject().contains(mBoard);
+                                change.getProject().contains(mBoard + "-common") ||
+                        change.getProject().contains(mManufacturer) &&
+                                change.getProject().contains(mHardware + "-common");
             } else if (change.getProject().contains("hardware")) {
                 return change.getProject().contains(mHardware);
             }
