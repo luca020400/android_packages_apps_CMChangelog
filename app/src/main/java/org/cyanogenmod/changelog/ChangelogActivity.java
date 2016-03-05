@@ -287,14 +287,14 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 long time = System.currentTimeMillis();
                 // Form API URL
                 String apiUrl =
-                        String.format("http://review.cyanogenmod.org/changes/?q=status:merged%s&%s&%s",
-                        " AND (" +
-                                "branch:cm-" + mCyanogenMod + " OR " +
-                                "branch:cm-" + mCyanogenMod + "-caf" + " OR " +
+                        String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
+                        "(" +
+                                "branch:cm-" + mCyanogenMod + "|" +
+                                "branch:cm-" + mCyanogenMod + "-caf" + "|" +
                                 "branch:cm-" + mCyanogenMod + "-caf-" + mBoard +
-                                ")",
+                        ")",
                         "n=" + n,
-                        "start=" + start).replace(" ", "%20");
+                        "start=" + start);
                 try {
                     HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
                     // Optional default is GET
