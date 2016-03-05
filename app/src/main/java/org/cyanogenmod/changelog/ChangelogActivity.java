@@ -103,6 +103,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     String[] mCommonReposCommon = {
             "android_hardware_cyanogen",
+            "android_hardware_ril",
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
