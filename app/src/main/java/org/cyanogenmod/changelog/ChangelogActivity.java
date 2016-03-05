@@ -62,7 +62,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     /*
      * Special Repos
      */
-    String[] mCommonReposCommon = {
+    private static final String[] COMMON_REPOS = {
             "android_hardware_akm",
             "android_hardware_broadcom_libbt",
             "android_hardware_broadcom_wlan",
@@ -75,7 +75,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
-    String[] mCommonReposQcom = {
+    private static final String[] COMMON_REPOS_QCOM = {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy"
     };
@@ -353,13 +353,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
 
         private boolean isDeviceSpecific(Change change) {
-            for (String repo : mCommonReposCommon) {
+            for (String repo : COMMON_REPOS) {
                 if (change.getProject().contains(repo)) {
                     return true;
                 }
             }
 
-            for (String repo : mCommonReposQcom) {
+            for (String repo : COMMON_REPOS_QCOM) {
                 if (mHardware.equals("qcom") && change.getProject().contains(repo)) {
                     return true;
                 }
