@@ -306,8 +306,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 String apiUrl =
                         String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
                                 "(" +
-                                        "branch:cm-" + mCyanogenMod + "|" +
-                                        "branch:cm-" + mCyanogenMod + "-caf" + "|" +
+                                        "branch:cm-" + mCyanogenMod + "%20OR%20" +
+                                        "branch:cm-" + mCyanogenMod + "-caf" + "%20OR%20" +
                                         "branch:cm-" + mCyanogenMod + "-caf-" + mBoard +
                                         ")",
                                 "n=" + n,
