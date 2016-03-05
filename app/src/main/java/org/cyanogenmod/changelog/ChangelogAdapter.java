@@ -26,8 +26,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -97,20 +95,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
                 }
             }
         });
-        // Set Animation
-        if (position > mLastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
-            holder.container.startAnimation(animation);
-            mLastPosition = position;
-        }
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        // Clear animation
-        holder.container.clearAnimation();
-        mLastPosition = holder.getAdapterPosition();
     }
 
     /**
