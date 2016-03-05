@@ -58,11 +58,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "ChangelogActivity";
+
     /*
      * Special Repos
      */
     String[] mCommonReposCommon = {
+            "android_hardware_akm",
+            "android_hardware_broadcom_libbt",
+            "android_hardware_broadcom_wlan",
+            "android_hardware_cm",
             "android_hardware_cyanogen",
+            "android_hardware_invensense",
+            "android_hardware_libhardware",
+            "android_hardware_libhardware_legacy",
             "android_hardware_ril",
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
