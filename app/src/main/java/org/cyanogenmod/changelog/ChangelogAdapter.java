@@ -18,6 +18,7 @@
 package org.cyanogenmod.changelog;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,13 +40,16 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     private static final String TAG = "RVAdapter";
 
     private final List<Change> mDataset;
+    private int mLastPosition = -1;
+    private Context mContext;
 
     /**
      * Construct a new ChangelogAdapter representing the specified data set.
      *
      * @param mDataset the set of data we want this Adapter to represent.
      */
-    public ChangelogAdapter(List<Change> mDataset) {
+    public ChangelogAdapter(Context mContext, List<Change> mDataset) {
+        this.mContext = mContext;
         this.mDataset = mDataset;
     }
 
@@ -91,6 +97,20 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
                 }
             }
         });
+        // Set Animation
+        if (position > mLastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
+            holder.container.startAnimation(animation);
+            mLastPosition = position;
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        // Clear animation
+        holder.container.clearAnimation();
+        mLastPosition = holder.getAdapterPosition();
     }
 
     /**
