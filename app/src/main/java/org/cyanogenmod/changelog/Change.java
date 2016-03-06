@@ -117,14 +117,15 @@ public class Change implements Serializable {
             }
         }
 
-        if (project.contains("device") ||
-                project.contains("kernel")) {
+        if (project.contains("device")) {
             return project.contains(Device.device) ||
                     project.contains(Device.manufacturer + "-common") ||
-                    project.contains(Device.manufacturer) &&
-                            project.contains(Device.board + "-common") ||
-                    project.contains(Device.manufacturer) &&
-                            project.contains(Device.hardware + "-common");
+                    project.contains(Device.manufacturer) && project.contains(Device.board + "-common") ||
+                    project.contains(Device.manufacturer) && project.contains(Device.hardware + "-common");
+        } else if (project.contains("kernel")) {
+            return project.contains(Device.manufacturer) && project.contains(Device.device) ||
+                    project.contains(Device.manufacturer) && project.contains(Device.board) ||
+                    project.contains(Device.manufacturer) && project.contains(Device.hardware);
         } else if (project.contains("hardware")) {
             return project.contains(Device.hardware);
         }

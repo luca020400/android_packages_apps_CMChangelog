@@ -26,34 +26,42 @@ public class Device {
      * The manufacturer of the product/hardware.
      */
     public final static String manufacturer = Build.MANUFACTURER.toLowerCase();
+
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String hardware = Build.HARDWARE.toLowerCase();
+
     /**
      * The name of the underlying board.
      */
     public final static String board = Build.BOARD.toLowerCase();
+
     /**
      * The device code-name (e.g. hammerhead).
      */
     public final static String device = Build.DEVICE.toLowerCase();
+
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
     public final static String CMVersion;
+
     /**
      * The CyanogenMod version of the device (e.g 13).
      */
     public final static String CMNumber;
+
     /**
      * The CyanogenMod release channel (e.g nightly).
      */
     public final static String CMReleaseChannel;
+
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
     public final static String buildDate;
+
     /**
      * Common repositories.
      */
@@ -70,13 +78,19 @@ public class Device {
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
+
     /**
      * Common repositories (Qualcomm boards only).
      */
     public static final String[] COMMON_REPOS_QCOM = {
             "android_device_qcom_common",
-            "android_device_qcom_sepolicy"
+            "android_device_qcom_sepolicy",
+            "android_device_qcom_audio"
     };
+
+    /**
+     * Logcat Tag
+     */
     private final static String TAG = "Device";
 
     static {

@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
-    private static final String TAG = "RVAdapter";
+    private static final String TAG = "Adapter";
 
     private final List<Change> mDataset;
     private Context mContext;
@@ -48,10 +48,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public ChangelogAdapter(Context mContext, List<Change> mDataset) {
         this.mContext = mContext;
         this.mDataset = mDataset;
-    }
-
-    public List<Change> getDataset() {
-        return mDataset;
     }
 
     // Create new views (invoked by the layout manager)
@@ -97,6 +93,20 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     }
 
     /**
+     * Returns the size of the data set. Usually invoked by LayoutManager.
+     *
+     * @return the size of the data set.
+     */
+    @Override
+    public int getItemCount() {
+        return mDataset.size();
+    }
+
+    public List<Change> getDataset() {
+        return mDataset;
+    }
+
+    /**
      * Clear all the elements of the RecyclerView
      */
     public void clear() {
@@ -113,16 +123,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public void addAll(List<Change> list) {
         mDataset.addAll(list);
         notifyItemRangeChanged(0, getItemCount());
-    }
-
-    /**
-     * Returns the size of the data set. Usually invoked by LayoutManager.
-     *
-     * @return the size of the data set.
-     */
-    @Override
-    public int getItemCount() {
-        return mDataset.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

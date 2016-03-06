@@ -18,30 +18,50 @@
 package org.cyanogenmod.changelog;
 
 public class RESTfulURI {
+
     public static final String STATUS_MERGED = "status:merged";
     public static final String STATUS_OPEN = "status:open";
     public static final String STATUS_ABANDONED = "status:abandoned";
-    private final String mURL = "http://review.cyanogenmod.org/changes/";
+
+    private final String URL = "http://review.cyanogenmod.org/changes/";
+
     /**
      * Number of changes to query
      */
     public int n;
+
     /**
      * Number of changes to skip
      */
     public int start;
-    private String mStatus;
-    private String mBranch;
 
-    public RESTfulURI(String mStatus, String mBranch, int changesToGet, int changesToSkip) {
-        this.mStatus = mStatus;
-        this.mBranch = mBranch;
+    /**
+     * The status of the requested changes.
+     */
+    private String status;
+
+    /**
+     * The branch of the requested changes
+     */
+    private String branch;
+
+    /**
+     * Construct a new formatted API URI with the specified options.
+     *
+     * @param status        request changes in the specified status
+     * @param branch        request changes of the specified branch
+     * @param changesToGet  the number of changes to get
+     * @param changesToSkip the number of changes to skip
+     */
+    public RESTfulURI(String status, String branch, int changesToGet, int changesToSkip) {
+        this.status = status;
+        this.branch = branch;
         this.n = changesToGet;
         this.start = changesToSkip;
     }
 
     @Override
     public String toString() {
-        return mURL + "?q=" + mStatus + "+" + mBranch + "&n=" + n + "&start=" + start;
+        return URL + "?q=" + status + "+" + branch + "&n=" + n + "&start=" + start;
     }
 }
