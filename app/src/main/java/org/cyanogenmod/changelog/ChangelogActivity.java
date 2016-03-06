@@ -38,15 +38,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.stream.JsonReader;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
@@ -61,41 +58,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Debug tag.
      */
     private static final String TAG = "ChangelogActivity";
-    /**
-     * Common repositories.
-     */
-    private static final String[] COMMON_REPOS = {
-            "android_hardware_akm",
-            "android_hardware_broadcom_libbt",
-            "android_hardware_broadcom_wlan",
-            "android_hardware_cm",
-            "android_hardware_cyanogen",
-            "android_hardware_invensense",
-            "android_hardware_libhardware",
-            "android_hardware_libhardware_legacy",
-            "android_hardware_ril",
-            "android_hardware_sony_thermanager",
-            "android_hardware_sony_timekeep"
-    };
-    /**
-     * Common repositories (Qualcomm boards only).
-     */
-    private static final String[] COMMON_REPOS_QCOM = {
-            "android_device_qcom_common",
-            "android_device_qcom_sepolicy"
-    };
-    /**
-     * The manufacturer of the product/hardware.
-     */
-    private final String mManufacturer = Build.MANUFACTURER.toLowerCase();
-    /**
-     * The name of the hardware (from the kernel command line or /proc).
-     */
-    private final String mHardware = Build.HARDWARE.toLowerCase();
-    /**
-     * The name of the underlying board.
-     */
-    private final String mBoard = Build.BOARD.toLowerCase();
     /**
      * Content view.
      */
@@ -112,29 +74,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Dialog showing info about the device.
      */
     private Dialog mInfoDialog;
-    /**
-     * The full CyanogenMod build version.
-     */
-    private String mCMVersion;
-    /**
-     * The CyanogenMod version of the device (e.g 13).
-     */
-    private String mCyanogenMod;
-    /**
-     * The update channel aka release type (e.g nightly).
-     */
-    private String mCMReleaseType;
-    /**
-     * The device code-name (e.g. hammerhead).
-     */
-    private String mDevice;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        /* Get device info */
-        retrieveDeviceInfo();
         /* Setup and create Views */
         init();
         /* Populate RecyclerView with cached data */
@@ -169,17 +113,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     /**
-     * Retrieve info about the device.
-     */
-    private void retrieveDeviceInfo() {
-        mCMVersion = Cmd.exec("getprop ro.cm.version");
-        String[] version = mCMVersion.split("-");
-        mCyanogenMod = version[0];
-        mCMReleaseType = version[2];
-        mDevice = version[3];
-    }
-
-    /**
      * Utility method.
      */
     private void init() {
@@ -203,9 +136,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format("%s %s\n%s %s\n%s %s",
-                getString(R.string.device_info_device), mDevice,
-                getString(R.string.device_info_version), mCMVersion,
-                getString(R.string.device_info_update_channel), mCMReleaseType);
+                getString(R.string.device_info_device), Device.device,
+                getString(R.string.device_info_version), Device.CMVersion,
+                getString(R.string.device_info_update_channel), Device.CMReleaseChannel);
         View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, mRecyclerView, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
@@ -292,63 +225,27 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         @Override
         protected List<Change> doInBackground(Integer... q) {
             List<Change> changes = new LinkedList<>();
-            int parsed = 0; // number of changes parsed and selected so far
-            int n = 120, start = 0; // number of changes to fetch and to skip
-            while (parsed < q[0]) {
+            int n = 120, start = 0;    // number of changes to fetch and to skip
+            String branch = "(" +
+                    "branch:cm-" + Device.CMNumber + "%20OR%20" +
+                    "branch:cm-" + Device.CMNumber + "-caf" + "%20OR%20" +
+                    "branch:cm-" + Device.CMNumber + "-caf-" + Build.BOARD.toLowerCase() +
+                    ")";
+            RESTfulURI uri = new RESTfulURI(RESTfulURI.STATUS_MERGED, branch, n, start);
+            while (changes.size() < q[0]) {
                 long time = System.currentTimeMillis();
-                // Form API URL
-                String apiUrl =
-                        String.format("http://review.cyanogenmod.org/changes/?q=status:merged+%s&%s&%s",
-                                "(" +
-                                        "branch:cm-" + mCyanogenMod + "%20OR%20" +
-                                        "branch:cm-" + mCyanogenMod + "-caf" + "%20OR%20" +
-                                        "branch:cm-" + mCyanogenMod + "-caf-" + mBoard +
-                                        ")",
-                                "n=" + n,
-                                "start=" + start);
+                uri.start = start;
+                String apiUrl = uri.toString();
                 try {
+                    Log.d(TAG, "Sending GET request to URL : " + apiUrl);
                     HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
-                    // Optional default is GET
                     con.setRequestMethod("GET");
-                    // Log
-                    Log.d(TAG, "Sending 'GET' request to URL : " + apiUrl);
-                    Log.v(TAG, String.format("Response code: %s\tResponse message: %s", con.getResponseCode(), con.getResponseMessage()));
+                    Log.d(TAG, "Response: " + con.getResponseCode() + ", " + con.getResponseMessage());
                     /* Parse JSON */
-                    JsonReader reader = new JsonReader(new InputStreamReader(con.getInputStream()));
-                    reader.setLenient(true); // strip XSSI protection
-                    reader.beginArray();
-                    while (reader.hasNext()) {
-                        reader.beginObject();
-                        Change newChange = new Change();
-                        while (reader.hasNext()) {
-                            switch (reader.nextName()) {
-                                case "_number":
-                                    newChange.setChangeId(reader.nextString());
-                                    break;
-                                case "project":
-                                    newChange.setProject(reader.nextString());
-                                    break;
-                                case "subject":
-                                    newChange.setSubject(reader.nextString());
-                                    break;
-                                case "updated":
-                                    newChange.setLastUpdate(reader.nextString());
-                                    break;
-                                default:
-                                    reader.skipValue();
-                            }
-                        }
-                        reader.endObject();
-                        // check if its a legit change
-                        if (isDeviceSpecific(newChange)) {
-                            changes.add(newChange);
-                            parsed++;
-                        }
-                    }
-                    reader.endArray();
-                    reader.close();
+                    changes.addAll(new ChangelogParser().parseJSON(con.getInputStream()));
                 } catch (IOException e) {
                     Log.e(TAG, "Parse error!", e);
+                    return null;
                 }
                 Log.i(TAG, "Successfully parsed REST API in " +
                         (System.currentTimeMillis() - time) + "ms");
@@ -357,45 +254,20 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             return changes;
         }
 
-        private boolean isDeviceSpecific(Change change) {
-            for (String repo : COMMON_REPOS) {
-                if (change.getProject().contains(repo)) {
-                    return true;
-                }
-            }
-
-            for (String repo : COMMON_REPOS_QCOM) {
-                if (mHardware.equals("qcom") && change.getProject().contains(repo)) {
-                    return true;
-                }
-            }
-
-            if (change.getProject().contains("device") ||
-                    change.getProject().contains("kernel")) {
-                return change.getProject().contains(mDevice) ||
-                        change.getProject().contains(mManufacturer + "-common") ||
-                        change.getProject().contains(mManufacturer) &&
-                                change.getProject().contains(mBoard + "-common") ||
-                        change.getProject().contains(mManufacturer) &&
-                                change.getProject().contains(mHardware + "-common");
-            } else if (change.getProject().contains("hardware")) {
-                return change.getProject().contains(mHardware);
-            }
-            return true;
-        }
-
         // Runs on the UI thread
         @Override
         protected void onPostExecute(List<Change> fetchedChanges) {
-            List oldChanges = mAdapter.getDataset();
-            if (oldChanges.isEmpty() || !fetchedChanges.get(0).equals(oldChanges.get(0))) {
-                // update the list
-                mAdapter.clear();
-                mAdapter.addAll(fetchedChanges);
-                // update cache
-                new CacheTask().execute(fetchedChanges);
-            } else {
-                Log.d(TAG, "Nothing changed");
+            if (fetchedChanges != null) {
+                List oldChanges = mAdapter.getDataset();
+                if (oldChanges.isEmpty() || !fetchedChanges.get(0).equals(oldChanges.get(0))) {
+                    // update the list
+                    mAdapter.clear();
+                    mAdapter.addAll(fetchedChanges);
+                    // update cache
+                    new CacheTask().execute(fetchedChanges);
+                } else {
+                    Log.d(TAG, "Nothing changed");
+                }
             }
 
             // delay refreshing animation just for the show

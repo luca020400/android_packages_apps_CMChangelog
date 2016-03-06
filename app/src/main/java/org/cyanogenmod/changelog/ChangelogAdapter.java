@@ -38,7 +38,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     private static final String TAG = "RVAdapter";
 
     private final List<Change> mDataset;
-    private int mLastPosition = -1;
     private Context mContext;
 
     /**

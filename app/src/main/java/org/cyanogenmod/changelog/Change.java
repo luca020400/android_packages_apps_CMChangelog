@@ -26,9 +26,24 @@ import java.io.Serializable;
  */
 public class Change implements Serializable {
 
+    /**
+     * The subject of the change (header line of the commit message).
+     */
     private String subject;
+
+    /**
+     * The name of the project.
+     */
     private String project;
+
+    /**
+     * The timestamp of when the change was last updated.
+     */
     private String lastUpdate;
+
+    /**
+     * The legacy numeric ID of the change.
+     */
     private String changeId;
 
     /**
@@ -38,7 +53,7 @@ public class Change implements Serializable {
     }
 
     /**
-     * Constructs a new Change.
+     * Constructs a new Change with the specified properties.
      *
      * @param subject    the subject of the Change
      * @param project    the project package affected by the Change
@@ -83,6 +98,39 @@ public class Change implements Serializable {
     public void setChangeId(String changeId) {
         this.changeId = changeId;
     }
+
+    /**
+     * Check if this Change is a device specific.
+     *
+     * @return true if this Change is a device specific change, otherwise false
+     */
+    public boolean isDeviceSpecific() {
+        for (String repo : Device.COMMON_REPOS) {
+            if (project.contains(repo)) {
+                return true;
+            }
+        }
+
+        for (String repo : Device.COMMON_REPOS_QCOM) {
+            if (Device.hardware.equals("qcom") && project.contains(repo)) {
+                return true;
+            }
+        }
+
+        if (project.contains("device") ||
+                project.contains("kernel")) {
+            return project.contains(Device.device) ||
+                    project.contains(Device.manufacturer + "-common") ||
+                    project.contains(Device.manufacturer) &&
+                            project.contains(Device.board + "-common") ||
+                    project.contains(Device.manufacturer) &&
+                            project.contains(Device.hardware + "-common");
+        } else if (project.contains("hardware")) {
+            return project.contains(Device.hardware);
+        }
+        return true;
+    }
+
 
     @Override
     public boolean equals(Object o) {
