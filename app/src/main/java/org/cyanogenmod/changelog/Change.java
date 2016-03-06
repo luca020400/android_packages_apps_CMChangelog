@@ -83,4 +83,17 @@ public class Change implements Serializable {
     public void setChangeId(String changeId) {
         this.changeId = changeId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Change change = (Change) o;
+        return changeId.equals(change.changeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return changeId.hashCode();
+    }
 }

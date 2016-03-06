@@ -144,12 +144,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        new CacheTask().execute(mAdapter.getDataset());
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
@@ -279,7 +273,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
     }
 
-    private class ChangelogTask extends AsyncTask<Integer, Change, List<Change>> {
+    private class ChangelogTask extends AsyncTask<Integer, Void, List<Change>> {
         // Runs on UI thread
         @Override
         protected void onPreExecute() {
@@ -393,9 +387,17 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Runs on the UI thread
         @Override
         protected void onPostExecute(List<Change> fetchedChanges) {
-            // update the list
-            mAdapter.clear();
-            mAdapter.addAll(fetchedChanges);
+            List oldChanges = mAdapter.getDataset();
+            if (oldChanges.isEmpty() || !fetchedChanges.get(0).equals(oldChanges.get(0))) {
+                // update the list
+                mAdapter.clear();
+                mAdapter.addAll(fetchedChanges);
+                // update cache
+                new CacheTask().execute(fetchedChanges);
+            } else {
+                Log.d(TAG, "Nothing changed");
+            }
+
             // delay refreshing animation just for the show
             new Handler().postDelayed(new Runnable() {
                 @Override
