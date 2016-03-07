@@ -123,7 +123,8 @@ public class Change implements Serializable {
                     project.contains(Device.manufacturer) && project.contains(Device.board + "-common") ||
                     project.contains(Device.manufacturer) && project.contains(Device.hardware + "-common");
         } else if (project.contains("kernel")) {
-            return project.contains(Device.manufacturer) && project.contains(Device.device) ||
+            return project.contains(Device.device) ||
+                    project.contains(Device.manufacturer) && project.contains(Device.device) ||
                     project.contains(Device.manufacturer) && project.contains(Device.board) ||
                     project.contains(Device.manufacturer) && project.contains(Device.hardware);
         } else if (project.contains("hardware")) {

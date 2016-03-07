@@ -212,7 +212,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         protected void onPreExecute() {
             /* Start refreshing circle animation.
              * Wrap in runnable to workaround SwipeRefreshLayout bug.
-             * View: https://code.google.com/p/android/issues/detail?id=77712 */
+             * View: https://code.google.com/p/android/issues/detail?id=77712
+             */
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -225,11 +226,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         @Override
         protected List<Change> doInBackground(Integer... q) {
             List<Change> changes = new LinkedList<>();
-            int n = 120, start = 0;    // number of changes to fetch and to skip
+            int n = 120, start = 0; // number of changes to fetch and to skip
             String branch = "(" +
                     "branch:cm-" + Device.CMNumber + "%20OR%20" +
                     "branch:cm-" + Device.CMNumber + "-caf" + "%20OR%20" +
-                    "branch:cm-" + Device.CMNumber + "-caf-" + Build.BOARD.toLowerCase() +
+                    "branch:cm-" + Device.CMNumber + "-caf-" + Device.board +
                     ")";
             RESTfulURI uri = new RESTfulURI(RESTfulURI.STATUS_MERGED, branch, n, start);
             while (changes.size() < q[0]) {
@@ -241,7 +242,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
                     con.setRequestMethod("GET");
                     Log.d(TAG, "Response: " + con.getResponseCode() + ", " + con.getResponseMessage());
-                    /* Parse JSON */
+                    // Parse JSON
                     changes.addAll(new ChangelogParser().parseJSON(con.getInputStream()));
                 } catch (IOException e) {
                     Log.e(TAG, "Parse error!", e);
@@ -260,17 +261,17 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             if (fetchedChanges != null) {
                 List oldChanges = mAdapter.getDataset();
                 if (oldChanges.isEmpty() || !fetchedChanges.get(0).equals(oldChanges.get(0))) {
-                    // update the list
+                    // Update the list
                     mAdapter.clear();
                     mAdapter.addAll(fetchedChanges);
-                    // update cache
+                    // Update cache
                     new CacheTask().execute(fetchedChanges);
                 } else {
                     Log.d(TAG, "Nothing changed");
                 }
             }
 
-            // delay refreshing animation just for the show
+            // Delay refreshing animation just for the show
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
