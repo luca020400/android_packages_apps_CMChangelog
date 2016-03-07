@@ -85,7 +85,6 @@ public class Device {
     public static final String[] COMMON_REPOS_QCOM = {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
-            "android_device_qcom_audio"
     };
 
     /**
