@@ -31,8 +31,11 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
     private static final String TAG = "Adapter";
@@ -68,10 +71,11 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
                 String.format("%s", change.getSubject()));
         // parse the value of the date
         try {
-            SimpleDateFormat simpleDateFormat =
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault());
-            Date convertedCommitDate = simpleDateFormat.parse(change.getLastUpdate());
-            holder.date.setText(simpleDateFormat.format(convertedCommitDate));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date convertedCommitDate = formatter.parse(change.getLastUpdate());
+            formatter.setTimeZone(Calendar.getInstance().getTimeZone());
+            holder.date.setText(formatter.format(convertedCommitDate));
         } catch (ParseException e) {
             Log.e(TAG, "", e);
         }
