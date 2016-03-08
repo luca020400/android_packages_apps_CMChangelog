@@ -17,6 +17,8 @@
 
 package org.cyanogenmod.changelog;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 /**
@@ -26,6 +28,7 @@ import java.io.Serializable;
  */
 public class Change implements Serializable {
 
+    private static final String TAG = "Change";
     /**
      * The subject of the change (header line of the commit message).
      */
@@ -99,12 +102,23 @@ public class Change implements Serializable {
         this.changeId = changeId;
     }
 
+    public boolean isDeviceSpecific() {
+        // Fallback to 'old' method
+        if (Device.SPECIFIC_PROJETS.size() == 0 || Device.SPECIFIC_PROJETS == null) return isDeviceSpecificLegacy();
+        for (String deviceProject : Device.SPECIFIC_PROJETS) {
+            if (this.project.equals(deviceProject)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Check if this Change is a device specific.
      *
      * @return true if this Change is a device specific change, otherwise false
      */
-    public boolean isDeviceSpecific() {
+    private boolean isDeviceSpecificLegacy() {
         for (String repo : Device.COMMON_REPOS) {
             if (project.contains(repo)) {
                 return true;

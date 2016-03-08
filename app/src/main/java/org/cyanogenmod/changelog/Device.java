@@ -21,6 +21,15 @@ package org.cyanogenmod.changelog;
 import android.os.Build;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class Device {
     /**
      * The manufacturer of the product/hardware.
@@ -62,6 +71,12 @@ public class Device {
      */
     public final static String buildDate;
 
+    public final static String RC_NIGHTLY = "NIGHTLY";
+    public final static String RC_UNOFFICIAL = "UNOFFICIAL";
+    public final static String RC_SNAPSHOT = "SNAPSHOT";
+
+    public final static Collection<String> SPECIFIC_PROJETS;
+
     /**
      * Common repositories.
      */
@@ -99,15 +114,63 @@ public class Device {
         CMReleaseChannel = version[2];
         buildDate = Cmd.exec("getprop ro.build.date").replace("\n", "");
         Log.v(TAG, "Device" +
-                "{ manufacturer=" + manufacturer +
+                " {manufacturer=" + manufacturer +
                 ", hardware=" + hardware +
                 ", board=" + board +
                 ", device=" + device +
                 ", CMVersion=" + CMVersion +
                 ", CMNumber=" + CMNumber +
                 ", CMReleaseChannel=" + CMReleaseChannel +
-                ", buildDate=" + buildDate +
-                "}");
+                ", buildDate=" + buildDate + "}");
+         /* Parse device projects from build-manifest.xml */
+        String buildManifest = Cmd.exec("cat /etc/build-manifest.xml");
+        // Cat produced no output
+        if (buildManifest.length() == 0) {
+            Log.d(TAG, "Couldn't find a build-manifest.xml.");
+            SPECIFIC_PROJETS = null;
+        } else {
+            // Cat was successful, parse the output as XML
+            Log.d(TAG, "Found build-manifest.xml.");
+            SPECIFIC_PROJETS = parseDspFromManifest(buildManifest);
+            Log.v(TAG, "Number of projects: " + SPECIFIC_PROJETS.size());
+        }
+    }
+
+    private static Collection<String> parseDspFromManifest(String inputXML) {
+        Collection<String> deviceProjects = new ArrayList<>();
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(inputXML));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                switch (eventType) {
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
+                    case XmlPullParser.START_TAG:
+                        break;
+                    case XmlPullParser.END_TAG:
+                        if (xpp.getName().equals("project")) {
+                            String attributeValue = xpp.getAttributeValue(null, "name");
+                            if (attributeValue != null && attributeValue.contains("CyanogenMod/")) {
+                                deviceProjects.add(attributeValue);
+                            }
+                        }
+                        break;
+                    case XmlPullParser.TEXT:
+                        break;
+                }
+                eventType = xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            Log.e(TAG, "Error while creating XML parser");
+            deviceProjects.clear();
+        } catch (IOException e) {
+            Log.e(TAG, "IOError while parsing XML");
+            deviceProjects.clear();
+        }
+        return deviceProjects;
     }
 
 }

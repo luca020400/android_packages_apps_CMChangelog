@@ -24,7 +24,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -38,6 +37,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,8 +50,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -248,7 +254,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     Log.e(TAG, "Parse error!", e);
                     return null;
                 }
-                Log.i(TAG, "Successfully parsed REST API in " +
+                Log.v(TAG, "Successfully parsed REST API in " +
                         (System.currentTimeMillis() - time) + "ms");
                 start += n; // skip n changes in next iteration
             }
