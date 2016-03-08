@@ -37,10 +37,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,11 +46,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -64,18 +57,22 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Debug tag.
      */
     private static final String TAG = "ChangelogActivity";
+
     /**
      * Content view.
      */
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     /**
      * RecyclerView used to list all the changes.
      */
     private RecyclerView mRecyclerView;
+
     /**
      * Adapter for the RecyclerView.
      */
     private ChangelogAdapter mAdapter;
+
     /**
      * Dialog showing info about the device.
      */
@@ -141,7 +138,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mAdapter = new ChangelogAdapter(this, new CopyOnWriteArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
-        String message = String.format("%s %s\n%s %s\n%s %s",
+        String message = String.format("%s %s\n\n%s %s\n\n%s %s",
                 getString(R.string.device_info_device), Device.device,
                 getString(R.string.device_info_version), Device.CMVersion,
                 getString(R.string.device_info_update_channel), Device.CMReleaseChannel);

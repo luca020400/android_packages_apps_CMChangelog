@@ -51,6 +51,12 @@ public class ChangelogParser {
                     case "updated":
                         newChange.setLastUpdate(reader.nextString());
                         break;
+                    case "insertions":
+                        newChange.setInsertions(reader.nextInt());
+                        break;
+                    case "deletions":
+                        newChange.setDeletions(reader.nextInt());
+                        break;
                     default:
                         reader.skipValue();
                 }

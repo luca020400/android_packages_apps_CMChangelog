@@ -31,52 +31,43 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Device {
+
     /**
-     * The manufacturer of the product/hardware.
+     * The manufacturer of the product/hardware. (e.g lge)
      */
     public final static String manufacturer = Build.MANUFACTURER.toLowerCase();
-
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String hardware = Build.HARDWARE.toLowerCase();
-
     /**
      * The name of the underlying board.
      */
     public final static String board = Build.BOARD.toLowerCase();
-
     /**
      * The device code-name (e.g. hammerhead).
      */
     public final static String device = Build.DEVICE.toLowerCase();
-
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
     public final static String CMVersion;
-
     /**
-     * The CyanogenMod version of the device (e.g 13).
+     * The CyanogenMod version of the device (e.g 13.0).
      */
     public final static String CMNumber;
-
     /**
-     * The CyanogenMod release channel (e.g nightly).
+     * The CyanogenMod release channel (e.g NIGHTLY).
      */
     public final static String CMReleaseChannel;
-
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
     public final static String buildDate;
-
     public final static String RC_NIGHTLY = "NIGHTLY";
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
     public final static String RC_SNAPSHOT = "SNAPSHOT";
-
-    public final static Collection<String> SPECIFIC_PROJETS;
-
+    public final static Collection<String> PROJECTS;
     /**
      * Common repositories.
      */
@@ -93,7 +84,6 @@ public class Device {
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
-
     /**
      * Common repositories (Qualcomm boards only).
      */
@@ -101,9 +91,8 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
-
     /**
-     * Logcat Tag
+     * Logcat tag
      */
     private final static String TAG = "Device";
 
@@ -124,50 +113,39 @@ public class Device {
                 ", buildDate=" + buildDate + "}");
          /* Parse device projects from build-manifest.xml */
         String buildManifest = Cmd.exec("cat /etc/build-manifest.xml");
-        // Cat produced no output
         if (buildManifest.length() == 0) {
+            // Cat produced no output
             Log.d(TAG, "Couldn't find a build-manifest.xml.");
-            SPECIFIC_PROJETS = null;
+            PROJECTS = null;
         } else {
             // Cat was successful, parse the output as XML
             Log.d(TAG, "Found build-manifest.xml.");
-            SPECIFIC_PROJETS = parseDspFromManifest(buildManifest);
-            Log.v(TAG, "Number of projects: " + SPECIFIC_PROJETS.size());
+            PROJECTS = parseDspFromManifest(buildManifest);
+            Log.v(TAG, "Number of projects: " + PROJECTS.size());
         }
     }
 
     private static Collection<String> parseDspFromManifest(String inputXML) {
-        Collection<String> deviceProjects = new ArrayList<>();
+        Collection<String> deviceProjects = new ArrayList<>(320);
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser xpp = factory.newPullParser();
             xpp.setInput(new StringReader(inputXML));
             int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                switch (eventType) {
-                    case XmlPullParser.START_DOCUMENT:
-                        break;
-                    case XmlPullParser.START_TAG:
-                        break;
-                    case XmlPullParser.END_TAG:
-                        if (xpp.getName().equals("project")) {
-                            String attributeValue = xpp.getAttributeValue(null, "name");
-                            if (attributeValue != null && attributeValue.contains("CyanogenMod/")) {
-                                deviceProjects.add(attributeValue);
-                            }
-                        }
-                        break;
-                    case XmlPullParser.TEXT:
-                        break;
+            do {
+                if (eventType == XmlPullParser.END_TAG && xpp.getName().equals("project")) {
+                    String value = xpp.getAttributeValue(null, "name"); // may return null value
+                    if (value != null && value.contains("CyanogenMod/")) {
+                        deviceProjects.add(value);
+                    }
                 }
-                eventType = xpp.next();
-            }
+            } while ((eventType = xpp.next()) != XmlPullParser.END_DOCUMENT);
         } catch (XmlPullParserException e) {
             Log.e(TAG, "Error while creating XML parser");
             deviceProjects.clear();
         } catch (IOException e) {
-            Log.e(TAG, "IOError while parsing XML");
+            Log.e(TAG, "IOException while parsing XML");
             deviceProjects.clear();
         }
         return deviceProjects;
