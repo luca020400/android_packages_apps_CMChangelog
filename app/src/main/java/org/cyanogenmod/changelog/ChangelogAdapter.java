@@ -67,8 +67,10 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         Change change = mDataset.get(pos);
         holder.project.setText(String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
         holder.subject.setText(String.format("%s", change.getSubject()));
-        if (change.getInsertions() != 0) holder.insertions.setText(String.format("+%s\t", change.getInsertions()));
-        if (change.getDeletions() != 0) holder.deletions.setText(String.format("-%s\t", change.getDeletions()));
+        if (change.getInsertions() != 0)
+            holder.insertions.setText(String.format("+%s\t", change.getInsertions()));
+        if (change.getDeletions() != 0)
+            holder.deletions.setText(String.format("-%s\t", change.getDeletions()));
         // parse the value of the date
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());

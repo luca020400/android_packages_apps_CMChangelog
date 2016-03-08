@@ -134,8 +134,12 @@ public class Change implements Serializable {
      */
     public boolean isDeviceSpecific() {
         // Fallback to 'old' method
-        if (Device.PROJECTS == null || Device.PROJECTS.size() == 0) return isDeviceSpecificLegacy();
-        for (String deviceProject : Device.PROJECTS) if (this.project.equals(deviceProject)) return true;
+        if (Device.PROJECTS == null || Device.PROJECTS.size() == 0)
+            return isDeviceSpecificLegacy();
+        for (String deviceProject : Device.PROJECTS) {
+            if (this.project.equals(deviceProject))
+                return true;
+        }
         return false;
     }
 
@@ -150,15 +154,13 @@ public class Change implements Serializable {
      */
     private boolean isDeviceSpecificLegacy() {
         for (String repo : Device.COMMON_REPOS) {
-            if (project.contains(repo)) {
+            if (project.contains(repo))
                 return true;
-            }
         }
 
         for (String repo : Device.COMMON_REPOS_QCOM) {
-            if (Device.hardware.equals("qcom") && project.contains(repo)) {
+            if (Device.hardware.equals("qcom") && project.contains(repo))
                 return true;
-            }
         }
 
         if (project.contains("device")) {
@@ -179,8 +181,10 @@ public class Change implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Change change = (Change) o;
 
