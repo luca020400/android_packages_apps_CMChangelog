@@ -65,10 +65,10 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final int pos = holder.getAdapterPosition();
         Change change = mDataset.get(pos);
-        holder.project.setText(
-                String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
-        holder.subject.setText(
-                String.format("%s", change.getSubject()));
+        holder.project.setText(String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
+        holder.subject.setText(String.format("%s", change.getSubject()));
+        if (change.getInsertions() != 0) holder.insertions.setText(String.format("+%s\t", change.getInsertions()));
+        if (change.getDeletions() != 0) holder.deletions.setText(String.format("-%s\t", change.getDeletions()));
         // parse the value of the date
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -135,12 +135,16 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         private final TextView project;
         private final TextView date;
         private final LinearLayout container;
+        private final TextView insertions;
+        private final TextView deletions;
 
         public ViewHolder(View itemView) {
             super(itemView);
             subject = (TextView) itemView.findViewById(R.id.subject);
             project = (TextView) itemView.findViewById(R.id.project);
             date = (TextView) itemView.findViewById(R.id.last_updated);
+            insertions = (TextView) itemView.findViewById(R.id.insertions);
+            deletions = (TextView) itemView.findViewById(R.id.deletions);
             container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
         }
     }

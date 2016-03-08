@@ -17,8 +17,6 @@
 
 package org.cyanogenmod.changelog;
 
-import android.util.Log;
-
 import java.io.Serializable;
 
 /**
@@ -48,6 +46,17 @@ public class Change implements Serializable {
      * The legacy numeric ID of the change.
      */
     private String changeId;
+
+    /**
+     * Number of inserted lines.
+     */
+    private int insertions;
+
+
+    /**
+     * Number of deleted lines.
+     */
+    private int deletions;
 
     /**
      * Constructs a new empty Change
@@ -102,21 +111,42 @@ public class Change implements Serializable {
         this.changeId = changeId;
     }
 
-    public boolean isDeviceSpecific() {
-        // Fallback to 'old' method
-        if (Device.SPECIFIC_PROJETS.size() == 0 || Device.SPECIFIC_PROJETS == null) return isDeviceSpecificLegacy();
-        for (String deviceProject : Device.SPECIFIC_PROJETS) {
-            if (this.project.equals(deviceProject)) {
-                return true;
-            }
-        }
-        return false;
+    public int getInsertions() {
+        return insertions;
+    }
+
+    public void setInsertions(int insertions) {
+        this.insertions = insertions;
+    }
+
+    public int getDeletions() {
+        return deletions;
+    }
+
+    public void setDeletions(int deletions) {
+        this.deletions = deletions;
     }
 
     /**
-     * Check if this Change is a device specific.
+     * Check if this Change is device specific Change.
+     *
+     * @return true if the Device is affected by this Change, else returns false
+     */
+    public boolean isDeviceSpecific() {
+        // Fallback to 'old' method
+        if (Device.PROJECTS.size() == 0 || Device.PROJECTS == null) return isDeviceSpecificLegacy();
+        for (String deviceProject : Device.PROJECTS) if (this.project.equals(deviceProject)) return true;
+        return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    /**
+     * Check if this Change is a device specific Change.
      *
      * @return true if this Change is a device specific change, otherwise false
+     * @deprecated This method is inefficient and unreliable, only use it if the current CyanogenMod version has no
+     * build-manifest.xml (i.e {@link Device#CMReleaseChannel} is {@link Device#RC_UNOFFICIAL}) in any other case use
+     * {@link #isDeviceSpecific()}
      */
     private boolean isDeviceSpecificLegacy() {
         for (String repo : Device.COMMON_REPOS) {
@@ -147,17 +177,17 @@ public class Change implements Serializable {
         return true;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Change change = (Change) o;
-        return changeId.equals(change.changeId);
+
+        return !(subject != null ? !subject.equals(change.subject) : change.subject != null) ||
+                !(project != null ? !project.equals(change.project) : change.project != null) ||
+                !(lastUpdate != null ? !lastUpdate.equals(change.lastUpdate) : change.lastUpdate != null) ||
+                !(changeId != null ? !changeId.equals(change.changeId) : change.changeId != null);
     }
 
-    @Override
-    public int hashCode() {
-        return changeId.hashCode();
-    }
 }

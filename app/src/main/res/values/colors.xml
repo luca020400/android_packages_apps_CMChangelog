@@ -8,4 +8,6 @@
     <color name="change_title_color">@color/color_accent</color>
     <color name="change_date_text_color">#FF6D00</color>
     <color name="change_package_text_color">#dd000000</color>
+    <color name="change_insertions_color">#00E676</color>
+    <color name="change_deletions_color">#FF3D00</color>
 </resources>
