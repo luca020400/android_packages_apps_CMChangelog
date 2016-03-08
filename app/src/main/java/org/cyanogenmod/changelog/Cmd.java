@@ -46,13 +46,14 @@ public class Cmd {
             outputStream.writeBytes("exit\n");
             outputStream.flush();
 
+            output = readFully(inputStream);
+
             try {
                 process.waitFor();
             } catch (InterruptedException e) {
                 Log.e(TAG, "", e);
             }
 
-            output = readFully(inputStream);
         } catch (IOException e) {
             Log.e(TAG, "", e);
         } finally {
@@ -78,14 +79,10 @@ public class Cmd {
         for (Object object : objects) {
             if (object != null) {
                 try {
-                    Log.d(TAG, "Closing: " + String.valueOf(object));
-
                     if (object instanceof Closeable) {
                         ((Closeable) object).close();
                         return;
                     }
-
-                    Log.d(TAG, "cannot close: " + String.valueOf(object));
                     throw new RuntimeException("cannot close " + object);
                 } catch (Throwable e) {
                     Log.e(TAG, "", e);
