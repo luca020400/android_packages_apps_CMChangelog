@@ -134,7 +134,7 @@ public class Change implements Serializable {
      */
     public boolean isDeviceSpecific() {
         // Fallback to 'old' method
-        if (Device.PROJECTS.size() == 0 || Device.PROJECTS == null) return isDeviceSpecificLegacy();
+        if (Device.PROJECTS == null || Device.PROJECTS.size() == 0) return isDeviceSpecificLegacy();
         for (String deviceProject : Device.PROJECTS) if (this.project.equals(deviceProject)) return true;
         return false;
     }

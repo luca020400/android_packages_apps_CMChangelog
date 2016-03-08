@@ -29,25 +29,26 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 public class Device {
 
     /**
      * The manufacturer of the product/hardware. (e.g lge)
      */
-    public final static String manufacturer = Build.MANUFACTURER.toLowerCase();
+    public final static String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
-    public final static String hardware = Build.HARDWARE.toLowerCase();
+    public final static String hardware = Build.HARDWARE.toLowerCase(Locale.getDefault());
     /**
      * The name of the underlying board.
      */
-    public final static String board = Build.BOARD.toLowerCase();
+    public final static String board = Build.BOARD.toLowerCase(Locale.getDefault());
     /**
      * The device code-name (e.g. hammerhead).
      */
-    public final static String device = Build.DEVICE.toLowerCase();
+    public final static String device = Build.DEVICE.toLowerCase(Locale.getDefault());
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
