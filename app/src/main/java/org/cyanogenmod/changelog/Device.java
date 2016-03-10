@@ -48,7 +48,7 @@ public class Device {
     /**
      * The device code-name (e.g. hammerhead).
      */
-    public final static String device = Build.DEVICE.toLowerCase(Locale.getDefault());
+    public final static String device = Build.DEVICE;
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
