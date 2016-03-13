@@ -17,7 +17,6 @@
 
 package org.cyanogenmod.changelog;
 
-
 import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
@@ -27,46 +26,108 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ChangelogParser {
+    private static final String TAG = "ChangelogParser";
 
-    public List<Change> parseJSON(InputStream inputStream) throws IOException {
+    public List<Change> readJsonStream(InputStream in) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+        try {
+            reader.setLenient(true); // strip XSSI protection
+            return parseChangeInfoList(reader);
+        } finally {
+            reader.close();
+        }
+    }
+
+    /**
+     * Parse a list ChangeInfo JSON entities
+     * @param reader the JsonReader to use
+     * @return a List of Changes
+     * @throws IOException
+     */
+    private List<Change> parseChangeInfoList(JsonReader reader) throws IOException {
         List<Change> changes = new LinkedList<>();
-        /* Parse JSON */
-        JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
-        reader.setLenient(true); // strip XSSI protection
+        reader.beginArray();
+        while (reader.hasNext()) {
+            Change newChange = parseChangeInfo(reader);
+            // check if its a legit change
+            if (newChange.isDeviceSpecific()) {
+                changes.add(newChange);
+            }
+        }
+        reader.endArray();
+        return changes;
+    }
+
+    /**
+     * Parse a single ChangeInfo JSON entity
+     * @param reader the JsonReader to use
+     * @return the parsed Change
+     * @throws IOException
+     */
+    private Change parseChangeInfo(JsonReader reader) throws IOException {
+        Change change = new Change();
+        reader.beginObject();
+        while (reader.hasNext()) {
+            switch (reader.nextName()) {
+                case "_number":
+                    change.setChangeId(reader.nextString());
+                    break;
+                case "project":
+                    change.setProject(reader.nextString());
+                    break;
+                case "subject":
+                    change.setSubject(reader.nextString());
+                    break;
+                case "updated":
+                    change.setLastUpdate(reader.nextString());
+                    break;
+                case "insertions":
+                    change.setInsertions(reader.nextInt());
+                    break;
+                case "deletions":
+                    change.setDeletions(reader.nextInt());
+                    break;
+                case "messages":
+                    change.setMergeDate(parseChangeMessageInfoDate(reader));
+                    break;
+                default:
+                    reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return change;
+    }
+
+    /**
+     * Parse ChangeMessageInfo entity, try to pull out the merge date and return it.
+     * @param reader the JsonReader to use
+     * @return the timestamp of when the Change has been merged
+     * @throws IOException
+     */
+    private String parseChangeMessageInfoDate(JsonReader reader) throws IOException {
+        boolean merged = false;
+        String mergeDate = "";
         reader.beginArray();
         while (reader.hasNext()) {
             reader.beginObject();
-            Change newChange = new Change();
             while (reader.hasNext()) {
                 switch (reader.nextName()) {
-                    case "_number":
-                        newChange.setChangeId(reader.nextString());
+                    case "date":
+                        mergeDate = reader.nextString();
                         break;
-                    case "project":
-                        newChange.setProject(reader.nextString());
-                        break;
-                    case "subject":
-                        newChange.setSubject(reader.nextString());
-                        break;
-                    case "updated":
-                        newChange.setLastUpdate(reader.nextString());
-                        break;
-                    case "insertions":
-                        newChange.setInsertions(reader.nextInt());
-                        break;
-                    case "deletions":
-                        newChange.setDeletions(reader.nextInt());
+                    case "message":
+                        merged = reader.nextString().contains("successfully merged");
                         break;
                     default:
                         reader.skipValue();
                 }
             }
             reader.endObject();
-            // check if its a legit change
-            if (newChange.isDeviceSpecific()) {
-                changes.add(newChange);
-            }
         }
-        return changes;
+        reader.endArray();
+        if (merged)
+            return mergeDate;
+        else
+            return "";
     }
 }

@@ -59,6 +59,11 @@ public class Change implements Serializable {
     private int deletions;
 
     /**
+     * The timestamp of when the change was merged.
+     */
+    private String mergeDate;
+
+    /**
      * Constructs a new empty Change
      */
     public Change() {
@@ -127,6 +132,14 @@ public class Change implements Serializable {
         this.deletions = deletions;
     }
 
+    public String getMergeDate() {
+        return mergeDate;
+    }
+
+    public void setMergeDate(String mergeDate) {
+        this.mergeDate = mergeDate;
+    }
+
     /**
      * Check if this Change is device specific Change.
      *
@@ -135,7 +148,7 @@ public class Change implements Serializable {
     public boolean isDeviceSpecific() {
         // Fallback to 'old' method
         if (Device.PROJECTS == null || Device.PROJECTS.size() == 0)
-            return isDeviceSpecificLegacy();
+            return isDeviceSpecificFallback();
         for (String deviceProject : Device.PROJECTS) {
             if (this.project.equals(deviceProject))
                 return true;
@@ -152,7 +165,7 @@ public class Change implements Serializable {
      * build-manifest.xml (i.e {@link Device#CMReleaseChannel} is {@link Device#RC_UNOFFICIAL}) in any other case use
      * {@link #isDeviceSpecific()}
      */
-    private boolean isDeviceSpecificLegacy() {
+    private boolean isDeviceSpecificFallback() {
         for (String repo : Device.COMMON_REPOS) {
             if (project.contains(repo))
                 return true;

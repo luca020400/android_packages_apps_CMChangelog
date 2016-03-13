@@ -17,13 +17,9 @@
 
 package org.cyanogenmod.changelog;
 
-public class RESTfulURI {
+public class RestfulUri {
 
-    public static final String STATUS_MERGED = "status:merged";
-    public static final String STATUS_OPEN = "status:open";
-    public static final String STATUS_ABANDONED = "status:abandoned";
-
-    private final String URL = "http://review.cyanogenmod.org/changes/";
+    private static final String URL = "http://review.cyanogenmod.org/changes/";
 
     /**
      * Number of changes to query
@@ -45,6 +41,8 @@ public class RESTfulURI {
      */
     private String branch;
 
+    private String options;
+
     /**
      * Construct a new formatted API URI with the specified options.
      *
@@ -53,15 +51,25 @@ public class RESTfulURI {
      * @param changesToGet  the number of changes to get
      * @param changesToSkip the number of changes to skip
      */
-    public RESTfulURI(String status, String branch, int changesToGet, int changesToSkip) {
-        this.status = status;
+    public RestfulUri(String status, String branch, int changesToGet, int changesToSkip) {
+        this.status = "status:" + status;
         this.branch = branch;
         this.n = changesToGet;
         this.start = changesToSkip;
+        this.options = "MESSAGES";
     }
 
     @Override
     public String toString() {
-        return URL + "?q=" + status + "+" + branch + "&n=" + n + "&start=" + start;
+        StringBuilder builder = new StringBuilder(128);
+        builder.append(URL).append("?");
+        builder.append("q=").append(status).append("+").append(branch);
+        if (options != null && !options.isEmpty())
+            builder.append("&o=").append(options);
+        if (n > 0)
+            builder.append("&n=").append(n);
+        if (start > 0)
+            builder.append("&start=").append(start);
+        return builder.toString();
     }
 }

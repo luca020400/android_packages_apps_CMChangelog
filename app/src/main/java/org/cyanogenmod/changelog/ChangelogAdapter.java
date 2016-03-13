@@ -32,6 +32,7 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -75,9 +76,9 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date convertedCommitDate = formatter.parse(change.getLastUpdate());
+            Date UtcDate = formatter.parse(change.getLastUpdate());
             formatter.setTimeZone(Calendar.getInstance().getTimeZone());
-            holder.date.setText(formatter.format(convertedCommitDate));
+            holder.date.setText(formatter.format(UtcDate));
         } catch (ParseException e) {
             Log.e(TAG, "", e);
         }
@@ -124,10 +125,10 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     /**
      * Append a set of elements to the RecyclerView
      *
-     * @param list the List we want to append.
+     * @param changeCollection the List we want to append.
      */
-    public void addAll(List<Change> list) {
-        mDataset.addAll(list);
+    public void addAll(Collection<Change> changeCollection) {
+        mDataset.addAll(changeCollection);
         notifyItemRangeChanged(0, getItemCount());
     }
 
@@ -144,7 +145,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             super(itemView);
             subject = (TextView) itemView.findViewById(R.id.subject);
             project = (TextView) itemView.findViewById(R.id.project);
-            date = (TextView) itemView.findViewById(R.id.last_updated);
+            date = (TextView) itemView.findViewById(R.id.date);
             insertions = (TextView) itemView.findViewById(R.id.insertions);
             deletions = (TextView) itemView.findViewById(R.id.deletions);
             container = (LinearLayout) itemView.findViewById(R.id.list_item_container);

@@ -46,8 +46,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -78,10 +76,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private Dialog mInfoDialog;
 
+    private Changelog changelog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        changelog = new Changelog(Device.CMNumber, Changelog.STATUS_MERGED);
         /* Setup and create Views */
         init();
         /* Populate RecyclerView with cached data */
@@ -156,15 +157,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
-
         if (!deviceIsConnected()) {
             Log.e(TAG, "Missing network connection");
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
-
-        new ChangelogTask().execute(80);
+        new ChangelogTask().execute();
     }
 
     /**
@@ -176,7 +175,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
         return !(networkInfo == null || !networkInfo.isConnected());
     }
 
@@ -193,8 +191,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 cachedData.add(temp);
             }
             objectInputStream.close();
+            changelog.setChanges(cachedData);
             mAdapter.clear();
-            mAdapter.addAll(cachedData);
+            mAdapter.addAll(changelog.getChanges());
             Log.d(TAG, "Restored cache");
         } catch (FileNotFoundException e) {
             Log.w(TAG, "Cache not found.");
@@ -209,7 +208,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         }
     }
 
-    private class ChangelogTask extends AsyncTask<Integer, Void, List<Change>> {
+    private class ChangelogTask extends AsyncTask<Void, Void, Boolean> {
         // Runs on UI thread
         @Override
         protected void onPreExecute() {
@@ -227,60 +226,28 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
 
         // Runs on the separate thread
         @Override
-        protected List<Change> doInBackground(Integer... q) {
-            List<Change> changes = new LinkedList<>();
-            int n = 120, start = 0; // number of changes to fetch and to skip
-            String branch = "(" +
-                    "branch:cm-" + Device.CMNumber + "%20OR%20" +
-                    "branch:cm-" + Device.CMNumber + "-caf" + "%20OR%20" +
-                    "branch:cm-" + Device.CMNumber + "-caf-" + Device.board +
-                    ")";
-            RESTfulURI uri = new RESTfulURI(RESTfulURI.STATUS_MERGED, branch, n, start);
-            while (changes.size() < q[0]) {
-                long time = System.currentTimeMillis();
-                uri.start = start;
-                String apiUrl = uri.toString();
-                try {
-                    Log.d(TAG, "Sending GET request to URL : " + apiUrl);
-                    HttpURLConnection con = (HttpURLConnection) new URL(apiUrl).openConnection();
-                    con.setRequestMethod("GET");
-                    Log.d(TAG, "Response: " + con.getResponseCode() + ", " + con.getResponseMessage());
-                    // Parse JSON
-                    changes.addAll(new ChangelogParser().parseJSON(con.getInputStream()));
-                } catch (IOException e) {
-                    Log.e(TAG, "Parse error!", e);
-                    return null;
-                }
-                Log.v(TAG, "Successfully parsed REST API in " +
-                        (System.currentTimeMillis() - time) + "ms");
-                start += n; // skip n changes in next iteration
-            }
-            return changes;
+        protected Boolean doInBackground(Void... voids) {
+            return changelog.update(100);
         }
 
         // Runs on the UI thread
         @Override
-        protected void onPostExecute(List<Change> fetchedChanges) {
-            if (fetchedChanges != null) {
-                List oldChanges = mAdapter.getDataset();
-                if (oldChanges.isEmpty() || !fetchedChanges.get(0).equals(oldChanges.get(0))) {
-                    // Update the list
-                    mAdapter.clear();
-                    mAdapter.addAll(fetchedChanges);
-                    // Update cache
-                    new CacheTask().execute(fetchedChanges);
-                } else {
-                    Log.d(TAG, "Nothing changed");
-                }
+        protected void onPostExecute(Boolean isUpdated) {
+            if (isUpdated) {
+                mAdapter.clear();
+                mAdapter.addAll(changelog.getChanges());
+                // Update cache
+                new CacheTask().execute((List) changelog.getChanges());
+            } else {
+                Log.d(TAG, "Nothing changed");
             }
-
             // Delay refreshing animation just for the show
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
-            }, 400);
+            }, 300);
         }
     }
 
