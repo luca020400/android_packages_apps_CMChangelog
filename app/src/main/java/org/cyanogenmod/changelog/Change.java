@@ -26,7 +26,11 @@ import java.io.Serializable;
  */
 public class Change implements Serializable {
 
+    /**
+     * Logcat tag
+     */
     private static final String TAG = "Change";
+
     /**
      * The subject of the change (header line of the commit message).
      */
@@ -147,11 +151,12 @@ public class Change implements Serializable {
      */
     public boolean isDeviceSpecific() {
         // Fallback to 'old' method
-        if (Device.PROJECTS == null || Device.PROJECTS.size() == 0)
+        if (Device.PROJECTS.isEmpty()) {
             return isDeviceSpecificFallback();
-        for (String deviceProject : Device.PROJECTS) {
-            if (this.project.equals(deviceProject))
+        } else for (String deviceProject : Device.PROJECTS) {
+            if (this.project.equals(deviceProject)) {
                 return true;
+            }
         }
         return false;
     }

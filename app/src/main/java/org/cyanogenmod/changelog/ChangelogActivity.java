@@ -26,6 +26,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.UiThread;
+import android.support.annotation.WorkerThread;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+
     /**
      * Debug tag.
      */
@@ -76,7 +79,15 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private Dialog mInfoDialog;
 
+    /**
+     * Changelog to show
+     */
     private Changelog changelog;
+
+    /**
+     * Minimum number of changes to get when updating Changelog list.
+     */
+    private static final int NUMBER_OF_CHANGES = 100;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,7 +164,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     /**
-     * Fetch data from API asynchronously.
+     * Update Changelog
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
@@ -209,7 +220,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     private class ChangelogTask extends AsyncTask<Void, Void, Boolean> {
-        // Runs on UI thread
+
+        @UiThread
         @Override
         protected void onPreExecute() {
             /* Start refreshing circle animation.
@@ -224,13 +236,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             });
         }
 
-        // Runs on the separate thread
+        @WorkerThread
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return changelog.update(100);
+            return changelog.update(NUMBER_OF_CHANGES);
         }
 
-        // Runs on the UI thread
+        @UiThread
         @Override
         protected void onPostExecute(Boolean isUpdated) {
             if (isUpdated) {

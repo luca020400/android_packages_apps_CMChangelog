@@ -17,6 +17,7 @@
 
 package org.cyanogenmod.changelog;
 
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -30,14 +31,36 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Changelog {
+
+    /**
+     * Logcat tag
+     */
+    private static final String TAG = "Changelog";
+
+    /**
+     * List of Changes of this changelog
+     */
+    private List<Change> changes;
+
+    /**
+     * The branch of this Changelog
+     */
+    private String branch;
+
+    /**
+     * The status of this Changelog. A valid status is, for example, {@link Changelog#STATUS_MERGED}.
+     */
+    private String status;
+
     public static final String STATUS_MERGED = "status:merged";
     public static final String STATUS_OPEN = "status:open";
     public static final String STATUS_ABANDONED = "status:abandoned";
-    private static final String TAG = "Changelog";
-    private List<Change> changes;
-    private String branch;
-    private String status;
 
+    /**
+     * Construct a Changelog that is a list of Changes in the specified status and made in the specified branch.
+     * @param branch the branch to be checked for changes.
+     * @param status the status of the changes.
+     */
     public Changelog(String branch, String status) {
         this.branch = branch;
         this.status = status;
@@ -67,6 +90,12 @@ public class Changelog {
         this.changes = changes;
     }
 
+    /**
+     * Update this Changelog by retrieving and processing data from API.
+     * @param numberOfChanges the minimum number of changes to fetch.
+     * @return true if the Changelog was successfully updated, false if not.
+     */
+    @WorkerThread
     public boolean update(int numberOfChanges) {
         List<Change> newChanges = new LinkedList<>();
         ChangelogParser parser = new ChangelogParser();

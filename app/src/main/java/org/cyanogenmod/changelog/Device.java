@@ -19,6 +19,7 @@
 package org.cyanogenmod.changelog;
 
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -29,46 +30,82 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Locale;
 
+/**
+ * Information about the device and the current build.
+ */
 public class Device {
+
+    /**
+     * Logcat tag
+     */
+    private final static String TAG = "Device";
 
     /**
      * The manufacturer of the product/hardware. (e.g lge)
      */
     public final static String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
+
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String hardware = Build.HARDWARE.toLowerCase(Locale.getDefault());
+
     /**
      * The name of the underlying board.
      */
     public final static String board = Build.BOARD.toLowerCase(Locale.getDefault());
+
     /**
      * The device code-name (e.g. hammerhead).
      */
     public final static String device = Build.DEVICE;
+
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
     public final static String CMVersion;
+
     /**
      * The CyanogenMod version of the device (e.g 13.0).
      */
     public final static String CMNumber;
+
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
     public final static String CMReleaseChannel;
+
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
     public final static String buildDate;
+
+    /**
+     * String value for the nightly release channel
+     */
     public final static String RC_NIGHTLY = "NIGHTLY";
+
+    /**
+     * String value for the unofficial release channel
+     */
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
+
+    /**
+     * String value for the stable release channel
+     */
     public final static String RC_SNAPSHOT = "SNAPSHOT";
+
+    /**
+     * Collection of device specific projects.
+     * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
+     * build the running build. This file is generated in official builds, unofficial builds may not include it.
+     * If build-manifest.xml is not present, the Collection is empty.
+     */
     public final static Collection<String> PROJECTS;
+        
     /**
      * Common repositories.
      */
@@ -92,10 +129,6 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
-    /**
-     * Logcat tag
-     */
-    private final static String TAG = "Device";
 
     static {
         CMVersion = Cmd.exec("getprop ro.cm.version").replace("\n", "");
@@ -117,16 +150,16 @@ public class Device {
         if (buildManifest.length() == 0) {
             // Cat produced no output
             Log.d(TAG, "Couldn't find a build-manifest.xml.");
-            PROJECTS = null;
+            PROJECTS = new LinkedList<>();  //  Empty list
         } else {
             // Cat was successful, parse the output as XML
             Log.d(TAG, "Found build-manifest.xml.");
-            PROJECTS = parseDspFromManifest(buildManifest);
+            PROJECTS = parseBuildManifest(buildManifest);
             Log.v(TAG, "Number of projects: " + PROJECTS.size());
         }
     }
 
-    private static Collection<String> parseDspFromManifest(String inputXML) {
+    private static Collection<String> parseBuildManifest(String inputXML) {
         Collection<String> deviceProjects = new ArrayList<>(320);
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
