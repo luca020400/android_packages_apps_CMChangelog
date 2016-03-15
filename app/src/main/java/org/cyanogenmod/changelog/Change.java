@@ -18,6 +18,7 @@
 package org.cyanogenmod.changelog;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Model class to use as the data source for ChangelogAdapter
@@ -44,7 +45,7 @@ public class Change implements Serializable {
     /**
      * The timestamp of when the change was last updated.
      */
-    private String lastUpdate;
+    private Date lastUpdate;
 
     /**
      * The legacy numeric ID of the change.
@@ -65,7 +66,7 @@ public class Change implements Serializable {
     /**
      * The timestamp of when the change was merged.
      */
-    private String mergeDate;
+    private Date mergeDate;
 
     /**
      * Constructs a new empty Change
@@ -81,7 +82,7 @@ public class Change implements Serializable {
      * @param lastUpdate last update date of the Change
      * @param id         id of the Change
      */
-    public Change(String subject, String project, String lastUpdate, String id) {
+    public Change(String subject, String project, Date lastUpdate, String id) {
         this.subject = subject;
         this.project = project;
         this.lastUpdate = lastUpdate;
@@ -104,11 +105,11 @@ public class Change implements Serializable {
         this.project = project;
     }
 
-    public String getLastUpdate() {
+    public Date getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(String lastUpdate) {
+    public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
@@ -136,11 +137,11 @@ public class Change implements Serializable {
         this.deletions = deletions;
     }
 
-    public String getMergeDate() {
+    public Date getMergeDate() {
         return mergeDate;
     }
 
-    public void setMergeDate(String mergeDate) {
+    public void setMergeDate(Date mergeDate) {
         this.mergeDate = mergeDate;
     }
 

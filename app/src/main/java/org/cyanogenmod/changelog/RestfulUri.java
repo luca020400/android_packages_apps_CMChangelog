@@ -56,7 +56,7 @@ public class RestfulUri {
         this.branch = branch;
         this.n = changesToGet;
         this.start = changesToSkip;
-        this.options = "MESSAGES";
+        //this.options = "MESSAGES";
     }
 
     @Override

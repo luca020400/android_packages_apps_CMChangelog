@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,6 +44,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     private final List<Change> mDataset;
     private Context mContext;
+    private DateFormat formatter;
 
     /**
      * Construct a new ChangelogAdapter representing the specified data set.
@@ -52,6 +54,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     public ChangelogAdapter(Context mContext, List<Change> mDataset) {
         this.mContext = mContext;
         this.mDataset = mDataset;
+        formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
 
     // Create new views (invoked by the layout manager)
@@ -72,16 +75,8 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             holder.insertions.setText(String.format("+%s\t", change.getInsertions()));
         if (change.getDeletions() != 0)
             holder.deletions.setText(String.format("-%s\t", change.getDeletions()));
-        // parse the value of the date
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date UtcDate = formatter.parse(change.getLastUpdate());
-            formatter.setTimeZone(Calendar.getInstance().getTimeZone());
-            holder.date.setText(formatter.format(UtcDate));
-        } catch (ParseException e) {
-            Log.e(TAG, "", e);
-        }
+        // format the value of the date
+        holder.date.setText(formatter.format(change.getLastUpdate()));
         // set open in browser intent
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override

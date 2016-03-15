@@ -17,13 +17,22 @@
 
 package org.cyanogenmod.changelog;
 
+import android.util.Log;
+
 import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ChangelogParser {
     private static final String TAG = "ChangelogParser";
@@ -79,7 +88,7 @@ public class ChangelogParser {
                     change.setSubject(reader.nextString());
                     break;
                 case "updated":
-                    change.setLastUpdate(reader.nextString());
+                    change.setLastUpdate(parseTimestamp(reader.nextString()));
                     break;
                 case "insertions":
                     change.setInsertions(reader.nextInt());
@@ -88,7 +97,7 @@ public class ChangelogParser {
                     change.setDeletions(reader.nextInt());
                     break;
                 case "messages":
-                    change.setMergeDate(parseChangeMessageInfoDate(reader));
+                    change.setMergeDate(parseTimestamp(parseChangeMessageInfoDate(reader)));
                     break;
                 default:
                     reader.skipValue();
@@ -116,7 +125,8 @@ public class ChangelogParser {
                         mergeDate = reader.nextString();
                         break;
                     case "message":
-                        merged = reader.nextString().contains("successfully merged");
+                        String message = reader.nextString();
+                        merged = message.contains("successfully merged") || message.contains("successfully pushed") || message.contains("successfully rebased");
                         break;
                     default:
                         reader.skipValue();
@@ -129,5 +139,21 @@ public class ChangelogParser {
             return mergeDate;
         else
             return "";
+    }
+
+    private Date parseTimestamp(String timestamp){
+        Date date = new Date(0);
+        try {
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            /* Parse UTC date */
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = formatter.parse(timestamp);
+            /* Convert from UTC to local time zone *//*
+            formatter.setTimeZone(Calendar.getInstance().getTimeZone());
+            date = formatter.parse(formatter.format(utcDate));*/
+        } catch (ParseException e) {
+            Log.e(TAG, "Couldn't parse timestamp.");
+        }
+        return date;
     }
 }
