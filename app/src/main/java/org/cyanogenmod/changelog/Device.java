@@ -13,13 +13,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package org.cyanogenmod.changelog;
 
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -39,65 +37,49 @@ import java.util.Locale;
 public class Device {
 
     /**
-     * Logcat tag
-     */
-    private final static String TAG = "Device";
-
-    /**
      * The manufacturer of the product/hardware. (e.g lge)
      */
     public final static String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
-
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String hardware = Build.HARDWARE.toLowerCase(Locale.getDefault());
-
     /**
      * The name of the underlying board.
      */
     public final static String board = Build.BOARD.toLowerCase(Locale.getDefault());
-
     /**
      * The device code-name (e.g. hammerhead).
      */
     public final static String device = Build.DEVICE;
-
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
     public final static String CMVersion;
-
     /**
      * The CyanogenMod version of the device (e.g 13.0).
      */
     public final static String CMNumber;
-
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
     public final static String CMReleaseChannel;
-
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
     public final static String buildDate;
-
     /**
      * String value for the nightly release channel
      */
     public final static String RC_NIGHTLY = "NIGHTLY";
-
     /**
      * String value for the unofficial release channel
      */
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
-
     /**
      * String value for the stable release channel
      */
     public final static String RC_SNAPSHOT = "SNAPSHOT";
-
     /**
      * Collection of device specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
@@ -105,7 +87,6 @@ public class Device {
      * If build-manifest.xml is not present, the Collection is empty.
      */
     public final static Collection<String> PROJECTS;
-        
     /**
      * Common repositories.
      */
@@ -129,6 +110,10 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
+    /**
+     * Logcat tag
+     */
+    private final static String TAG = "Device";
 
     static {
         CMVersion = Cmd.exec("getprop ro.cm.version").replace("\n", "");

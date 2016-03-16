@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +48,7 @@ public class ChangelogParser {
 
     /**
      * Parse a list ChangeInfo JSON entities
+     *
      * @param reader the JsonReader to use
      * @return a List of Changes
      * @throws IOException
@@ -69,6 +69,7 @@ public class ChangelogParser {
 
     /**
      * Parse a single ChangeInfo JSON entity
+     *
      * @param reader the JsonReader to use
      * @return the parsed Change
      * @throws IOException
@@ -109,6 +110,7 @@ public class ChangelogParser {
 
     /**
      * Parse ChangeMessageInfo entity, try to pull out the merge date and return it.
+     *
      * @param reader the JsonReader to use
      * @return the timestamp of when the Change has been merged
      * @throws IOException
@@ -141,7 +143,7 @@ public class ChangelogParser {
             return "";
     }
 
-    private Date parseTimestamp(String timestamp){
+    private Date parseTimestamp(String timestamp) {
         Date date = new Date(0);
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());

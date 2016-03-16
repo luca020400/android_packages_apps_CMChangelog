@@ -30,14 +30,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
     private static final String TAG = "Adapter";

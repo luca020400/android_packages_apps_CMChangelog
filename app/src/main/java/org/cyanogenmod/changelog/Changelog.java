@@ -32,32 +32,29 @@ import java.util.List;
 
 public class Changelog {
 
+    public static final String STATUS_MERGED = "status:merged";
+    public static final String STATUS_OPEN = "status:open";
+    public static final String STATUS_ABANDONED = "status:abandoned";
     /**
      * Logcat tag
      */
     private static final String TAG = "Changelog";
-
     /**
      * List of Changes of this changelog
      */
     private List<Change> changes;
-
     /**
      * The branch of this Changelog
      */
     private String branch;
-
     /**
      * The status of this Changelog. A valid status is, for example, {@link Changelog#STATUS_MERGED}.
      */
     private String status;
 
-    public static final String STATUS_MERGED = "status:merged";
-    public static final String STATUS_OPEN = "status:open";
-    public static final String STATUS_ABANDONED = "status:abandoned";
-
     /**
      * Construct a Changelog that is a list of Changes in the specified status and made in the specified branch.
+     *
      * @param branch the branch to be checked for changes.
      * @param status the status of the changes.
      */
@@ -92,6 +89,7 @@ public class Changelog {
 
     /**
      * Update this Changelog by retrieving and processing data from API.
+     *
      * @param numberOfChanges the minimum number of changes to fetch.
      * @return true if the Changelog was successfully updated, false if not.
      */
@@ -104,8 +102,8 @@ public class Changelog {
                 "branch:cm-" + branch + "-caf" + "%20OR%20" +
                 "branch:cm-" + branch + "-caf-" + Device.board +
                 ")";
-        int start = 0; // number of changes to fetch and to skip
-        RestfulUri uri = new RestfulUri("merged", branchString, numberOfChanges, start);
+        int n = 500, start = 0; // number of changes to fetch and to skip
+        RestfulUri uri = new RestfulUri("merged", branchString, n, start);
         long time = System.currentTimeMillis();
         while (newChanges.size() < numberOfChanges) {
             uri.start = start;
@@ -136,7 +134,7 @@ public class Changelog {
             start += numberOfChanges; // skip n changes in next iteration
         }
         Log.v(TAG, "Successfully parsed " + newChanges.size() + " changes in " + (System.currentTimeMillis() - time) + "ms");
-        if (changes == null || !changes.get(0).equals(newChanges.get(0))) {
+        if (changes == null || !changes.get(0).equals(newChanges.get(0)) || changes.size() != newChanges.size()) {
             changes = newChanges;
             return true;
         } else {

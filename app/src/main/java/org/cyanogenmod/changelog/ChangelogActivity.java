@@ -58,36 +58,30 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      * Debug tag.
      */
     private static final String TAG = "ChangelogActivity";
-
-    /**
-     * Content view.
-     */
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    /**
-     * RecyclerView used to list all the changes.
-     */
-    private RecyclerView mRecyclerView;
-
-    /**
-     * Adapter for the RecyclerView.
-     */
-    private ChangelogAdapter mAdapter;
-
-    /**
-     * Dialog showing info about the device.
-     */
-    private Dialog mInfoDialog;
-
-    /**
-     * Changelog to show
-     */
-    private Changelog changelog;
-
     /**
      * Minimum number of changes to get when updating Changelog list.
      */
     private static final int NUMBER_OF_CHANGES = 100;
+    /**
+     * Content view.
+     */
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    /**
+     * RecyclerView used to list all the changes.
+     */
+    private RecyclerView mRecyclerView;
+    /**
+     * Adapter for the RecyclerView.
+     */
+    private ChangelogAdapter mAdapter;
+    /**
+     * Dialog showing info about the device.
+     */
+    private Dialog mInfoDialog;
+    /**
+     * Changelog to show
+     */
+    private Changelog changelog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
