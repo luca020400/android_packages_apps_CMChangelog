@@ -131,7 +131,7 @@ public class Changelog {
                 Log.e(TAG, "Error while connecting to " + uri.toString());
                 return false;
             }
-            start += numberOfChanges; // skip n changes in next iteration
+            start += n; // skip n changes in next iteration
         }
         Log.v(TAG, "Successfully parsed " + newChanges.size() + " changes in " + (System.currentTimeMillis() - time) + "ms");
         if (changes == null || !changes.get(0).equals(newChanges.get(0)) || changes.size() != newChanges.size()) {
