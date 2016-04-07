@@ -50,6 +50,7 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
@@ -144,10 +145,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mAdapter = new ChangelogAdapter(this, new CopyOnWriteArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
-        String message = String.format("%s %s\n\n%s %s\n\n%s %s",
-                getString(R.string.device_info_device), Device.device,
-                getString(R.string.device_info_version), Device.CMVersion,
-                getString(R.string.device_info_update_channel), Device.CMReleaseChannel);
+        String message = String.format(Locale.getDefault(), "%s %s\n\n%s %s\n\n%s %s\n\n%s %s",
+                getString(R.string.dialog_device_name), Device.device,
+                getString(R.string.dialog_version), Device.CMVersion,
+                getString(R.string.dialog_build_date), Device.buildDate,
+                getString(R.string.dialog_update_channel), Device.CMReleaseChannel);
         View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, mRecyclerView, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
