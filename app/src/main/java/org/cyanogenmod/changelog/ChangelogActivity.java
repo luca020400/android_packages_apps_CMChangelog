@@ -76,7 +76,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private ChangelogAdapter mAdapter;
     /**
-     * Dialog showing info about the device.
+     * Dialog showing info about the DEVICE.
      */
     private Dialog mInfoDialog;
     /**
@@ -88,7 +88,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        changelog = new Changelog(Device.CMNumber, Changelog.STATUS_MERGED);
+        changelog = new Changelog(Device.CM_NUMBER, Changelog.STATUS_MERGED);
         /* Setup and create Views */
         init();
         /* Populate RecyclerView with cached data */
@@ -146,10 +146,10 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format(Locale.getDefault(), "%s %s\n\n%s %s\n\n%s %s\n\n%s %s",
-                getString(R.string.dialog_device_name), Device.device,
-                getString(R.string.dialog_version), Device.CMVersion,
-                getString(R.string.dialog_build_date), Device.buildDate,
-                getString(R.string.dialog_update_channel), Device.CMReleaseChannel);
+                getString(R.string.dialog_device_name), Device.DEVICE,
+                getString(R.string.dialog_version), Device.CM_VERSION,
+                getString(R.string.dialog_build_date), Device.BUILD_DATE,
+                getString(R.string.dialog_update_channel), Device.CM_RELEASE_CHANNEL);
         View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, mRecyclerView, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
@@ -174,9 +174,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     /**
-     * Check if the device is connected to internet, return true if the device has data connection.
+     * Check if the DEVICE is connected to internet, return true if the DEVICE has data connection.
      *
-     * @return true if device is connected to internet, otherwise returns false.
+     * @return true if DEVICE is connected to internet, otherwise returns false.
      */
     private boolean deviceIsConnected() {
         ConnectivityManager connectivityManager =

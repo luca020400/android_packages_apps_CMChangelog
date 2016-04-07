@@ -37,61 +37,78 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Information about the device and the current build.
+ * Information about the DEVICE and the current build.
  */
 public class Device {
 
     /**
-     * The manufacturer of the product/hardware. (e.g lge)
+     * The MANUFACTURER of the product/HARDWARE. (e.g lge)
      */
-    public final static String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
+    public final static String MANUFACTURER = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
+
     /**
-     * The name of the hardware (from the kernel command line or /proc).
+     * The name of the HARDWARE (from the kernel command line or /proc).
      */
-    public final static String hardware = Build.HARDWARE.toLowerCase(Locale.getDefault());
+    public final static String HARDWARE = Build.HARDWARE.toLowerCase(Locale.getDefault());
+
     /**
-     * The name of the underlying board.
+     * The name of the underlying BOARD.
      */
-    public final static String board = Build.BOARD.toLowerCase(Locale.getDefault());
+    public final static String BOARD = Build.BOARD.toLowerCase(Locale.getDefault());
+
     /**
-     * The device code-name (e.g. hammerhead).
+     * The DEVICE code-name (e.g. hammerhead).
      */
-    public final static String device = Build.DEVICE;
+    public final static String DEVICE = Build.DEVICE;
+
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
-    public final static String CMVersion;
+    public final static String CM_VERSION;
+
     /**
-     * The CyanogenMod version of the device (e.g 13.0).
+     * The CyanogenMod version of the DEVICE (e.g 13.0).
      */
-    public final static String CMNumber;
+    public final static String CM_NUMBER;
+
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
-    public final static String CMReleaseChannel;
+    public final static String CM_RELEASE_CHANNEL;
+
+    /**
+     * Git BRANCH of this build
+     */
+    public final static String BRANCH;
+
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
-    public final static String buildDate;
+    public final static String BUILD_DATE;
+
     /**
      * String value for the nightly release channel
      */
     public final static String RC_NIGHTLY = "NIGHTLY";
+
     /**
      * String value for the unofficial release channel
      */
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
+
     /**
      * String value for the stable release channel
      */
     public final static String RC_SNAPSHOT = "SNAPSHOT";
+
     /**
-     * Collection of device specific projects.
+     * Collection of DEVICE specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
      * build the running build. This file is generated in official builds, unofficial builds may not include it.
      * If build-manifest.xml is not present, the Collection is empty.
      */
     public final static Collection<String> PROJECTS;
+
     /**
      * Common repositories.
      */
@@ -108,6 +125,7 @@ public class Device {
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
+
     /**
      * Common repositories (Qualcomm boards only).
      */
@@ -115,27 +133,34 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
+
     /**
      * Logcat tag
      */
     private final static String TAG = "Device";
 
     static {
-        CMVersion = Cmd.exec("getprop ro.cm.version").replace("\n", "");
-        String[] version = CMVersion.split("-");
-        CMNumber = version[0];
-        CMReleaseChannel = version[2];
-        buildDate = Cmd.exec("getprop ro.build.date").replace("\n", "");
+        CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
+        String[] version = CM_VERSION.split("-");
+        CM_NUMBER = version[0];
+        CM_RELEASE_CHANNEL = version[2];
+        if (CM_RELEASE_CHANNEL.equals("SNAPSHOT")) {
+            BRANCH = "stable/" + version[3].substring(0, 4);
+        } else {
+            BRANCH = CM_NUMBER;
+        }
+        BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
         Log.v(TAG, "Device" +
-                " {manufacturer=" + manufacturer +
-                ", hardware=" + hardware +
-                ", board=" + board +
-                ", device=" + device +
-                ", CMVersion=" + CMVersion +
-                ", CMNumber=" + CMNumber +
-                ", CMReleaseChannel=" + CMReleaseChannel +
-                ", buildDate=" + buildDate + "}");
-         /* Parse device projects from build-manifest.xml */
+                " {MANUFACTURER:" + MANUFACTURER +
+                ", HARDWARE:" + HARDWARE +
+                ", BOARD:" + BOARD +
+                ", BRANCH:" + BRANCH +
+                ", DEVICE:" + DEVICE +
+                ", CM_VERSION:" + CM_VERSION +
+                ", CM_NUMBER:" + CM_NUMBER +
+                ", CM_RELEASE_CHANNEL:" + CM_RELEASE_CHANNEL +
+                ", BUILD_DATE:" + BUILD_DATE + "}");
+         /* Parse DEVICE projects from build-manifest.xml */
         String buildManifest = Cmd.exec("cat /etc/build-manifest.xml");
         if (buildManifest.length() == 0) {
             // Cat produced no output

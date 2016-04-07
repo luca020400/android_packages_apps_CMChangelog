@@ -146,7 +146,7 @@ public class Change implements Serializable {
     }
 
     /**
-     * Check if this Change is device specific Change.
+     * Check if this Change is DEVICE specific Change.
      *
      * @return true if the Device is affected by this Change, else returns false
      */
@@ -164,11 +164,11 @@ public class Change implements Serializable {
 
     @SuppressWarnings("deprecation")
     /**
-     * Check if this Change is a device specific Change.
+     * Check if this Change is a DEVICE specific Change.
      *
-     * @return true if this Change is a device specific change, otherwise false
+     * @return true if this Change is a DEVICE specific change, otherwise false
      * @deprecated This method is inefficient and unreliable, only use it if the current CyanogenMod version has no
-     * build-manifest.xml (i.e {@link Device#CMReleaseChannel} is {@link Device#RC_UNOFFICIAL}) in any other case use
+     * build-manifest.xml (i.e {@link Device#CM_RELEASE_CHANNEL} is {@link Device#RC_UNOFFICIAL}) in any other case use
      * {@link #isDeviceSpecific()}
      */
     private boolean isDeviceSpecificFallback() {
@@ -178,22 +178,22 @@ public class Change implements Serializable {
         }
 
         for (String repo : Device.COMMON_REPOS_QCOM) {
-            if (Device.hardware.equals("qcom") && project.contains(repo))
+            if (Device.HARDWARE.equals("qcom") && project.contains(repo))
                 return true;
         }
 
-        if (project.contains("device")) {
-            return project.contains(Device.device) ||
-                    project.contains(Device.manufacturer + "-common") ||
-                    project.contains(Device.manufacturer) && project.contains(Device.board + "-common") ||
-                    project.contains(Device.manufacturer) && project.contains(Device.hardware + "-common");
+        if (project.contains("DEVICE")) {
+            return project.contains(Device.DEVICE) ||
+                    project.contains(Device.MANUFACTURER + "-common") ||
+                    project.contains(Device.MANUFACTURER) && project.contains(Device.BOARD + "-common") ||
+                    project.contains(Device.MANUFACTURER) && project.contains(Device.HARDWARE + "-common");
         } else if (project.contains("kernel")) {
-            return project.contains(Device.device) ||
-                    project.contains(Device.manufacturer) && project.contains(Device.device) ||
-                    project.contains(Device.manufacturer) && project.contains(Device.board) ||
-                    project.contains(Device.manufacturer) && project.contains(Device.hardware);
-        } else if (project.contains("hardware")) {
-            return project.contains(Device.hardware);
+            return project.contains(Device.DEVICE) ||
+                    project.contains(Device.MANUFACTURER) && project.contains(Device.DEVICE) ||
+                    project.contains(Device.MANUFACTURER) && project.contains(Device.BOARD) ||
+                    project.contains(Device.MANUFACTURER) && project.contains(Device.HARDWARE);
+        } else if (project.contains("HARDWARE")) {
+            return project.contains(Device.HARDWARE);
         }
         return true;
     }

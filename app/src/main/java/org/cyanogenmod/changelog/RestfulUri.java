@@ -37,7 +37,7 @@ public class RestfulUri {
     private String status;
 
     /**
-     * The branch of the requested changes
+     * The BRANCH of the requested changes
      */
     private String branch;
 
@@ -47,7 +47,7 @@ public class RestfulUri {
      * Construct a new formatted API URI with the specified options.
      *
      * @param status        request changes in the specified status
-     * @param branch        request changes of the specified branch
+     * @param branch        request changes of the specified BRANCH
      * @param changesToGet  the number of changes to get
      * @param changesToSkip the number of changes to skip
      */
