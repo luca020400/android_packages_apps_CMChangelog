@@ -37,22 +37,22 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Information about the DEVICE and the current build.
+ * Information about the device and the current build.
  */
 public class Device {
 
     /**
-     * The MANUFACTURER of the product/HARDWARE. (e.g lge)
+     * The manufacturer of the product/hardware. (e.g lge)
      */
     public final static String MANUFACTURER = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
 
     /**
-     * The name of the HARDWARE (from the kernel command line or /proc).
+     * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String HARDWARE = Build.HARDWARE.toLowerCase(Locale.getDefault());
 
     /**
-     * The name of the underlying BOARD.
+     * The name of the underlying board.
      */
     public final static String BOARD = Build.BOARD.toLowerCase(Locale.getDefault());
 
@@ -67,7 +67,7 @@ public class Device {
     public final static String CM_VERSION;
 
     /**
-     * The CyanogenMod version of the DEVICE (e.g 13.0).
+     * The CyanogenMod version of the device (e.g 13.0).
      */
     public final static String CM_NUMBER;
 
@@ -102,7 +102,7 @@ public class Device {
     public final static String RC_SNAPSHOT = "SNAPSHOT";
 
     /**
-     * Collection of DEVICE specific projects.
+     * Collection of device specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
      * build the running build. This file is generated in official builds, unofficial builds may not include it.
      * If build-manifest.xml is not present, the Collection is empty.

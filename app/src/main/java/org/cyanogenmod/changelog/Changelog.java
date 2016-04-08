@@ -44,7 +44,7 @@ public class Changelog {
      */
     private List<Change> changes;
     /**
-     * The BRANCH of this Changelog
+     * The branch of this Changelog
      */
     private String branch;
     /**
@@ -98,9 +98,9 @@ public class Changelog {
         List<Change> newChanges = new LinkedList<>();
         ChangelogParser parser = new ChangelogParser();
         String branchString = "(" +
-                "BRANCH:cm-" + branch + "%20OR%20" +
-                "BRANCH:cm-" + branch + "-caf" + "%20OR%20" +
-                "BRANCH:cm-" + branch + "-caf-" + Device.BOARD +
+                "branch:cm-" + branch + "%20OR%20" +
+                "branch:cm-" + branch + "-caf" + "%20OR%20" +
+                "branch:cm-" + branch + "-caf-" + Device.BOARD +
                 ")";
         int n = 500, start = 0; // number of changes to fetch and to skip
         RestfulUri uri = new RestfulUri("merged", branchString, n, start);

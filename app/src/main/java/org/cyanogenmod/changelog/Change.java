@@ -146,7 +146,7 @@ public class Change implements Serializable {
     }
 
     /**
-     * Check if this Change is DEVICE specific Change.
+     * Check if this Change is device specific Change.
      *
      * @return true if the Device is affected by this Change, else returns false
      */
@@ -164,9 +164,9 @@ public class Change implements Serializable {
 
     @SuppressWarnings("deprecation")
     /**
-     * Check if this Change is a DEVICE specific Change.
+     * Check if this Change is a device specific Change.
      *
-     * @return true if this Change is a DEVICE specific change, otherwise false
+     * @return true if this Change is a device specific change, otherwise false
      * @deprecated This method is inefficient and unreliable, only use it if the current CyanogenMod version has no
      * build-manifest.xml (i.e {@link Device#CM_RELEASE_CHANNEL} is {@link Device#RC_UNOFFICIAL}) in any other case use
      * {@link #isDeviceSpecific()}
@@ -182,7 +182,7 @@ public class Change implements Serializable {
                 return true;
         }
 
-        if (project.contains("DEVICE")) {
+        if (project.contains("device")) {
             return project.contains(Device.DEVICE) ||
                     project.contains(Device.MANUFACTURER + "-common") ||
                     project.contains(Device.MANUFACTURER) && project.contains(Device.BOARD + "-common") ||
@@ -192,7 +192,7 @@ public class Change implements Serializable {
                     project.contains(Device.MANUFACTURER) && project.contains(Device.DEVICE) ||
                     project.contains(Device.MANUFACTURER) && project.contains(Device.BOARD) ||
                     project.contains(Device.MANUFACTURER) && project.contains(Device.HARDWARE);
-        } else if (project.contains("HARDWARE")) {
+        } else if (project.contains("hardware")) {
             return project.contains(Device.HARDWARE);
         }
         return true;

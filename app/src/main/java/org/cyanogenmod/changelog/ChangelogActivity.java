@@ -76,7 +76,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private ChangelogAdapter mAdapter;
     /**
-     * Dialog showing info about the DEVICE.
+     * Dialog showing info about the device.
      */
     private Dialog mInfoDialog;
     /**
@@ -174,9 +174,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     }
 
     /**
-     * Check if the DEVICE is connected to internet, return true if the DEVICE has data connection.
+     * Check if the device is connected to internet, return true if the device has data connection.
      *
-     * @return true if DEVICE is connected to internet, otherwise returns false.
+     * @return true if device is connected to internet, otherwise returns false.
      */
     private boolean deviceIsConnected() {
         ConnectivityManager connectivityManager =
