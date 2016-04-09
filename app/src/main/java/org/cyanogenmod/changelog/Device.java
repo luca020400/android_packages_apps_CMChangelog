@@ -59,7 +59,7 @@ public class Device {
     /**
      * The DEVICE code-name (e.g. hammerhead).
      */
-    public final static String DEVICE = Build.DEVICE;
+    public final static String DEVICE = Cmd.exec("getprop ro.cm.device").replace("\n", "");
 
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
