@@ -17,6 +17,9 @@
 
 package org.cyanogenmod.changelog;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 
@@ -193,6 +196,20 @@ public class Device {
             deviceProjects.clear();
         }
         return deviceProjects;
+    }
+
+    /**
+     * Check if the device is connected to internet, return true if the device has data connection.
+     * A valid application Context must be specified.
+     *
+     * @param c the Context holding the global information about the application environment.
+     * @return true if device is connected to internet, otherwise returns false.
+     */
+    public static boolean isConnected(Context c) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return !(networkInfo == null || !networkInfo.isConnected());
     }
 
 }

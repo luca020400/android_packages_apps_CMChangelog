@@ -20,9 +20,6 @@ package org.cyanogenmod.changelog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -162,25 +159,13 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private void updateChangelog() {
         Log.i(TAG, "Updating Changelog");
-        if (!deviceIsConnected()) {
-            Log.e(TAG, "Missing network connection");
+        if (!Device.isConnected(this)) {
+            Log.w(TAG, "Missing network connection");
             Toast.makeText(this, R.string.data_connection_required, Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
             return;
         }
         new ChangelogTask().execute();
-    }
-
-    /**
-     * Check if the device is connected to internet, return true if the device has data connection.
-     *
-     * @return true if device is connected to internet, otherwise returns false.
-     */
-    private boolean deviceIsConnected() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return !(networkInfo == null || !networkInfo.isConnected());
     }
 
     /**
