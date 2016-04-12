@@ -51,29 +51,30 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ChangelogActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
 
     /**
-     * Debug tag.
+     * Logcat tag.
      */
     private static final String TAG = "ChangelogActivity";
-    /**
-     * Minimum number of changes to get when updating Changelog list.
-     */
-    private static final int NUMBER_OF_CHANGES = 100;
+
     /**
      * Content view.
      */
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     /**
      * RecyclerView used to list all the changes.
      */
     private RecyclerView mRecyclerView;
+
     /**
      * Adapter for the RecyclerView.
      */
     private ChangelogAdapter mAdapter;
+
     /**
      * Dialog showing info about the device.
      */
     private Dialog mInfoDialog;
+
     /**
      * Changelog to show
      */
@@ -137,7 +138,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Setup and initialize RecyclerView adapter
-        mAdapter = new ChangelogAdapter(this, new CopyOnWriteArrayList<Change>());
+        mAdapter = new ChangelogAdapter(new CopyOnWriteArrayList<Change>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format(Locale.getDefault(), "%s %s\n\n%s %s\n\n%s %s\n\n%s %s",
@@ -218,7 +219,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         @WorkerThread
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return changelog.update(NUMBER_OF_CHANGES);
+            return changelog.update(100);
         }
 
         @UiThread

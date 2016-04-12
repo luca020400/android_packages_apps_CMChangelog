@@ -37,12 +37,9 @@ public class ChangelogParser {
     private static final String TAG = "ChangelogParser";
 
     public List<Change> readJsonStream(InputStream in) throws IOException {
-        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-        try {
+        try (JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"))) {
             reader.setLenient(true); // strip XSSI protection
             return parseChangeInfoList(reader);
-        } finally {
-            reader.close();
         }
     }
 

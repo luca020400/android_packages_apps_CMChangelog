@@ -18,7 +18,6 @@
 package org.cyanogenmod.changelog;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +38,6 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     private static final String TAG = "Adapter";
 
     private final List<Change> mDataset;
-    private Context mContext;
     private DateFormat formatter;
 
     /**
@@ -47,8 +45,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      *
      * @param mDataset the set of data we want this Adapter to represent.
      */
-    public ChangelogAdapter(Context mContext, List<Change> mDataset) {
-        this.mContext = mContext;
+    public ChangelogAdapter(List<Change> mDataset) {
         this.mDataset = mDataset;
         formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
