@@ -26,15 +26,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * Information about the device and the current build.
@@ -198,22 +193,6 @@ public class Device {
             deviceProjects.clear();
         }
         return deviceProjects;
-    }
-
-    private static Date parseDate(String timestamp) {
-        Date date = new Date(0);
-        try {
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            /* Parse UTC date */
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            date = formatter.parse(timestamp);
-            /* Convert from UTC to local time zone *//*
-            formatter.setTimeZone(Calendar.getInstance().getTimeZone());
-            date = formatter.parse(formatter.format(utcDate));*/
-        } catch (ParseException e) {
-            Log.e(TAG, "Couldn't parse timestamp.");
-        }
-        return date;
     }
 
 }
