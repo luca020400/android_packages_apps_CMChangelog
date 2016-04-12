@@ -43,10 +43,8 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 import java.util.List;
@@ -245,7 +243,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 mAdapter.clear();
                 mAdapter.addAll(changelog.getChanges());
                 // Update cache
-                new CacheTask().execute((List) changelog.getChanges());
+                new CacheChangelogTask(getCacheDir()).execute((List) changelog.getChanges());
             } else {
                 Log.d(TAG, "Nothing changed");
             }
@@ -256,25 +254,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }, 300);
-        }
-    }
-
-    private class CacheTask extends AsyncTask<List, Void, Void> {
-        @Override
-        protected Void doInBackground(List... list) {
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(new File(getCacheDir(), "cache"));
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                for (Object obj : list[0]) {
-                    objectOutputStream.writeObject(obj);
-                }
-                objectOutputStream.writeObject(null);
-                objectOutputStream.close();
-                Log.d(TAG, "Successfully cached data");
-            } catch (IOException e) {
-                Log.e(TAG, "Error while writing cache");
-            }
-            return null;
         }
     }
 
