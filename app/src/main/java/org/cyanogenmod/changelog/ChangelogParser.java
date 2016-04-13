@@ -34,6 +34,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class ChangelogParser {
+
+    /**
+     * Logcat tag.
+     */
     private static final String TAG = "ChangelogParser";
 
     public List<Change> readJsonStream(InputStream in) throws IOException {
@@ -53,12 +57,11 @@ public class ChangelogParser {
     private List<Change> parseChangeInfoList(JsonReader reader) throws IOException {
         List<Change> changes = new LinkedList<>();
         reader.beginArray();
+        Log.d(TAG, "hasNext " + reader.hasNext());
         while (reader.hasNext()) {
             Change newChange = parseChangeInfo(reader);
             // check if its a legit change
-            if (newChange.isDeviceSpecific()) {
-                changes.add(newChange);
-            }
+            if (newChange.isDeviceSpecific()) changes.add(newChange);
         }
         reader.endArray();
         return changes;
@@ -94,50 +97,12 @@ public class ChangelogParser {
                 case "deletions":
                     change.setDeletions(reader.nextInt());
                     break;
-                case "messages":
-                    change.setMergeDate(parseTimestamp(parseChangeMessageInfoDate(reader)));
-                    break;
                 default:
                     reader.skipValue();
             }
         }
         reader.endObject();
         return change;
-    }
-
-    /**
-     * Parse ChangeMessageInfo entity, try to pull out the merge date and return it.
-     *
-     * @param reader the JsonReader to use
-     * @return the timestamp of when the Change has been merged
-     * @throws IOException
-     */
-    private String parseChangeMessageInfoDate(JsonReader reader) throws IOException {
-        boolean merged = false;
-        String mergeDate = "";
-        reader.beginArray();
-        while (reader.hasNext()) {
-            reader.beginObject();
-            while (reader.hasNext()) {
-                switch (reader.nextName()) {
-                    case "date":
-                        mergeDate = reader.nextString();
-                        break;
-                    case "message":
-                        String message = reader.nextString();
-                        merged = message.contains("successfully merged") || message.contains("successfully pushed") || message.contains("successfully rebased");
-                        break;
-                    default:
-                        reader.skipValue();
-                }
-            }
-            reader.endObject();
-        }
-        reader.endArray();
-        if (merged)
-            return mergeDate;
-        else
-            return "";
     }
 
     private Date parseTimestamp(String timestamp) {
@@ -147,9 +112,6 @@ public class ChangelogParser {
             /* Parse UTC date */
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             date = formatter.parse(timestamp);
-            /* Convert from UTC to local time zone *//*
-            formatter.setTimeZone(Calendar.getInstance().getTimeZone());
-            date = formatter.parse(formatter.format(utcDate));*/
         } catch (ParseException e) {
             Log.e(TAG, "Couldn't parse timestamp.");
         }

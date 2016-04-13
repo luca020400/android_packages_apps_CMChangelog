@@ -106,6 +106,7 @@ public class Changelog {
         RestfulUri uri = new RestfulUri("merged", branchString, n, start);
         long time = System.currentTimeMillis();
         while (newChanges.size() < numberOfChanges) {
+            Log.d(TAG, "size() : " + newChanges.size());
             uri.start = start;
             try {
                 URL url = new URL(uri.toString());
