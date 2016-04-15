@@ -48,8 +48,8 @@ public class ChangelogParser {
     }
 
     /**
-     * Parse a list ChangeInfo JSON entities
-     *
+     * Read a Collection of ChangeInfo JSON entities
+     * See http://review.cyanogenmod.org/Documentation/rest-api.html
      * @param reader the JsonReader to use
      * @return a List of Changes
      * @throws IOException
@@ -57,7 +57,6 @@ public class ChangelogParser {
     private List<Change> parseChangeInfoList(JsonReader reader) throws IOException {
         List<Change> changes = new LinkedList<>();
         reader.beginArray();
-        Log.d(TAG, "hasNext " + reader.hasNext());
         while (reader.hasNext()) {
             Change newChange = parseChangeInfo(reader);
             // check if its a legit change
@@ -68,10 +67,10 @@ public class ChangelogParser {
     }
 
     /**
-     * Parse a single ChangeInfo JSON entity
-     *
+     * Read ChangeInfo JSON entity
+     * See http://review.cyanogenmod.org/Documentation/rest-api.html
      * @param reader the JsonReader to use
-     * @return the parsed Change
+     * @return the parsed Change.
      * @throws IOException
      */
     private Change parseChangeInfo(JsonReader reader) throws IOException {
@@ -105,6 +104,14 @@ public class ChangelogParser {
         return change;
     }
 
+    /**
+     * Parse ChangeInfo timestamp values.
+     * Timestamps are given in UTC and have the format "'yyyy-mm-dd hh:mm:ss.fffffffff'"
+     * where "'ffffffffff'" represents nanoseconds.
+     *
+     * @param timestamp timestamp String from a ChangeInfo entity
+     * @return the parsed Date
+     */
     private Date parseTimestamp(String timestamp) {
         Date date = new Date(0);
         try {

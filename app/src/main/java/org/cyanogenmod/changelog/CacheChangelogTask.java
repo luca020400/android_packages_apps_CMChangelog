@@ -28,7 +28,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 /**
- * A simple task that caches a Changelog.
+ * An AsyncTask that caches a Changelog.
  */
 public class CacheChangelogTask extends AsyncTask<List, Void, Void> {
 

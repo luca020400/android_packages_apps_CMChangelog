@@ -19,6 +19,9 @@ package org.cyanogenmod.changelog;
 
 public class RestfulUri {
 
+    /**
+     * Base url
+     */
     private static final String URL = "http://review.cyanogenmod.org/changes/";
 
     /**
@@ -56,14 +59,18 @@ public class RestfulUri {
         this.branch = branch;
         this.n = changesToGet;
         this.start = changesToSkip;
-        //this.options = "MESSAGES";
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(128);
         builder.append(URL).append("?");
-        builder.append("q=").append(status).append("+").append(branch);
+        builder.append("q=").append(status);
+        if (branch != null && !branch.isEmpty())
+            builder.append("+")
+                    .append("(").append("branch:cm-").append(branch).append("%20OR%20")
+                    .append("branch:cm-").append(branch).append("-caf").append("%20OR%20")
+                    .append("branch:cm-").append(branch).append("-caf-").append(Device.BOARD).append(")");
         if (options != null && !options.isEmpty())
             builder.append("&o=").append(options);
         if (n > 0)

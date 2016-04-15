@@ -43,62 +43,50 @@ public class Device {
      * The manufacturer of the product/hardware. (e.g lge)
      */
     public final static String MANUFACTURER = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
-
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
     public final static String HARDWARE = Build.HARDWARE.toLowerCase(Locale.getDefault());
-
     /**
      * The name of the underlying board.
      */
     public final static String BOARD = Build.BOARD.toLowerCase(Locale.getDefault());
-
     /**
      * The DEVICE code-name (e.g. hammerhead).
      */
     public final static String DEVICE = Cmd.exec("getprop ro.cm.device").replace("\n", "");
-
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
     public final static String CM_VERSION;
-
     /**
      * The CyanogenMod version of the device (e.g 13.0).
      */
     public final static String CM_NUMBER;
-
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
     public final static String CM_RELEASE_CHANNEL;
-
     /**
      * Git BRANCH of this build
      */
     public final static String BRANCH;
-
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
     public final static String BUILD_DATE;
-
     /**
      * String value for the nightly release channel
      */
     public final static String RC_NIGHTLY = "NIGHTLY";
-
     /**
      * String value for the unofficial release channel
      */
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
-
     /**
      * String value for the stable release channel
      */
     public final static String RC_SNAPSHOT = "SNAPSHOT";
-
     /**
      * Collection of device specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
@@ -106,7 +94,6 @@ public class Device {
      * If build-manifest.xml is not present, the Collection is empty.
      */
     public final static Collection<String> PROJECTS;
-
     /**
      * Common repositories.
      */
@@ -123,7 +110,6 @@ public class Device {
             "android_hardware_sony_thermanager",
             "android_hardware_sony_timekeep"
     };
-
     /**
      * Common repositories (Qualcomm boards only).
      */
@@ -131,7 +117,6 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
-
     /**
      * Logcat tag
      */
@@ -139,13 +124,18 @@ public class Device {
 
     static {
         CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
-        String[] version = CM_VERSION.split("-");
-        CM_NUMBER = version[0];
-        CM_RELEASE_CHANNEL = version[2];
-        if (CM_RELEASE_CHANNEL.equals("SNAPSHOT")) {
-            BRANCH = "stable/" + version[3].substring(0, 4);
+        /* Validate CM_VERSION */
+        if (CM_VERSION.length() == 0) {
+            CM_NUMBER = CM_RELEASE_CHANNEL = BRANCH = CM_VERSION;
         } else {
-            BRANCH = CM_NUMBER;
+            String[] version = CM_VERSION.split("-");
+            CM_NUMBER = version[0];
+            CM_RELEASE_CHANNEL = version[2];
+            if (CM_RELEASE_CHANNEL.equals("SNAPSHOT")) {
+                BRANCH = "stable/" + version[3].substring(0, 4);
+            } else {
+                BRANCH = CM_NUMBER;
+            }
         }
         BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
         Log.v(TAG, "Device" +

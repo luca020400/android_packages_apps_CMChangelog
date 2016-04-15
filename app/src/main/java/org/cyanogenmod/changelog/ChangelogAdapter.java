@@ -35,22 +35,36 @@ import java.util.List;
 import java.util.Locale;
 
 public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
-    private static final String TAG = "Adapter";
 
-    private final List<Change> mDataset;
-    private DateFormat formatter;
+    /**
+     * Logcat tag.
+     */
+    private static final String TAG = "ChangelogAdapter";
+
+    /**
+     * Data set to be represented by this Adapter.
+     */
+    private final List<Change> dataSet;
+
+    /**
+     * Format in which the dates will be displayed. , based on the device default locale.
+     * For example the commit last update date.
+     */
+    private final DateFormat formatter;
 
     /**
      * Construct a new ChangelogAdapter representing the specified data set.
      *
-     * @param mDataset the set of data we want this Adapter to represent.
+     * @param dataSet the set of data we want this Adapter to represent.
      */
-    public ChangelogAdapter(List<Change> mDataset) {
-        this.mDataset = mDataset;
+    public ChangelogAdapter(List<Change> dataSet) {
+        this.dataSet = dataSet;
         formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
 
-    // Create new views (invoked by the layout manager)
+    /**
+     * Create new views (invoked by the layout manager)
+     */
     @Override
     public ChangelogAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
@@ -60,8 +74,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final int pos = holder.getAdapterPosition();
-        Change change = mDataset.get(pos);
+        final Change change = dataSet.get(holder.getAdapterPosition());
         holder.project.setText(String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
         holder.subject.setText(String.format("%s", change.getSubject()));
         if (change.getInsertions() != 0)
@@ -71,20 +84,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         // format the value of the date
         holder.date.setText(formatter.format(change.getLastUpdate()));
         // set open in browser intent
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String review_url =
-                        String.format("http://review.cyanogenmod.org/#/c/%s", mDataset.get(pos).getChangeId());
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review_url));
-                Log.i(TAG, String.format("Opening %s", review_url));
-                try {
-                    v.getContext().startActivity(browserIntent);
-                } catch (ActivityNotFoundException e) {
-                    Log.e(TAG, "Browser activity not found.");
-                }
-            }
-        });
+        holder.container.setOnClickListener(new openBrowserOnClick(change.getChangeId()));
     }
 
     /**
@@ -94,11 +94,11 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return dataSet.size();
     }
 
     public List<Change> getDataset() {
-        return mDataset;
+        return dataSet;
     }
 
     /**
@@ -106,7 +106,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     public void clear() {
         int c = getItemCount();
-        mDataset.clear();
+        dataSet.clear();
         notifyItemRangeRemoved(0, c);
     }
 
@@ -116,7 +116,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      * @param changeCollection the List we want to append.
      */
     public void addAll(Collection<Change> changeCollection) {
-        mDataset.addAll(changeCollection);
+        dataSet.addAll(changeCollection);
         notifyItemRangeChanged(0, getItemCount());
     }
 
@@ -138,5 +138,26 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
             deletions = (TextView) itemView.findViewById(R.id.deletions);
             container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
         }
+    }
+
+    private static class openBrowserOnClick implements View.OnClickListener {
+
+        private final String reviewUrl;
+
+        public openBrowserOnClick(String changeId) {
+            this.reviewUrl = "http://review.cyanogenmod.org/#/c/" + changeId;
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(reviewUrl));
+            try {
+                view.getContext().startActivity(browserIntent);
+                Log.i(TAG, String.format("Opening %s", reviewUrl));
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG, "Browser activity not found.");
+            }
+        }
+
     }
 }

@@ -57,16 +57,10 @@ public class Change implements Serializable {
      */
     private int insertions;
 
-
     /**
      * Number of deleted lines.
      */
     private int deletions;
-
-    /**
-     * The timestamp of when the change was merged.
-     */
-    private Date mergeDate;
 
     /**
      * Constructs a new empty Change
@@ -135,14 +129,6 @@ public class Change implements Serializable {
 
     public void setDeletions(int deletions) {
         this.deletions = deletions;
-    }
-
-    public Date getMergeDate() {
-        return mergeDate;
-    }
-
-    public void setMergeDate(Date mergeDate) {
-        this.mergeDate = mergeDate;
     }
 
     /**

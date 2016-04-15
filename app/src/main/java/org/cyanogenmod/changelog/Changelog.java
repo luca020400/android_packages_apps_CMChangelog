@@ -32,44 +32,20 @@ import java.util.List;
 
 public class Changelog {
 
-    public static final String STATUS_MERGED = "status:merged";
-    public static final String STATUS_OPEN = "status:open";
-    public static final String STATUS_ABANDONED = "status:abandoned";
     /**
      * Logcat tag
      */
     private static final String TAG = "Changelog";
+
     /**
      * List of Changes of this changelog
      */
     private List<Change> changes;
+
     /**
      * The branch of this Changelog
      */
     private String branch;
-    /**
-     * The status of this Changelog. A valid status is, for example, {@link Changelog#STATUS_MERGED}.
-     */
-    private String status;
-
-    /**
-     * Construct a Changelog that is a list of Changes in the specified status and made in the specified BRANCH.
-     *
-     * @param branch the BRANCH to be checked for changes.
-     * @param status the status of the changes.
-     */
-    public Changelog(String branch, String status) {
-        this.branch = branch;
-        this.status = status;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public String getBranch() {
         return branch;
@@ -97,19 +73,14 @@ public class Changelog {
     public boolean update(int numberOfChanges) {
         List<Change> newChanges = new LinkedList<>();
         ChangelogParser parser = new ChangelogParser();
-        String branchString = "(" +
-                "branch:cm-" + branch + "%20OR%20" +
-                "branch:cm-" + branch + "-caf" + "%20OR%20" +
-                "branch:cm-" + branch + "-caf-" + Device.BOARD +
-                ")";
         int n = 500, start = 0; // number of changes to fetch and to skip
-        RestfulUri uri = new RestfulUri("merged", branchString, n, start);
+        RestfulUri uri = new RestfulUri("merged", branch, n, start);
         long time = System.currentTimeMillis();
         while (newChanges.size() < numberOfChanges) {
-            Log.d(TAG, "size() : " + newChanges.size());
             uri.start = start;
             try {
                 URL url = new URL(uri.toString());
+                Log.d(TAG, "Sending GET request to \"" + url.toString() + "\"");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 try {
                     connection.setRequestMethod("GET");
