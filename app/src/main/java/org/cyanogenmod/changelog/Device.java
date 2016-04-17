@@ -68,9 +68,9 @@ public class Device {
      */
     public final static String CM_RELEASE_CHANNEL;
     /**
-     * Git BRANCH of this build
+     * Git CM_BRANCH of this build
      */
-    public final static String BRANCH;
+    public final static String CM_BRANCH;
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
@@ -126,15 +126,15 @@ public class Device {
         CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
         /* Validate CM_VERSION */
         if (CM_VERSION.length() == 0) {
-            CM_NUMBER = CM_RELEASE_CHANNEL = BRANCH = CM_VERSION;
+            CM_NUMBER = CM_RELEASE_CHANNEL = CM_BRANCH = CM_VERSION;
         } else {
             String[] version = CM_VERSION.split("-");
             CM_NUMBER = version[0];
             CM_RELEASE_CHANNEL = version[2];
             if (CM_RELEASE_CHANNEL.equals("SNAPSHOT")) {
-                BRANCH = "stable/" + version[3].substring(0, 4);
+                CM_BRANCH = "stable/" + version[3].substring(0, 4);
             } else {
-                BRANCH = CM_NUMBER;
+                CM_BRANCH = CM_NUMBER;
             }
         }
         BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
@@ -142,7 +142,7 @@ public class Device {
                 " {MANUFACTURER:" + MANUFACTURER +
                 ", HARDWARE:" + HARDWARE +
                 ", BOARD:" + BOARD +
-                ", BRANCH:" + BRANCH +
+                ", BRANCH:" + CM_BRANCH +
                 ", DEVICE:" + DEVICE +
                 ", CM_VERSION:" + CM_VERSION +
                 ", CM_NUMBER:" + CM_NUMBER +

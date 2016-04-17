@@ -85,7 +85,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         changelog = new Changelog();
-        changelog.setBranch(Device.BRANCH);
+        changelog.setBranch(Device.CM_BRANCH);
         /* Setup and create Views */
         init();
         /* Populate RecyclerView with cached data */

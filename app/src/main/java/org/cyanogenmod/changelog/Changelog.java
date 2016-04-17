@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,15 +73,16 @@ public class Changelog {
         List<Change> newChanges = new LinkedList<>();
         ChangelogParser parser = new ChangelogParser();
         int n = 500, start = 0; // number of changes to fetch and to skip
-        RestfulUri uri = new RestfulUri("merged", branch, n, start);
+        RestfulUrl url = createRestUrl();
+        url.setN(n);
         long time = System.currentTimeMillis();
         while (newChanges.size() < numberOfChanges) {
-            uri.start = start;
+            url.setStart(start);
             try {
-                URL url = new URL(uri.toString());
                 Log.d(TAG, "Sending GET request to \"" + url.toString() + "\"");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) url.createUrl().openConnection();
                 try {
+                    connection.setRequestProperty("Accept", "application/json");
                     connection.setRequestMethod("GET");
                     try (InputStream in = new BufferedInputStream(connection.getInputStream())) {
                         newChanges.addAll(parser.readJsonStream(in));
@@ -100,7 +100,7 @@ public class Changelog {
                 Log.e(TAG, "Malformed URL!");
                 return false;
             } catch (IOException e) {
-                Log.e(TAG, "Error while connecting to " + uri.toString());
+                Log.e(TAG, "Error while connecting to " + url.toString());
                 return false;
             }
             start += n; // skip n changes in next iteration
@@ -112,5 +112,17 @@ public class Changelog {
         } else {
             return false;
         }
+    }
+
+    private RestfulUrl createRestUrl() {
+        RestfulUrl rest = new RestfulUrl("http://review.cyanogenmod.org");
+        rest.setEndpoint("/changes/");
+        rest.setRequestCompactJSON(true);
+        rest.appendQuery("status:merged");
+        if (branch != null && !branch.isEmpty())
+            rest.appendQuery("(branch:" + branch + "%20OR%20"
+                    + "branch:" + branch + "-caf" + "%20OR%20"
+                    + "branch:" + branch + "-caf-" + Device.BOARD + ")");
+        return rest;
     }
 }
