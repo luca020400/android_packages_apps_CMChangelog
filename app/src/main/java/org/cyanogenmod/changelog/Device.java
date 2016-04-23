@@ -125,21 +125,21 @@ public class Device {
     static {
         CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
         /* Validate CM_VERSION */
-        if (CM_VERSION.length() == 0) {
+        if (CM_VERSION.isEmpty()) {
             CM_NUMBER = CM_RELEASE_CHANNEL = CM_BRANCH = CM_VERSION;
         } else {
             String[] version = CM_VERSION.split("-");
             CM_NUMBER = version[0];
             CM_RELEASE_CHANNEL = version[2];
-            if (CM_RELEASE_CHANNEL.equals("SNAPSHOT")) {
-                CM_BRANCH = "stable/" + version[3].substring(0, 4);
+            if (CM_RELEASE_CHANNEL.equals(RC_SNAPSHOT)) {
+                CM_BRANCH = "stable/cm-" + version[3].substring(0, 4);
             } else {
-                CM_BRANCH = CM_NUMBER;
+                CM_BRANCH = "cm-" + CM_NUMBER;
             }
         }
         BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
-        Log.v(TAG, "Device" +
-                " {MANUFACTURER:" + MANUFACTURER +
+        Log.v(TAG, "Device: { " +
+                "MANUFACTURER:" + MANUFACTURER +
                 ", HARDWARE:" + HARDWARE +
                 ", BOARD:" + BOARD +
                 ", BRANCH:" + CM_BRANCH +
@@ -150,7 +150,7 @@ public class Device {
                 ", BUILD_DATE:" + BUILD_DATE + "}");
          /* Parse DEVICE projects from build-manifest.xml */
         String buildManifest = Cmd.exec("cat /etc/build-manifest.xml");
-        if (buildManifest.length() == 0) {
+        if (buildManifest.isEmpty()) {
             // Cat produced no output
             Log.d(TAG, "Couldn't find a build-manifest.xml.");
             PROJECTS = new LinkedList<>();  //  Empty list
