@@ -184,6 +184,11 @@ public class Change implements Serializable {
         return true;
     }
 
+    /**
+     * Determine whether or not some other Object is "equal to" this one.
+     * @param o the Object to compare
+     * @return true if o is equal to this Change
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o)

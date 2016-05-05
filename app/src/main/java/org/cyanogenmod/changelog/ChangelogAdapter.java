@@ -84,7 +84,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         // format the value of the date
         holder.date.setText(formatter.format(change.getLastUpdate()));
         // set open in browser intent
-        holder.container.setOnClickListener(new openBrowserOnClick(change.getChangeId()));
+        holder.container.setOnClickListener(new OpenBrowserOnClickListener(change.getChangeId()));
     }
 
     /**
@@ -120,7 +120,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         notifyItemRangeChanged(0, getItemCount());
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static final class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView subject;
         private final TextView project;
@@ -140,11 +140,11 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         }
     }
 
-    private static class openBrowserOnClick implements View.OnClickListener {
+    private static final class OpenBrowserOnClickListener implements View.OnClickListener {
 
         private final String reviewUrl;
 
-        public openBrowserOnClick(String changeId) {
+        public OpenBrowserOnClickListener(String changeId) {
             this.reviewUrl = "http://review.cyanogenmod.org/#/c/" + changeId;
         }
 

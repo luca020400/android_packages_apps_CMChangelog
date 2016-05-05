@@ -28,7 +28,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 /**
- * An AsyncTask that caches a Changelog.
+ * An AsyncTask that caches a List of Change objects.
  */
 public class CacheChangelogTask extends AsyncTask<List, Void, Void> {
 
@@ -43,6 +43,8 @@ public class CacheChangelogTask extends AsyncTask<List, Void, Void> {
     private final File cacheDir;
 
     /**
+     * Construct a new CacheChangelogTask that will eventually store data in the specified directory.
+     *
      * @param cacheDir the directory in which the data will be stored.
      */
     public CacheChangelogTask(File cacheDir) {
@@ -50,7 +52,7 @@ public class CacheChangelogTask extends AsyncTask<List, Void, Void> {
     }
 
     /**
-     * Caches the specified set of Changes. Will execute in a separate Thread.
+     * Caches the specified set of Changes. Will execute in a worker Thread.
      *
      * @param list the list of Changes to be cached.
      * @return null
