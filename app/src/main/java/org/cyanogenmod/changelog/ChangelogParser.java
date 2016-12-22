@@ -70,7 +70,7 @@ class ChangelogParser {
             public int compare(Change c1, Change c2) {
                 if (c1.getSubmitted() == null || c2.getSubmitted() == null)
                     return 0;
-                return c1.getSubmitted().compareTo(c2.getSubmitted());
+                return c2.getSubmitted().compareTo(c1.getSubmitted());
             }
         });
         return changes;
