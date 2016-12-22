@@ -28,7 +28,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,12 +65,10 @@ class ChangelogParser {
             if (newChange.isDeviceSpecific()) changes.add(newChange);
         }
         reader.endArray();
-        Collections.sort(changes, new Comparator<Change>() {
-            public int compare(Change c1, Change c2) {
-                if (c1.getSubmitted() == null || c2.getSubmitted() == null)
-                    return 0;
-                return c2.getSubmitted().compareTo(c1.getSubmitted());
-            }
+        Collections.sort(changes, (c1, c2) -> {
+            if (c1.getSubmitted() == null || c2.getSubmitted() == null)
+                return 0;
+            return c2.getSubmitted().compareTo(c1.getSubmitted());
         });
         return changes;
     }

@@ -134,7 +134,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Setup and initialize RecyclerView adapter
-        mAdapter = new ChangelogAdapter(new CopyOnWriteArrayList<Change>());
+        mAdapter = new ChangelogAdapter(new CopyOnWriteArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
         // Setup and initialize info dialog
         String message = String.format(Locale.getDefault(), "%s %s\n\n%s %s\n\n%s %s\n\n%s %s",
@@ -204,12 +204,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
              * Wrap in runnable to workaround SwipeRefreshLayout bug.
              * View: https://code.google.com/p/android/issues/detail?id=77712
              */
-            mSwipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                }
-            });
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
         }
 
         @WorkerThread
@@ -230,12 +225,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
                 Log.d(TAG, "Nothing changed");
             }
             // Delay refreshing animation just for the show
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            }, 300);
+            new Handler().postDelayed(() -> mSwipeRefreshLayout.setRefreshing(false), 300);
         }
     }
 
