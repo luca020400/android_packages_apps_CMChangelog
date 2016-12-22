@@ -37,7 +37,7 @@ import java.util.Locale;
 /**
  * Information about the device and the current build.
  */
-public class Device {
+class Device {
 
     /**
      * The manufacturer of the product/hardware. (e.g lge)
@@ -60,10 +60,6 @@ public class Device {
      */
     public final static String CM_VERSION;
     /**
-     * The CyanogenMod version of the device (e.g 13.0).
-     */
-    public final static String CM_NUMBER;
-    /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
     public final static String CM_RELEASE_CHANNEL;
@@ -83,10 +79,6 @@ public class Device {
      * String value for the unofficial release channel
      */
     public final static String RC_UNOFFICIAL = "UNOFFICIAL";
-    /**
-     * String value for the stable release channel
-     */
-    public final static String RC_SNAPSHOT = "SNAPSHOT";
     /**
      * Collection of device specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
@@ -117,6 +109,14 @@ public class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
+    /**
+     * The CyanogenMod version of the device (e.g 13.0).
+     */
+    private final static String CM_NUMBER;
+    /**
+     * String value for the stable release channel
+     */
+    private final static String RC_SNAPSHOT = "SNAPSHOT";
     /**
      * Logcat tag
      */

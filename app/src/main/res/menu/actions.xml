@@ -4,11 +4,11 @@
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_renew"
         android:showAsAction="ifRoom"
-        android:title="@string/menu_refresh"/>
+        android:title="@string/menu_refresh" />
     <item
         android:id="@+id/menu_device_info"
         android:icon="@drawable/ic_info"
         android:showAsAction="ifRoom"
-        android:title="@string/menu_device_info"/>
+        android:title="@string/menu_device_info" />
 
 </menu>

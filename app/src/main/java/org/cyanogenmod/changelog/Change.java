@@ -25,7 +25,7 @@ import java.util.Date;
  *
  * @see ChangelogAdapter
  */
-public class Change implements Serializable {
+class Change implements Serializable {
 
     /**
      * Logcat tag
@@ -43,9 +43,9 @@ public class Change implements Serializable {
     private String project;
 
     /**
-     * The timestamp of when the change was last updated.
+     * The timestamp of when the change was submitted.
      */
-    private Date lastUpdate;
+    private Date submitted;
 
     /**
      * The legacy numeric ID of the change.
@@ -71,15 +71,15 @@ public class Change implements Serializable {
     /**
      * Constructs a new Change with the specified properties.
      *
-     * @param subject    the subject of the Change
-     * @param project    the project package affected by the Change
-     * @param lastUpdate last update date of the Change
-     * @param id         id of the Change
+     * @param subject   the subject of the Change
+     * @param project   the project package affected by the Change
+     * @param submitted last update date of the Change
+     * @param id        id of the Change
      */
-    public Change(String subject, String project, Date lastUpdate, String id) {
+    public Change(String subject, String project, Date submitted, String id) {
         this.subject = subject;
         this.project = project;
-        this.lastUpdate = lastUpdate;
+        this.submitted = submitted;
         this.changeId = id;
     }
 
@@ -99,12 +99,12 @@ public class Change implements Serializable {
         this.project = project;
     }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
+    public Date getSubmitted() {
+        return submitted;
     }
 
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
+    public void setSubmitted(Date lastUpdate) {
+        this.submitted = lastUpdate;
     }
 
     public String getChangeId() {
@@ -195,8 +195,7 @@ public class Change implements Serializable {
 
         return !(subject != null ? !subject.equals(change.subject) : change.subject != null) ||
                 !(project != null ? !project.equals(change.project) : change.project != null) ||
-                !(lastUpdate != null ? !lastUpdate.equals(change.lastUpdate) : change.lastUpdate != null) ||
+                !(submitted != null ? !submitted.equals(change.submitted) : change.submitted != null) ||
                 !(changeId != null ? !changeId.equals(change.changeId) : change.changeId != null);
     }
-
 }

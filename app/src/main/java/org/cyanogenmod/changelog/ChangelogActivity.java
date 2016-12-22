@@ -61,11 +61,6 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
-     * RecyclerView used to list all the changes.
-     */
-    private RecyclerView mRecyclerView;
-
-    /**
      * Adapter for the RecyclerView.
      */
     private ChangelogAdapter mAdapter;
@@ -131,7 +126,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.color_primary_dark, R.color.color_accent);
         // Setup RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         // Setup divider for RecyclerView items

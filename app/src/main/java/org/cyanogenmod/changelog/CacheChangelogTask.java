@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * An AsyncTask that caches a Changelog.
  */
-public class CacheChangelogTask extends AsyncTask<List, Void, Void> {
+class CacheChangelogTask extends AsyncTask<List, Void, Void> {
 
     /**
      * Logcat tag.

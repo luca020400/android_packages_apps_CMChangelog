@@ -20,7 +20,7 @@ package org.cyanogenmod.changelog;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class RestfulUrl {
+class RestfulUrl {
 
     /**
      * Base url

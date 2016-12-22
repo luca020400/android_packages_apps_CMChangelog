@@ -82,7 +82,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         if (change.getDeletions() != 0)
             holder.deletions.setText(String.format("-%s\t", change.getDeletions()));
         // format the value of the date
-        holder.date.setText(formatter.format(change.getLastUpdate()));
+        holder.date.setText(formatter.format(change.getSubmitted()));
         // set open in browser intent
         holder.container.setOnClickListener(new openBrowserOnClick(change.getChangeId()));
     }
@@ -145,7 +145,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         private final String reviewUrl;
 
         public openBrowserOnClick(String changeId) {
-            this.reviewUrl = "http://review.cyanogenmod.org/#/c/" + changeId;
+            this.reviewUrl = "https://review.cyanogenmod.org/#/c/" + changeId;
         }
 
         @Override

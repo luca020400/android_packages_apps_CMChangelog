@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2016 The CyanogenMod Project.
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,9 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/info_dialog_title"
@@ -30,7 +29,7 @@
         android:paddingStart="24dp"
         android:paddingTop="24dp"
         android:text="@string/menu_device_info"
-        android:textAppearance="@android:style/TextAppearance.Material.DialogWindowTitle"/>
+        android:textAppearance="@android:style/TextAppearance.Material.DialogWindowTitle" />
 
     <TextView
         android:id="@+id/info_dialog_message"
@@ -40,6 +39,6 @@
         android:paddingEnd="24dp"
         android:paddingStart="24dp"
         android:paddingTop="10dp"
-        android:textAppearance="@android:style/TextAppearance.Material.Small"/>
+        android:textAppearance="@android:style/TextAppearance.Material.Small" />
 
 </LinearLayout>

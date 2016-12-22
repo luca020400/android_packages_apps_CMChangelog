@@ -27,13 +27,15 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ChangelogParser {
+class ChangelogParser {
 
     /**
      * Logcat tag.
@@ -50,6 +52,7 @@ public class ChangelogParser {
     /**
      * Read a Collection of ChangeInfo JSON entities
      * See http://review.cyanogenmod.org/Documentation/rest-api.html
+     *
      * @param reader the JsonReader to use
      * @return a List of Changes
      * @throws IOException
@@ -63,12 +66,20 @@ public class ChangelogParser {
             if (newChange.isDeviceSpecific()) changes.add(newChange);
         }
         reader.endArray();
+        Collections.sort(changes, new Comparator<Change>() {
+            public int compare(Change c1, Change c2) {
+                if (c1.getSubmitted() == null || c2.getSubmitted() == null)
+                    return 0;
+                return c1.getSubmitted().compareTo(c2.getSubmitted());
+            }
+        });
         return changes;
     }
 
     /**
      * Read ChangeInfo JSON entity
      * See http://review.cyanogenmod.org/Documentation/rest-api.html
+     *
      * @param reader the JsonReader to use
      * @return the parsed Change.
      * @throws IOException
@@ -87,8 +98,8 @@ public class ChangelogParser {
                 case "subject":
                     change.setSubject(reader.nextString());
                     break;
-                case "updated":
-                    change.setLastUpdate(parseTimestamp(reader.nextString()));
+                case "submitted":
+                    change.setSubmitted(parseTimestamp(reader.nextString()));
                     break;
                 case "insertions":
                     change.setInsertions(reader.nextInt());

@@ -29,7 +29,7 @@ import java.net.ProtocolException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Changelog {
+class Changelog {
 
     /**
      * Logcat tag
@@ -115,7 +115,7 @@ public class Changelog {
     }
 
     private RestfulUrl createRestUrl() {
-        RestfulUrl rest = new RestfulUrl("http://review.cyanogenmod.org");
+        RestfulUrl rest = new RestfulUrl("https://review.cyanogenmod.org");
         rest.setEndpoint("/changes/");
         rest.setRequestCompactJSON(true);
         rest.appendQuery("status:merged");
