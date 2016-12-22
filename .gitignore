@@ -201,3 +201,6 @@ local.properties
 
 ## Miscellaneous
 raw/
+
+# Keystore
+keystore.properties
