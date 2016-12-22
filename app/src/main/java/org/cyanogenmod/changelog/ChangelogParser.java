@@ -50,7 +50,7 @@ class ChangelogParser {
 
     /**
      * Read a Collection of ChangeInfo JSON entities
-     * See http://review.cyanogenmod.org/Documentation/rest-api.html
+     * See https://review.cyanogenmod.org/Documentation/rest-api.html
      *
      * @param reader the JsonReader to use
      * @return a List of Changes
@@ -75,7 +75,7 @@ class ChangelogParser {
 
     /**
      * Read ChangeInfo JSON entity
-     * See http://review.cyanogenmod.org/Documentation/rest-api.html
+     * See https://review.cyanogenmod.org/Documentation/rest-api.html
      *
      * @param reader the JsonReader to use
      * @return the parsed Change.
