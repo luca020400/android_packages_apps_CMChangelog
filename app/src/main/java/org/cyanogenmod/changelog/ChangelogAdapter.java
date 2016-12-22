@@ -105,9 +105,8 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      * Clear all the elements of the RecyclerView
      */
     public void clear() {
-        int c = getItemCount();
         dataSet.clear();
-        notifyItemRangeRemoved(0, c);
+        notifyDataSetChanged();
     }
 
     /**
@@ -117,7 +116,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      */
     public void addAll(Collection<Change> changeCollection) {
         dataSet.addAll(changeCollection);
-        notifyItemRangeChanged(0, getItemCount());
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
