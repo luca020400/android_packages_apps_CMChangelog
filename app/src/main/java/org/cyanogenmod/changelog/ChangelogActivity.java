@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -224,8 +223,8 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
             } else {
                 Log.d(TAG, "Nothing changed");
             }
-            // Delay refreshing animation just for the show
-            new Handler().postDelayed(() -> mSwipeRefreshLayout.setRefreshing(false), 300);
+            // Stop refreshing circle animation.
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
         }
     }
 
