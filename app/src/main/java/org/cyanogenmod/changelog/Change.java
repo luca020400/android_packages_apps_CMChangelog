@@ -50,7 +50,7 @@ class Change implements Serializable {
     /**
      * The legacy numeric ID of the change.
      */
-    private String changeId;
+    private String id;
 
     /**
      * Number of inserted lines.
@@ -80,7 +80,7 @@ class Change implements Serializable {
         this.subject = subject;
         this.project = project;
         this.submitted = submitted;
-        this.changeId = id;
+        this.id = id;
     }
 
     public String getSubject() {
@@ -107,12 +107,12 @@ class Change implements Serializable {
         this.submitted = lastUpdate;
     }
 
-    public String getChangeId() {
-        return changeId;
+    public String getId() {
+        return id;
     }
 
-    public void setChangeId(String changeId) {
-        this.changeId = changeId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getInsertions() {
@@ -195,6 +195,6 @@ class Change implements Serializable {
         return !(subject != null ? !subject.equals(change.subject) : change.subject != null) ||
                 !(project != null ? !project.equals(change.project) : change.project != null) ||
                 !(submitted != null ? !submitted.equals(change.submitted) : change.submitted != null) ||
-                !(changeId != null ? !changeId.equals(change.changeId) : change.changeId != null);
+                !(id != null ? !id.equals(change.id) : change.id != null);
     }
 }

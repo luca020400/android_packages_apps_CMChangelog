@@ -84,7 +84,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         // format the value of the date
         holder.date.setText(formatter.format(change.getSubmitted()));
         // set open in browser intent
-        holder.container.setOnClickListener(new openBrowserOnClick(change.getChangeId()));
+        holder.container.setOnClickListener(new openBrowserOnClick(change.getId()));
     }
 
     /**

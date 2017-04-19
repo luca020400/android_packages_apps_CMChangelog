@@ -17,22 +17,16 @@
 
 package org.cyanogenmod.changelog;
 
-import android.util.Log;
-
-import com.google.gson.stream.JsonReader;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 class ChangelogParser {
 
@@ -42,96 +36,10 @@ class ChangelogParser {
     private static final String TAG = "ChangelogParser";
 
     public List<Change> readJsonStream(InputStream in) throws IOException {
-        try (JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"))) {
-            reader.setLenient(true); // strip XSSI protection
-            return parseChangeInfoList(reader);
+        try (Reader reader = new InputStreamReader(in, "UTF-8")) {
+            Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+            return gson.fromJson(reader, new TypeToken<ArrayList<Change>>() {
+            }.getType());
         }
-    }
-
-    /**
-     * Read a Collection of ChangeInfo JSON entities
-     * See https://review.cyanogenmod.org/Documentation/rest-api.html
-     *
-     * @param reader the JsonReader to use
-     * @return a List of Changes
-     * @throws IOException
-     */
-    private List<Change> parseChangeInfoList(JsonReader reader) throws IOException {
-        List<Change> changes = new LinkedList<>();
-        reader.beginArray();
-        while (reader.hasNext()) {
-            Change newChange = parseChangeInfo(reader);
-            // check if its a legit change
-            if (newChange.getSubmitted() != null && newChange.isDeviceSpecific()) {
-                changes.add(newChange);
-            }
-        }
-        reader.endArray();
-        Collections.sort(changes, (c1, c2) -> {
-            if (c1.getSubmitted() == null || c2.getSubmitted() == null)
-                return 0;
-            return c2.getSubmitted().compareTo(c1.getSubmitted());
-        });
-        return changes;
-    }
-
-    /**
-     * Read ChangeInfo JSON entity
-     * See https://review.cyanogenmod.org/Documentation/rest-api.html
-     *
-     * @param reader the JsonReader to use
-     * @return the parsed Change.
-     * @throws IOException
-     */
-    private Change parseChangeInfo(JsonReader reader) throws IOException {
-        Change change = new Change();
-        reader.beginObject();
-        while (reader.hasNext()) {
-            switch (reader.nextName()) {
-                case "_number":
-                    change.setChangeId(reader.nextString());
-                    break;
-                case "project":
-                    change.setProject(reader.nextString());
-                    break;
-                case "subject":
-                    change.setSubject(reader.nextString());
-                    break;
-                case "submitted":
-                    change.setSubmitted(parseTimestamp(reader.nextString()));
-                    break;
-                case "insertions":
-                    change.setInsertions(reader.nextInt());
-                    break;
-                case "deletions":
-                    change.setDeletions(reader.nextInt());
-                    break;
-                default:
-                    reader.skipValue();
-            }
-        }
-        reader.endObject();
-        return change;
-    }
-
-    /**
-     * Parse ChangeInfo timestamp values.
-     * Timestamps are given in UTC and have the format "'yyyy-mm-dd hh:mm:ss.fffffffff'"
-     * where "'ffffffffff'" represents nanoseconds.
-     *
-     * @param timestamp timestamp String from a ChangeInfo entity
-     * @return the parsed Date
-     */
-    private Date parseTimestamp(String timestamp) {
-        Date date = new Date(0);
-        try {
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            /* Parse UTC date */
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            date = formatter.parse(timestamp);
-        } catch (ParseException e) {
-            Log.e(TAG, "Couldn't parse timestamp.");
-        }
-        return date;
     }
 }
