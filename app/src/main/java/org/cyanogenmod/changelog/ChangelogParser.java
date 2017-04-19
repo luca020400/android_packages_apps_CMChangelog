@@ -62,7 +62,9 @@ class ChangelogParser {
         while (reader.hasNext()) {
             Change newChange = parseChangeInfo(reader);
             // check if its a legit change
-            if (newChange.isDeviceSpecific()) changes.add(newChange);
+            if (newChange.getSubmitted() != null && newChange.isDeviceSpecific()) {
+                changes.add(newChange);
+            }
         }
         reader.endArray();
         Collections.sort(changes, (c1, c2) -> {

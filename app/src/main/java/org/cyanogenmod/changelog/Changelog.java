@@ -115,7 +115,7 @@ class Changelog {
     }
 
     private RestfulUrl createRestUrl() {
-        RestfulUrl rest = new RestfulUrl("https://review.cyanogenmod.org");
+        RestfulUrl rest = new RestfulUrl("https://review.lineageos.org");
         rest.setEndpoint("/changes/");
         rest.setRequestCompactJSON(true);
         rest.appendQuery("status:merged");

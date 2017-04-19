@@ -148,7 +148,6 @@ class Change implements Serializable {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     /**
      * Check if this Change is a device specific Change.
      *

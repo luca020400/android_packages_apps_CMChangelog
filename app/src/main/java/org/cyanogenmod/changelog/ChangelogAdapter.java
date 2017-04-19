@@ -75,7 +75,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Change change = dataSet.get(holder.getAdapterPosition());
-        holder.project.setText(String.format("%s", change.getProject().replace("CyanogenMod/", "").replace("android_", "")));
+        holder.project.setText(String.format("%s", change.getProject().replace("LineageOS/", "").replace("android_", "")));
         holder.subject.setText(String.format("%s", change.getSubject()));
         if (change.getInsertions() != 0)
             holder.insertions.setText(String.format("+%s\t", change.getInsertions()));
@@ -144,7 +144,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         private final String reviewUrl;
 
         public openBrowserOnClick(String changeId) {
-            this.reviewUrl = "https://review.cyanogenmod.org/#/c/" + changeId;
+            this.reviewUrl = "https://review.lineageos.org/#/c/" + changeId;
         }
 
         @Override

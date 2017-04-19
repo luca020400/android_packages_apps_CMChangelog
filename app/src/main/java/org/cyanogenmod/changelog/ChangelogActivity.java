@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -127,9 +128,11 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup RecyclerView
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
         // Setup divider for RecyclerView items
-        mRecyclerView.addItemDecoration(new Divider(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(
+                mRecyclerView.getContext(), linearLayoutManager.getOrientation()));
         // Setup item animator
         mRecyclerView.setItemAnimator(null);    // Disable to prevent view blinking when refreshing
         // Setup and initialize RecyclerView adapter
