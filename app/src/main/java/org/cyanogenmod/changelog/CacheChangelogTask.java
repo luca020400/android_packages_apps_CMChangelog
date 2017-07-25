@@ -45,7 +45,7 @@ class CacheChangelogTask extends AsyncTask<List, Void, Void> {
     /**
      * @param cacheDir the directory in which the data will be stored.
      */
-    public CacheChangelogTask(File cacheDir) {
+    CacheChangelogTask(File cacheDir) {
         this.cacheDir = cacheDir;
     }
 

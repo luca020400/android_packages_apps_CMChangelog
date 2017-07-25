@@ -28,7 +28,7 @@ import java.io.InputStream;
 class Cmd {
     private static final String TAG = "Cmd";
 
-    public static String exec(String... strings) {
+    static String exec(String... strings) {
         String output = "";
         DataOutputStream outputStream = null;
         InputStream inputStream = null;

@@ -42,54 +42,46 @@ class Device {
     /**
      * The manufacturer of the product/hardware. (e.g lge)
      */
-    public final static String MANUFACTURER = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
+    final static String MANUFACTURER = Build.MANUFACTURER.toLowerCase(Locale.getDefault());
     /**
      * The name of the hardware (from the kernel command line or /proc).
      */
-    public final static String HARDWARE = Build.HARDWARE.toLowerCase(Locale.getDefault());
+    final static String HARDWARE = Build.HARDWARE.toLowerCase(Locale.getDefault());
     /**
      * The name of the underlying board.
      */
-    public final static String BOARD = Build.BOARD.toLowerCase(Locale.getDefault());
+    final static String BOARD = Build.BOARD.toLowerCase(Locale.getDefault());
     /**
      * The DEVICE code-name (e.g. hammerhead).
      */
-    public final static String DEVICE = Cmd.exec("getprop ro.cm.device").replace("\n", "");
+    final static String DEVICE = Cmd.exec("getprop ro.cm.device").replace("\n", "");
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
-    public final static String CM_VERSION;
+    final static String CM_VERSION;
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
-    public final static String CM_RELEASE_CHANNEL;
+    final static String CM_RELEASE_CHANNEL;
     /**
      * Git CM_BRANCH of this build
      */
-    public final static String CM_BRANCH;
+    final static String CM_BRANCH;
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
-    public final static String BUILD_DATE;
-    /**
-     * String value for the nightly release channel
-     */
-    public final static String RC_NIGHTLY = "NIGHTLY";
-    /**
-     * String value for the unofficial release channel
-     */
-    public final static String RC_UNOFFICIAL = "UNOFFICIAL";
+    final static String BUILD_DATE;
     /**
      * Collection of device specific projects.
      * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
      * build the running build. This file is generated in official builds, unofficial builds may not include it.
      * If build-manifest.xml is not present, the Collection is empty.
      */
-    public final static Collection<String> PROJECTS;
+    final static Collection<String> PROJECTS;
     /**
      * Common repositories.
      */
-    public static final String[] COMMON_REPOS = {
+    static final String[] COMMON_REPOS = {
             "android_hardware_akm",
             "android_hardware_broadcom_libbt",
             "android_hardware_broadcom_wlan",
@@ -105,7 +97,7 @@ class Device {
     /**
      * Common repositories (Qualcomm boards only).
      */
-    public static final String[] COMMON_REPOS_QCOM = {
+    static final String[] COMMON_REPOS_QCOM = {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
@@ -195,7 +187,7 @@ class Device {
      * @param c the Context holding the global information about the application environment.
      * @return true if device is connected to internet, otherwise returns false.
      */
-    public static boolean isConnected(Context c) {
+    static boolean isConnected(Context c) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();

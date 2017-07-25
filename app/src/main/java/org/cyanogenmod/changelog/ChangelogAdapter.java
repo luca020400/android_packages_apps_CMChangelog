@@ -57,7 +57,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      *
      * @param dataSet the set of data we want this Adapter to represent.
      */
-    public ChangelogAdapter(List<Change> dataSet) {
+    ChangelogAdapter(List<Change> dataSet) {
         this.dataSet = dataSet;
         formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
@@ -97,14 +97,10 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         return dataSet.size();
     }
 
-    public List<Change> getDataset() {
-        return dataSet;
-    }
-
     /**
      * Clear all the elements of the RecyclerView
      */
-    public void clear() {
+    void clear() {
         dataSet.clear();
         notifyDataSetChanged();
     }
@@ -114,12 +110,12 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
      *
      * @param changeCollection the List we want to append.
      */
-    public void addAll(Collection<Change> changeCollection) {
+    void addAll(Collection<Change> changeCollection) {
         dataSet.addAll(changeCollection);
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView subject;
         private final TextView project;
@@ -128,14 +124,14 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
         private final TextView insertions;
         private final TextView deletions;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
-            subject = (TextView) itemView.findViewById(R.id.subject);
-            project = (TextView) itemView.findViewById(R.id.project);
-            date = (TextView) itemView.findViewById(R.id.date);
-            insertions = (TextView) itemView.findViewById(R.id.insertions);
-            deletions = (TextView) itemView.findViewById(R.id.deletions);
-            container = (LinearLayout) itemView.findViewById(R.id.list_item_container);
+            subject = itemView.findViewById(R.id.subject);
+            project = itemView.findViewById(R.id.project);
+            date = itemView.findViewById(R.id.date);
+            insertions = itemView.findViewById(R.id.insertions);
+            deletions = itemView.findViewById(R.id.deletions);
+            container = itemView.findViewById(R.id.list_item_container);
         }
     }
 
@@ -143,7 +139,7 @@ public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.View
 
         private final String reviewUrl;
 
-        public openBrowserOnClick(String changeId) {
+        openBrowserOnClick(String changeId) {
             this.reviewUrl = "https://review.lineageos.org/#/c/" + changeId;
         }
 

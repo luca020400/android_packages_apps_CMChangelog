@@ -30,16 +30,20 @@ import java.util.List;
 
 class ChangelogParser {
 
-    /**
-     * Logcat tag.
-     */
-    private static final String TAG = "ChangelogParser";
+    List<Change> readJsonStream(InputStream in) throws IOException {
+        List<Change> changes;
 
-    public List<Change> readJsonStream(InputStream in) throws IOException {
         try (Reader reader = new InputStreamReader(in, "UTF-8")) {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-            return gson.fromJson(reader, new TypeToken<ArrayList<Change>>() {
+            changes = gson.fromJson(reader, new TypeToken<ArrayList<Change>>() {
             }.getType());
         }
+
+        List<Change> device_changes = new ArrayList<>();
+        for (Change change : changes) {
+            if (change.isDeviceSpecific()) device_changes.add(change);
+        }
+
+        return device_changes;
     }
 }

@@ -119,14 +119,14 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
      */
     private void init() {
         // Setup SwipeRefreshLayout
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh);
         // Setup refresh listener which triggers new data loading
         mSwipeRefreshLayout.setOnRefreshListener(this);
         // Color scheme of the refresh spinner
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.color_primary_dark, R.color.color_accent);
         // Setup RecyclerView
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -148,7 +148,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
                 .setPositiveButton(R.string.dialog_ok, null);
-        TextView dialogMessage = (TextView) infoDialog.findViewById(R.id.info_dialog_message);
+        TextView dialogMessage = infoDialog.findViewById(R.id.info_dialog_message);
         dialogMessage.setText(message);
         mInfoDialog = builder.create();
     }

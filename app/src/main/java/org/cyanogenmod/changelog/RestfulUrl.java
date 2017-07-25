@@ -25,7 +25,7 @@ class RestfulUrl {
     /**
      * Base url
      */
-    private String baseUrl;
+    private final String baseUrl;
 
     /**
      * Rest endpoint
@@ -52,7 +52,7 @@ class RestfulUrl {
      */
     private boolean requestCompactJSON;
 
-    public RestfulUrl(String baseUrl) {
+    RestfulUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         this.query = "";
         this.n = 0;
@@ -60,31 +60,15 @@ class RestfulUrl {
         this.requestCompactJSON = false;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public void setEndpoint(String endpoint) {
+    void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
-    public boolean isRequestCompactJSON() {
-        return requestCompactJSON;
-    }
-
-    public void setRequestCompactJSON(boolean requestCompactJSON) {
+    void setRequestCompactJSON(boolean requestCompactJSON) {
         this.requestCompactJSON = requestCompactJSON;
     }
 
-    public void appendQuery(String query) {
+    void appendQuery(String query) {
         if (!query.isEmpty()) {
             if (this.query.isEmpty())
                 this.query = this.query + query;
@@ -93,23 +77,11 @@ class RestfulUrl {
         }
     }
 
-    public void clearQuery() {
-        this.query = "";
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
+    void setStart(int start) {
         this.start = start;
     }
 
-    public int getN() {
-        return n;
-    }
-
-    public void setN(int n) {
+    void setN(int n) {
         this.n = n;
     }
 
@@ -126,7 +98,7 @@ class RestfulUrl {
         return string.toString();
     }
 
-    public URL createUrl() throws MalformedURLException {
+    URL createUrl() throws MalformedURLException {
         return new URL(toString());
     }
 }

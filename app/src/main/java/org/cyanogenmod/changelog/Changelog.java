@@ -46,19 +46,15 @@ class Changelog {
      */
     private String branch;
 
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
+    void setBranch(String branch) {
         this.branch = branch;
     }
 
-    public List<Change> getChanges() {
+    List<Change> getChanges() {
         return changes;
     }
 
-    public void setChanges(List<Change> changes) {
+    void setChanges(List<Change> changes) {
         this.changes = changes;
     }
 
@@ -69,7 +65,7 @@ class Changelog {
      * @return true if the Changelog was successfully updated, false if not.
      */
     @WorkerThread
-    public boolean update(int numberOfChanges) {
+    boolean update(int numberOfChanges) {
         List<Change> newChanges = new LinkedList<>();
         ChangelogParser parser = new ChangelogParser();
         int n = 500, start = 0; // number of changes to fetch and to skip

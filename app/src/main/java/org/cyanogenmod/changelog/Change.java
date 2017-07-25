@@ -28,45 +28,34 @@ import java.util.Date;
 class Change implements Serializable {
 
     /**
-     * Logcat tag
-     */
-    private static final String TAG = "Change";
-
-    /**
      * The subject of the change (header line of the commit message).
      */
-    private String subject;
+    private final String subject;
 
     /**
      * The name of the project.
      */
-    private String project;
+    private final String project;
 
     /**
      * The timestamp of when the change was submitted.
      */
-    private Date submitted;
+    private final Date submitted;
 
     /**
      * The legacy numeric ID of the change.
      */
-    private String id;
+    private final String id;
 
     /**
      * Number of inserted lines.
      */
-    private int insertions;
+    private final int insertions;
 
     /**
      * Number of deleted lines.
      */
-    private int deletions;
-
-    /**
-     * Constructs a new empty Change
-     */
-    public Change() {
-    }
+    private final int deletions;
 
     /**
      * Constructs a new Change with the specified properties.
@@ -76,59 +65,37 @@ class Change implements Serializable {
      * @param submitted last update date of the Change
      * @param id        id of the Change
      */
-    public Change(String subject, String project, Date submitted, String id) {
+    public Change(String subject, String project, Date submitted, String id, int insertions, int deletions) {
         this.subject = subject;
         this.project = project;
         this.submitted = submitted;
         this.id = id;
+        this.insertions = insertions;
+        this.deletions = deletions;
     }
 
-    public String getSubject() {
+    String getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getProject() {
+    String getProject() {
         return project;
     }
 
-    public void setProject(String project) {
-        this.project = project;
-    }
-
-    public Date getSubmitted() {
+    Date getSubmitted() {
         return submitted;
     }
 
-    public void setSubmitted(Date lastUpdate) {
-        this.submitted = lastUpdate;
-    }
-
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getInsertions() {
+    int getInsertions() {
         return insertions;
     }
 
-    public void setInsertions(int insertions) {
-        this.insertions = insertions;
-    }
-
-    public int getDeletions() {
+    int getDeletions() {
         return deletions;
-    }
-
-    public void setDeletions(int deletions) {
-        this.deletions = deletions;
     }
 
     /**
@@ -136,7 +103,7 @@ class Change implements Serializable {
      *
      * @return true if the Device is affected by this Change, else returns false
      */
-    public boolean isDeviceSpecific() {
+    boolean isDeviceSpecific() {
         // Fallback to 'old' method
         if (Device.PROJECTS.isEmpty()) {
             return isDeviceSpecificFallback();
@@ -152,9 +119,6 @@ class Change implements Serializable {
      * Check if this Change is a device specific Change.
      *
      * @return true if this Change is a device specific change, otherwise false
-     * @deprecated This method is inefficient and unreliable, only use it if the current CyanogenMod version has no
-     * build-manifest.xml (i.e {@link Device#CM_RELEASE_CHANNEL} is {@link Device#RC_UNOFFICIAL}) in any other case use
-     * {@link #isDeviceSpecific()}
      */
     private boolean isDeviceSpecificFallback() {
         for (String repo : Device.COMMON_REPOS) {
