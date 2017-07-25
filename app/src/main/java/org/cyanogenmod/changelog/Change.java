@@ -99,36 +99,21 @@ class Change implements Serializable {
     }
 
     /**
-     * Check if this Change is device specific Change.
-     *
-     * @return true if the Device is affected by this Change, else returns false
-     */
-    boolean isDeviceSpecific() {
-        // Fallback to 'old' method
-        if (Device.PROJECTS.isEmpty()) {
-            return isDeviceSpecificFallback();
-        } else for (String deviceProject : Device.PROJECTS) {
-            if (this.project.equals(deviceProject)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Check if this Change is a device specific Change.
      *
      * @return true if this Change is a device specific change, otherwise false
      */
-    private boolean isDeviceSpecificFallback() {
+    boolean isDeviceSpecific() {
         for (String repo : Device.COMMON_REPOS) {
             if (project.contains(repo))
                 return true;
         }
 
-        for (String repo : Device.COMMON_REPOS_QCOM) {
-            if (Device.HARDWARE.equals("qcom") && project.contains(repo))
-                return true;
+        if (Device.HARDWARE.equals("qcom")) {
+            for (String repo : Device.COMMON_REPOS_QCOM) {
+                if (project.contains(repo))
+                    return true;
+            }
         }
 
         if (project.contains("device")) {

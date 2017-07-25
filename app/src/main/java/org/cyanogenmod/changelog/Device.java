@@ -21,17 +21,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.Log;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Locale;
 
 /**
@@ -72,13 +62,6 @@ class Device {
      */
     final static String BUILD_DATE;
     /**
-     * Collection of device specific projects.
-     * The value is determined by the content of the build-manifest.xml, a file that defines all the projects used to
-     * build the running build. This file is generated in official builds, unofficial builds may not include it.
-     * If build-manifest.xml is not present, the Collection is empty.
-     */
-    final static Collection<String> PROJECTS;
-    /**
      * Common repositories.
      */
     static final String[] COMMON_REPOS = {
@@ -109,10 +92,6 @@ class Device {
      * String value for the stable release channel
      */
     private final static String RC_SNAPSHOT = "SNAPSHOT";
-    /**
-     * Logcat tag
-     */
-    private final static String TAG = "Device";
 
     static {
         CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
@@ -130,54 +109,6 @@ class Device {
             }
         }
         BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
-        Log.v(TAG, "Device: { " +
-                "MANUFACTURER:" + MANUFACTURER +
-                ", HARDWARE:" + HARDWARE +
-                ", BOARD:" + BOARD +
-                ", BRANCH:" + CM_BRANCH +
-                ", DEVICE:" + DEVICE +
-                ", CM_VERSION:" + CM_VERSION +
-                ", CM_NUMBER:" + CM_NUMBER +
-                ", CM_RELEASE_CHANNEL:" + CM_RELEASE_CHANNEL +
-                ", BUILD_DATE:" + BUILD_DATE + "}");
-         /* Parse DEVICE projects from build-manifest.xml */
-        String buildManifest = Cmd.exec("cat /etc/build-manifest.xml");
-        if (buildManifest.isEmpty()) {
-            // Cat produced no output
-            Log.d(TAG, "Couldn't find a build-manifest.xml.");
-            PROJECTS = new LinkedList<>();  //  Empty list
-        } else {
-            // Cat was successful, parse the output as XML
-            Log.d(TAG, "Found build-manifest.xml.");
-            PROJECTS = parseBuildManifest(buildManifest);
-            Log.v(TAG, "Number of projects: " + PROJECTS.size());
-        }
-    }
-
-    private static Collection<String> parseBuildManifest(String inputXML) {
-        Collection<String> deviceProjects = new ArrayList<>(320);
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(inputXML));
-            int eventType = xpp.getEventType();
-            do {
-                if (eventType == XmlPullParser.END_TAG && xpp.getName().equals("project")) {
-                    String value = xpp.getAttributeValue(null, "name"); // may return null value
-                    if (value != null && value.contains("CyanogenMod/")) {
-                        deviceProjects.add(value);
-                    }
-                }
-            } while ((eventType = xpp.next()) != XmlPullParser.END_DOCUMENT);
-        } catch (XmlPullParserException e) {
-            Log.e(TAG, "Error while creating XML parser");
-            deviceProjects.clear();
-        } catch (IOException e) {
-            Log.e(TAG, "IOException while parsing XML");
-            deviceProjects.clear();
-        }
-        return deviceProjects;
     }
 
     /**
