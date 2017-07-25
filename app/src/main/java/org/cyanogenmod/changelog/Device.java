@@ -44,19 +44,19 @@ class Device {
     /**
      * The DEVICE code-name (e.g. hammerhead).
      */
-    final static String DEVICE = Cmd.exec("getprop ro.cm.device").replace("\n", "");
+    final static String DEVICE = Build.PRODUCT.toLowerCase(Locale.getDefault());
     /**
      * The full CyanogenMod build version string. The value is determined by the output of getprop ro.cm.version.
      */
-    final static String CM_VERSION;
+    final static String LINEAGE_VERSION;
     /**
      * The CyanogenMod release channel (e.g NIGHTLY).
      */
-    final static String CM_RELEASE_CHANNEL;
+    final static String LINEAGE_RELEASE_CHANNEL;
     /**
      * Git CM_BRANCH of this build
      */
-    final static String CM_BRANCH;
+    final static String LINEAGE_BRANCH;
     /**
      * The date when this build was compiled. The value is determined by the output of getprop ro.build.date.
      */
@@ -84,29 +84,16 @@ class Device {
             "android_device_qcom_common",
             "android_device_qcom_sepolicy",
     };
-    /**
-     * The CyanogenMod version of the device (e.g 13.0).
-     */
-    private final static String CM_NUMBER;
-    /**
-     * String value for the stable release channel
-     */
-    private final static String RC_SNAPSHOT = "SNAPSHOT";
 
     static {
-        CM_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
-        /* Validate CM_VERSION */
-        if (CM_VERSION.isEmpty()) {
-            CM_NUMBER = CM_RELEASE_CHANNEL = CM_BRANCH = CM_VERSION;
+        LINEAGE_VERSION = Cmd.exec("getprop ro.cm.version").replace("\n", "");
+        /* Validate LINEAGE_VERSION */
+        if (LINEAGE_VERSION.isEmpty()) {
+            LINEAGE_RELEASE_CHANNEL = LINEAGE_BRANCH = LINEAGE_VERSION;
         } else {
-            String[] version = CM_VERSION.split("-");
-            CM_NUMBER = version[0];
-            CM_RELEASE_CHANNEL = version[2];
-            if (CM_RELEASE_CHANNEL.equals(RC_SNAPSHOT)) {
-                CM_BRANCH = "stable/cm-" + version[3].substring(0, 4);
-            } else {
-                CM_BRANCH = "cm-" + CM_NUMBER;
-            }
+            String[] version = LINEAGE_VERSION.split("-");
+            LINEAGE_RELEASE_CHANNEL = version[2];
+            LINEAGE_BRANCH = "cm-" + version[0];
         }
         BUILD_DATE = Cmd.exec("getprop ro.build.date").replace("\n", "");
     }

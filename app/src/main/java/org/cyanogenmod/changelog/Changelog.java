@@ -114,8 +114,8 @@ class Changelog {
         rest.setRequestCompactJSON(true);
         rest.appendQuery("status:merged");
         if (branch != null && !branch.isEmpty())
-            rest.appendQuery("(branch:" + branch + "%20OR%20"
-                    + "branch:" + branch + "-caf" + "%20OR%20"
+            rest.appendQuery("(branch:" + branch + " OR "
+                    + "branch:" + branch + "-caf" + " OR "
                     + "branch:" + branch + "-caf-" + Device.BOARD + ")");
         return rest;
     }

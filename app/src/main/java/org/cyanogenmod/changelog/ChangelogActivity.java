@@ -80,7 +80,7 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         changelog = new Changelog();
-        changelog.setBranch(Device.CM_BRANCH);
+        changelog.setBranch(Device.LINEAGE_BRANCH);
         /* Setup and create Views */
         init();
         /* Populate RecyclerView with cached data */
@@ -141,9 +141,9 @@ public class ChangelogActivity extends Activity implements SwipeRefreshLayout.On
         // Setup and initialize info dialog
         String message = String.format(Locale.getDefault(), "%s %s\n\n%s %s\n\n%s %s\n\n%s %s",
                 getString(R.string.dialog_device_name), Device.DEVICE,
-                getString(R.string.dialog_version), Device.CM_VERSION,
+                getString(R.string.dialog_version), Device.LINEAGE_VERSION,
                 getString(R.string.dialog_build_date), Device.BUILD_DATE,
-                getString(R.string.dialog_update_channel), Device.CM_RELEASE_CHANNEL);
+                getString(R.string.dialog_update_channel), Device.LINEAGE_RELEASE_CHANNEL);
         View infoDialog = getLayoutInflater().inflate(R.layout.info_dialog, mRecyclerView, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_InfoDialog)
                 .setView(infoDialog)
