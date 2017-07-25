@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package org.cyanogenmod.changelog
 
-buildscript {
-    ext.kotlin_version = '1.1.3-2'
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha8'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-    repositories {
-        mavenCentral()
+internal class ChangelogParser {
+
+    @Throws(IOException::class)
+    fun readJsonStream(`in`: InputStream): List<Change> {
+        var changes = listOf<Change>()
+
+        InputStreamReader(`in`, "UTF-8").use { reader ->
+            val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
+            changes = gson.fromJson<List<Change>>(reader, object : TypeToken<List<Change>>() {}.type)
+        }
+
+        return changes.filter { it.isDeviceSpecific }
     }
 }
