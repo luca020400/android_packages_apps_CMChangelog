@@ -71,7 +71,6 @@ class Changelog {
         int n = 500, start = 0; // number of changes to fetch and to skip
         RestfulUrl url = createRestUrl();
         url.setN(n);
-        long time = System.currentTimeMillis();
         while (newChanges.size() < numberOfChanges) {
             url.setStart(start);
             try {
@@ -101,7 +100,6 @@ class Changelog {
             }
             start += n; // skip n changes in next iteration
         }
-        Log.v(TAG, "Successfully parsed " + newChanges.size() + " changes in " + (System.currentTimeMillis() - time) + "ms");
         if (changes == null || !changes.get(0).equals(newChanges.get(0)) || changes.size() != newChanges.size()) {
             changes = newChanges;
             return true;

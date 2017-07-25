@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-public class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
+class ChangelogAdapter extends RecyclerView.Adapter<ChangelogAdapter.ViewHolder> {
 
     /**
      * Logcat tag.
