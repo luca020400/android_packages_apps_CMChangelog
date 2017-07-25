@@ -21,7 +21,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,18 +107,8 @@ internal class ChangelogAdapter : RecyclerView.Adapter<ChangelogAdapter.ViewHold
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(reviewUrl))
             try {
                 view.context.startActivity(browserIntent)
-                Log.i(TAG, String.format("Opening %s", reviewUrl))
-            } catch (e: ActivityNotFoundException) {
-                Log.e(TAG, "Browser activity not found.")
+            } catch (_: ActivityNotFoundException) {
             }
-
         }
-    }
-
-    companion object {
-        /**
-         * Logcat tag.
-         */
-        private val TAG = "ChangelogAdapter"
     }
 }

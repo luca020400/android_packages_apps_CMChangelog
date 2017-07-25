@@ -31,6 +31,7 @@ import java.io.ObjectOutputStream
  * @param cacheDir the directory in which the data will be stored.
  */
 internal class CacheChangelogTask(val cacheDir: File) : AsyncTask<List<*>, Void, Void>() {
+    private val TAG = "CacheChangelogTask"
 
     /**
      * Caches the specified set of Changes. Will execute in a separate Thread.
@@ -55,12 +56,5 @@ internal class CacheChangelogTask(val cacheDir: File) : AsyncTask<List<*>, Void,
         }
 
         return null
-    }
-
-    companion object {
-        /**
-         * Logcat tag.
-         */
-        private val TAG = "CacheChangelogTask"
     }
 }

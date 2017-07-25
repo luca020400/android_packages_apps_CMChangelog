@@ -37,6 +37,8 @@ import java.io.*
 import java.util.*
 
 class ChangelogActivity : Activity(), SwipeRefreshLayout.OnRefreshListener {
+    private val TAG = "ChangelogActivity"
+
     /**
      * Adapter for the RecyclerView.
      */
@@ -193,13 +195,4 @@ class ChangelogActivity : Activity(), SwipeRefreshLayout.OnRefreshListener {
             swipe_refresh.post { swipe_refresh.isRefreshing = false }
         }
     }
-
-    companion object {
-
-        /**
-         * Logcat tag.
-         */
-        private val TAG = "ChangelogActivity"
-    }
-
 }

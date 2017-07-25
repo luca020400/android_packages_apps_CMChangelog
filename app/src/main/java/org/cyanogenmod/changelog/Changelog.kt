@@ -26,6 +26,7 @@ import java.net.MalformedURLException
 import java.net.ProtocolException
 
 internal class Changelog(val branch: String) {
+    private val TAG = "Changelog"
 
     /**
      * List of Changes of this changelog
@@ -96,12 +97,5 @@ internal class Changelog(val branch: String) {
                     + "branch:" + branch + "-caf" + " OR "
                     + "branch:" + branch + "-caf-" + Device.BOARD + ")")
         return rest
-    }
-
-    companion object {
-        /**
-         * Logcat tag
-         */
-        private val TAG = "Changelog"
     }
 }
